@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from 'react'
-import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom'
 import { UserProvider, UserContext } from './context/UserContext'
 
 import Navbar from './components/Navbar'
@@ -16,14 +16,16 @@ function AppRoutes() {
   );
 }
 
+
 function App() {
   return (
-    <UserProvider>
-      <Router>
-        <AppRoutes />
-      </Router>
-    </UserProvider>
-  )
+    <Routes>
+      <Route path="/" element={<Promo />} />
+      <Route path="/profile" element={<Profile />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
 }
 
-export default App
+export default App;
