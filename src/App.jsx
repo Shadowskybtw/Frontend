@@ -1,5 +1,6 @@
 import React, { useContext, useEffect } from 'react'
 import { Routes, Route } from 'react-router-dom'
+import { Navigate } from 'react-router-dom';
 import { UserProvider, UserContext } from './context/UserContext'
 
 import Navbar from './components/Navbar'
