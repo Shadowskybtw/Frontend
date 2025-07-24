@@ -10,17 +10,8 @@ import NotFound from './pages/NotFound'
 import Register from './pages/Register'
 
 function AppRoutes() {
-  return (
-    <div style={{ padding: '2rem', textAlign: 'center' }}>
-      <h1>Приложение работает</h1>
-    </div>
-  );
-}
-
-
-function App() {
   const { user } = useContext(UserContext);
-  
+
   return (
     <Routes>
       {!user ? (
@@ -36,6 +27,15 @@ function App() {
         </>
       )}
     </Routes>
+  );
+}
+
+
+function App() {
+  return (
+    <UserProvider>
+      <AppRoutes />
+    </UserProvider>
   );
 }
 
