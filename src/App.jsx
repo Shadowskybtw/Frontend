@@ -18,13 +18,14 @@ function AppRoutes() {
         {!user ? (
           <>
             <Route path="/register" element={<Register />} />
+            <Route path="/" element={<Navigate to="/register" replace />} />
             <Route path="*" element={<Navigate to="/register" replace />} />
           </>
         ) : (
           <>
-            <Route path="/" element={<Promo />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="*" element={<NotFound />} />
+            <Route path="/profile" element={<Promo />} />
+            <Route path="/" element={<Profile />} />
+            <Route path="*" element={<Navigate to="/profile" replace />} />
           </>
         )}
       </Routes>
