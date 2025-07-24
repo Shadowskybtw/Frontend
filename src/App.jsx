@@ -18,12 +18,22 @@ function AppRoutes() {
 
 
 function App() {
+  const { user } = useContext(UserContext);
+  
   return (
     <Routes>
-      <Route path="/" element={<Promo />} />
-      <Route path="/profile" element={<Profile />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="*" element={<NotFound />} />
+      {!user ? (
+        <>
+          <Route path="/register" element={<Register />} />
+          <Route path="*" element={<Navigate to="/register" replace />} />
+        </>
+      ) : (
+        <>
+          <Route path="/" element={<Promo />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="*" element={<NotFound />} />
+        </>
+      )}
     </Routes>
   );
 }

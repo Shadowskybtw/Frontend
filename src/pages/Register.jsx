@@ -9,6 +9,15 @@ const Register = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (!user) {
+      const savedUser = localStorage.getItem('user');
+      if (savedUser) {
+        setUser(JSON.parse(savedUser));
+      }
+    }
+  }, []);
+
+  useEffect(() => {
     console.log('Текущий пользователь в Register:', user);
     if (user?.name) navigate('/promo');
   }, [user, navigate]);
@@ -33,6 +42,7 @@ const Register = () => {
       const data = await res.json();
       if (data.success) {
         console.log('Регистрация прошла', data.user);
+        localStorage.setItem('user', JSON.stringify(data.user));
         setUser(data.user);
         navigate('/promo');
       }
