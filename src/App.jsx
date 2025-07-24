@@ -1,6 +1,5 @@
-import React, { useContext, useEffect } from 'react'
-import { Routes, Route } from 'react-router-dom'
-import { Navigate } from 'react-router-dom';
+import React, { useContext } from 'react'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import { UserProvider, UserContext } from './context/UserContext'
 
 import Navbar from './components/Navbar'
@@ -13,23 +12,25 @@ function AppRoutes() {
   const { user } = useContext(UserContext);
 
   return (
-    <Routes>
-      {!user ? (
-        <>
-          <Route path="/register" element={<Register />} />
-          <Route path="*" element={<Navigate to="/register" replace />} />
-        </>
-      ) : (
-        <>
-          <Route path="/" element={<Promo />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="*" element={<NotFound />} />
-        </>
-      )}
-    </Routes>
+    <>
+      {user && <Navbar />}
+      <Routes>
+        {!user ? (
+          <>
+            <Route path="/register" element={<Register />} />
+            <Route path="*" element={<Navigate to="/register" replace />} />
+          </>
+        ) : (
+          <>
+            <Route path="/" element={<Promo />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="*" element={<NotFound />} />
+          </>
+        )}
+      </Routes>
+    </>
   );
 }
-
 
 function App() {
   return (
