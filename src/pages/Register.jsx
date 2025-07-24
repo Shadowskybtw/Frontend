@@ -2,6 +2,8 @@ import React, { useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
 
+<h1>Регистрация</h1>
+
 const Register = () => {
   console.log('Register rendered');
   const { user, setUser } = useContext(UserContext);
