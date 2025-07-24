@@ -2,8 +2,6 @@ import React, { useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
 
-<h1>Регистрация</h1>
-
 const Register = () => {
   console.log('Register rendered');
   const { user, setUser } = useContext(UserContext);
@@ -55,7 +53,7 @@ const Register = () => {
 
   return (
     <div className="p-4 max-w-md mx-auto">
-      <h1 className="text-xl font-bold mb-4">Регистрация</h1>
+      <h1 className="text-2xl font-bold text-center text-red-500 mb-4">Регистрация</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="text"
