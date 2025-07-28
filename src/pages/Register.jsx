@@ -1,7 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
-import './Register.css';
 
 const Register = () => {
   console.log('Register rendered');
@@ -56,10 +55,10 @@ const Register = () => {
   };
 
   return (
-    <div className="register-container">
+    <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem' }}>
       <div>
         <h1>Регистрация</h1>
-        <form onSubmit={handleSubmit} className="register-form">
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '400px' }}>
           <div>
             <input
               type="text"
@@ -67,7 +66,7 @@ const Register = () => {
               placeholder="Имя"
               value={form.name}
               onChange={handleChange}
-              className="register-input"
+              style={{ padding: '0.5rem', fontSize: '1rem', width: '100%' }}
               required
             />
             <input
@@ -76,7 +75,7 @@ const Register = () => {
               placeholder="Фамилия"
               value={form.surname}
               onChange={handleChange}
-              className="register-input"
+              style={{ padding: '0.5rem', fontSize: '1rem', width: '100%' }}
               required
             />
           </div>
@@ -86,10 +85,10 @@ const Register = () => {
             placeholder="Телефон"
             value={form.phone}
             onChange={handleChange}
-            className="register-input"
+            style={{ padding: '0.5rem', fontSize: '1rem', width: '100%' }}
             required
           />
-          <label className="register-label">
+          <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem' }}>
             <input
               type="checkbox"
               name="agree"
@@ -105,7 +104,7 @@ const Register = () => {
           </label>
           <button
             type="submit"
-            className="register-button"
+            style={{ padding: '0.75rem', fontSize: '1rem', backgroundColor: '#333', color: '#fff', border: 'none', cursor: 'pointer' }}
           >
             Зарегистрироваться
           </button>
