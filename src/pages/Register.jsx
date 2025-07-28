@@ -56,10 +56,10 @@ const Register = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-[#1a1a1a] to-[#2c2c2c] px-4 text-white">
-      <div className="w-full max-w-md bg-[#121212] rounded-2xl shadow-lg p-6 space-y-6">
+      <div className="w-full max-w-md bg-[#121212] rounded-2xl shadow-lg p-6 sm:p-8 space-y-6">
         <h1 className="text-3xl font-bold text-center text-white">Регистрация</h1>
         <form onSubmit={handleSubmit} className="space-y-5">
-          <div className="flex space-x-3">
+          <div className="flex flex-col sm:flex-row sm:space-x-3 space-y-3 sm:space-y-0">
             <input
               type="text"
               name="name"
@@ -88,7 +88,7 @@ const Register = () => {
             className="w-full bg-[#1e1e1e] text-white border border-gray-600 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
-          <label className="flex items-start text-sm text-white space-x-2">
+          <label className="flex items-start text-sm text-white space-x-2 leading-snug">
             <input
               type="checkbox"
               name="agree"
