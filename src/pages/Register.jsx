@@ -55,18 +55,18 @@ const Register = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-[#1a1a1a] to-[#2c2c2c] px-4 text-white">
-      <div className="w-full max-w-md bg-[#121212] rounded-2xl shadow-lg p-6 sm:p-8 space-y-6">
-        <h1 className="text-3xl font-bold text-center text-white">Регистрация</h1>
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div className="flex flex-col sm:flex-row sm:space-x-3 space-y-3 sm:space-y-0">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white px-4 py-12">
+      <div className="w-full max-w-md bg-[#1f1f1f] p-8 rounded-2xl shadow-2xl">
+        <h1 className="text-3xl font-bold text-center mb-6">Регистрация</h1>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0">
             <input
               type="text"
               name="name"
               placeholder="Имя"
               value={form.name}
               onChange={handleChange}
-              className="w-1/2 bg-[#1e1e1e] text-white border border-gray-600 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex-1 bg-gray-800 text-white placeholder-gray-400 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
             <input
@@ -75,7 +75,7 @@ const Register = () => {
               placeholder="Фамилия"
               value={form.surname}
               onChange={handleChange}
-              className="w-1/2 bg-[#1e1e1e] text-white border border-gray-600 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex-1 bg-gray-800 text-white placeholder-gray-400 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
@@ -85,10 +85,10 @@ const Register = () => {
             placeholder="Телефон"
             value={form.phone}
             onChange={handleChange}
-            className="w-full bg-[#1e1e1e] text-white border border-gray-600 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full bg-gray-800 text-white placeholder-gray-400 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
-          <label className="flex items-start text-sm text-white space-x-2 leading-snug">
+          <label className="flex items-start text-sm text-white space-x-2 leading-tight">
             <input
               type="checkbox"
               name="agree"
@@ -99,13 +99,13 @@ const Register = () => {
             />
             <span>
               Я согласен с{" "}
-              <a href="/rules" className="text-blue-400 underline">правилами</a> и{" "}
-              <a href="/privacy" className="text-blue-400 underline">политикой конфиденциальности</a>
+              <a href="/rules" className="text-blue-400 underline hover:text-blue-300">правилами</a> и{" "}
+              <a href="/privacy" className="text-blue-400 underline hover:text-blue-300">политикой конфиденциальности</a>
             </span>
           </label>
           <button
             type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-200"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300"
           >
             Зарегистрироваться
           </button>
