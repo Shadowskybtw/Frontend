@@ -10,6 +10,7 @@ import Register from './pages/Register'
 
 function AppRoutes() {
   const { user } = useContext(UserContext);
+  console.log("AppRoutes rendered, user:", user);
 
   return (
     <>

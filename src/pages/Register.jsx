@@ -19,8 +19,10 @@ const Register = () => {
 
   useEffect(() => {
     console.log('Текущий пользователь в Register:', user);
-    if (user?.name) navigate('/promo');
+    if (user && user.name) navigate('/promo');
   }, [user, navigate]);
+
+  console.log('Render form:', form);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -32,6 +34,7 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log('Форма отправлена:', form);
     if (!form.agree) return alert('Вы должны согласиться с правилами и политикой конфиденциальности');
     try {
       const res = await fetch('https://your-backend.com/api/register', {
@@ -102,4 +105,3 @@ const Register = () => {
 };
 
 export default Register;
-
