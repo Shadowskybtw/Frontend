@@ -3,13 +3,7 @@ import React, { createContext, useEffect, useState } from 'react'
 export const UserContext = createContext()
 
 export const UserProvider = ({ children }) => {
-  // Временно задаём user вручную для теста интерфейса
-  const [user, setUser] = useState({
-    id: 123,
-    name: '',
-    surname: '',
-    phone: ''
-  })
+  const [user, setUser] = useState(null)
 
   useEffect(() => {
     const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user
