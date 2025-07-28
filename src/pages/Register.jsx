@@ -41,7 +41,7 @@ const Register = () => {
     }
 
     try {
-      const res = await fetch('https://zany-potato-q766r7jq7w662xxwp-8000.app.github.dev/api/register', {
+      const res = await fetch('https://orange-garbanzo-jj996jv5rrg7hj69r-8000.app.github.dev/api/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
