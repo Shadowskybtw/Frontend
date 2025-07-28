@@ -55,8 +55,8 @@ const Register = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-900 px-4">
-      <div className="w-full max-w-md bg-white rounded-lg shadow-md p-6">
+    <div className="flex items-center justify-center min-h-screen bg-gray-900 px-4 text-white">
+      <div className="w-full max-w-md bg-gray-800 rounded-xl shadow-xl p-6">
         <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">Регистрация</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="flex space-x-2">
@@ -88,7 +88,7 @@ const Register = () => {
             className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
             required
           />
-          <label className="flex items-start text-sm text-gray-700">
+          <label className="flex items-start text-sm text-white">
             <input
               type="checkbox"
               name="agree"
