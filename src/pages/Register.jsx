@@ -55,18 +55,18 @@ const Register = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-900 px-4 text-white">
-      <div className="w-full max-w-md bg-gray-800 rounded-xl shadow-xl p-6">
-        <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">Регистрация</h1>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="flex space-x-2">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-[#1a1a1a] to-[#2c2c2c] px-4 text-white">
+      <div className="w-full max-w-md bg-[#121212] rounded-2xl shadow-lg p-6 space-y-6">
+        <h1 className="text-3xl font-bold text-center text-white">Регистрация</h1>
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="flex space-x-3">
             <input
               type="text"
               name="name"
               placeholder="Имя"
               value={form.name}
               onChange={handleChange}
-              className="w-1/2 border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-1/2 bg-[#1e1e1e] text-white border border-gray-600 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
             <input
@@ -75,7 +75,7 @@ const Register = () => {
               placeholder="Фамилия"
               value={form.surname}
               onChange={handleChange}
-              className="w-1/2 border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-1/2 bg-[#1e1e1e] text-white border border-gray-600 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
@@ -85,27 +85,27 @@ const Register = () => {
             placeholder="Телефон"
             value={form.phone}
             onChange={handleChange}
-            className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full bg-[#1e1e1e] text-white border border-gray-600 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
-          <label className="flex items-start text-sm text-white">
+          <label className="flex items-start text-sm text-white space-x-2">
             <input
               type="checkbox"
               name="agree"
               checked={form.agree}
               onChange={handleChange}
-              className="mr-2 mt-1"
+              className="mt-1"
               required
             />
             <span>
               Я согласен с{" "}
-              <a href="/rules" className="text-blue-600 underline">правилами</a> и{" "}
-              <a href="/privacy" className="text-blue-600 underline">политикой конфиденциальности</a>
+              <a href="/rules" className="text-blue-400 underline">правилами</a> и{" "}
+              <a href="/privacy" className="text-blue-400 underline">политикой конфиденциальности</a>
             </span>
           </label>
           <button
             type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-200"
           >
             Зарегистрироваться
           </button>
