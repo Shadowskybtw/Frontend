@@ -8,7 +8,7 @@ const Profile = () => {
   const [newAdminId, setNewAdminId] = useState('')
   const handleGrantAdmin = () => {
     if (!newAdminId) return alert("Введите Telegram ID")
-    fetch(`hhttps://turbo-carnival-69ww69qgv975hrjr9-8000.app.github.dev/api/grant-admin`, {
+    fetch(`https://zany-potato-q766r7jq7w662xxwp-8000.app.github.dev/api/grant-admin`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ targetId: parseInt(newAdminId), grantBy: user.id })
@@ -21,11 +21,11 @@ const Profile = () => {
   useEffect(() => {
     if (!user) return
 
-    fetch(`https://your-backend.com/api/main/${user.id}`)
+    fetch(`https://zany-potato-q766r7jq7w662xxwp-8000.app.github.dev/api/main/${user.id}`)
       .then(res => res.json())
       .then(data => {
         setCompletedStocks(data.completedStocks)
-        fetch(`https://your-backend.com/api/free-hookahs/${user.id}`)
+        fetch(`https://zany-potato-q766r7jq7w662xxwp-8000.app.github.dev/api/free-hookahs/${user.id}`)
           .then(res => res.json())
           .then(data => setFreeHookahs(data.count || 0))
       })

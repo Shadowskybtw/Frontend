@@ -14,19 +14,19 @@ const Promo = () => {
   useEffect(() => {
     if (!user) return
 
-    fetch(`https://turbo-carnival-69ww69qgv975hrjr9-8000.app.github.dev/api/stocks/${user.id}`)
+    fetch(`https://zany-potato-q766r7jq7w662xxwp-8000.app.github.dev/api/stocks/${user.id}`)
       .then(res => res.json())
       .then(data => {
         setSlots(data.filter(slot => !slot.completed))
       })
 
-    fetch(`https://turbo-carnival-69ww69qgv975hrjr9-8000.app.github.dev/api/free-hookahs/${user.id}`)
+    fetch(`https://zany-potato-q766r7jq7w662xxwp-8000.app.github.dev/api/free-hookahs/${user.id}`)
       .then(res => res.json())
       .then(data => setFreeHookahs(data.count || 0))
   }, [user])
 
   const handleSmoke = () => {
-    fetch(`https://turbo-carnival-69ww69qgv975hrjr9-8000.app.github.dev/api/stocks/${user.id}`, {
+    fetch(`https://zany-potato-q766r7jq7w662xxwp-8000.app.github.dev/api/stocks/${user.id}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ incrementSlot: true })
@@ -34,14 +34,14 @@ const Promo = () => {
       .then(res => res.json())
       .then(data => {
         setSlots(data.filter(slot => !slot.completed))
-        return fetch(`https://turbo-carnival-69ww69qgv975hrjr9-8000.app.github.dev/api/free-hookahs/${user.id}`)
+        return fetch(`https://zany-potato-q766r7jq7w662xxwp-8000.app.github.dev/api/free-hookahs/${user.id}`)
       })
       .then(res => res.json())
       .then(data => setFreeHookahs(data.count || 0))
   }
 
   const handleUseFreeHookah = () => {
-    fetch(`https://turbo-carnival-69ww69qgv975hrjr9-8000.app.github.dev/api/use-free-slot/${user.id}`, {
+    fetch(`https://zany-potato-q766r7jq7w662xxwp-8000.app.github.dev/api/use-free-slot/${user.id}`, {
       method: 'POST'
     })
       .then(res => res.json())
@@ -106,7 +106,7 @@ const Promo = () => {
 
       <div style={{ marginTop: '2rem' }}>
         <h3>QR-код для подтверждения кальяна:</h3>
-        <QRCodeSVG value={`https://turbo-carnival-69ww69qgv975hrjr9-8000.app.github.dev/redeem/${user.id}`} />
+        <QRCodeSVG value={`https://zany-potato-q766r7jq7w662xxwp-8000.app.github.dev/redeem/${user.id}`} />
       </div>
 
       {isAdmin && (

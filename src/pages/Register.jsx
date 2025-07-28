@@ -37,7 +37,7 @@ const Register = () => {
     console.log('Форма отправлена:', form);
     if (!form.agree) return alert('Вы должны согласиться с правилами и политикой конфиденциальности');
     try {
-      const res = await fetch('https://your-backend.com/api/register', {
+      const res = await fetch('https://zany-potato-q766r7jq7w662xxwp-8000.app.github.dev/api/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...form, telegram_id: user?.id }),
