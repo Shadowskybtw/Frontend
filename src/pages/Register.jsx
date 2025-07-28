@@ -54,11 +54,24 @@ const Register = () => {
     }
   };
 
+  const [hover, setHover] = useState(false);
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem' }}>
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '2rem', minHeight: '100vh', backgroundColor: '#f4f4f4' }}>
       <div>
         <h1>Регистрация</h1>
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '400px' }}>
+        <form
+          onSubmit={handleSubmit}
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '1rem',
+            padding: '2rem',
+            maxWidth: '400px',
+            backgroundColor: '#fff',
+            borderRadius: '12px',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
+          }}
+        >
           <div>
             <input
               type="text"
@@ -66,7 +79,7 @@ const Register = () => {
               placeholder="Имя"
               value={form.name}
               onChange={handleChange}
-              style={{ padding: '0.5rem', fontSize: '1rem', width: '100%' }}
+              style={{ padding: '0.75rem', fontSize: '1rem', width: '100%', border: '1px solid #ccc', borderRadius: '8px' }}
               required
             />
             <input
@@ -75,7 +88,7 @@ const Register = () => {
               placeholder="Фамилия"
               value={form.surname}
               onChange={handleChange}
-              style={{ padding: '0.5rem', fontSize: '1rem', width: '100%' }}
+              style={{ padding: '0.75rem', fontSize: '1rem', width: '100%', border: '1px solid #ccc', borderRadius: '8px' }}
               required
             />
           </div>
@@ -85,7 +98,7 @@ const Register = () => {
             placeholder="Телефон"
             value={form.phone}
             onChange={handleChange}
-            style={{ padding: '0.5rem', fontSize: '1rem', width: '100%' }}
+            style={{ padding: '0.75rem', fontSize: '1rem', width: '100%', border: '1px solid #ccc', borderRadius: '8px' }}
             required
           />
           <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem' }}>
@@ -104,7 +117,18 @@ const Register = () => {
           </label>
           <button
             type="submit"
-            style={{ padding: '0.75rem', fontSize: '1rem', backgroundColor: '#333', color: '#fff', border: 'none', cursor: 'pointer' }}
+            style={{
+              padding: '0.75rem',
+              fontSize: '1rem',
+              backgroundColor: hover ? '#0056b3' : '#007bff',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              transition: 'background-color 0.3s'
+            }}
+            onMouseEnter={() => setHover(true)}
+            onMouseLeave={() => setHover(false)}
           >
             Зарегистрироваться
           </button>
