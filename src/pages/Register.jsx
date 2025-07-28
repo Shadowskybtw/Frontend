@@ -34,23 +34,43 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Форма отправлена:', form);
-    if (!form.agree) return alert('Вы должны согласиться с правилами и политикой конфиденциальности');
+
+    if (!form.agree) {
+      alert('Вы должны согласиться с правилами и политикой конфиденциальности');
+      return;
+    }
+
     try {
       const res = await fetch('https://zany-potato-q766r7jq7w662xxwp-8000.app.github.dev/api/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, telegram_id: user?.id }),
+        body: JSON.stringify({
+          name: form.name,
+          surname: form.surname,
+          phone: form.phone,
+          agree: form.agree,
+          telegram_id: user?.id || 'test-id'
+        }),
       });
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(`Ошибка регистрации: ${res.status} ${errorText}`);
+      }
+
       const data = await res.json();
+      console.log('Ответ от сервера:', data);
+
       if (data.success) {
-        console.log('Регистрация прошла', data.user);
         localStorage.setItem('user', JSON.stringify(data.user));
         setUser(data.user);
         navigate('/promo');
+      } else {
+        alert('Ошибка регистрации: ' + (data.message || 'неизвестная ошибка'));
       }
     } catch (error) {
-      console.error('Ошибка регистрации:', error);
+      console.error('Ошибка при регистрации:', error);
+      alert('Ошибка при отправке формы. Подробнее в консоли.');
     }
   };
 
