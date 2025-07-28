@@ -56,7 +56,7 @@ const Register = () => {
 
   const [hover, setHover] = useState(false);
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '2rem', minHeight: '100vh', backgroundColor: '#f4f4f4' }}>
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start', padding: '5rem 1rem 2rem', minHeight: '100vh', backgroundColor: '#f4f4f4' }}>
       <div>
         <h1>Регистрация</h1>
         <form
@@ -72,7 +72,7 @@ const Register = () => {
             boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
           }}
         >
-          <div>
+          <div style={{ display: 'flex', gap: '1rem' }}>
             <input
               type="text"
               name="name"
