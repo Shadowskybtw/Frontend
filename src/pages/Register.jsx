@@ -29,7 +29,7 @@ useEffect(() => {
 
   useEffect(() => {
     console.log('Текущий пользователь в Register:', user);
-    if (user && user.name) navigate('/promo');
+    if (user && (user.name || user.first_name)) navigate('/promo');
   }, [user, navigate]);
 
   console.log('Render form:', form);
@@ -57,7 +57,7 @@ useEffect(() => {
     }
 
     try {
-      const res = await fetch('https://bug-free-xylophone-4j664j57qwjgc5gwv-8000.app.github.dev/api/register', {
+      const res = await fetch('https://refactored-cod-v6ww469vp657fwqpw-8000.app.github.dev/api/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
