@@ -45,11 +45,10 @@ const Register = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: form.name,
-          surname: form.surname,
+          firstName: form.name,
+          lastName: form.surname,
           phone: form.phone,
-          agree: form.agree,
-          telegram_id: user?.id || 'test-id'
+          tg_id: user?.id || 'test-id'
         }),
       });
 
