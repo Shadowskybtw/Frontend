@@ -50,8 +50,9 @@ useEffect(() => {
       return;
     }
 
-    if (!user?.id) {
-      alert('Не удалось получить Telegram ID');
+    console.log("user перед отправкой:", user);
+    if (!user || typeof user.id !== 'number') {
+      alert('Telegram ID не определён. Пожалуйста, откройте WebApp внутри Telegram.');
       return;
     }
 
