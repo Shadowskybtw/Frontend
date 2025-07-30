@@ -50,6 +50,11 @@ useEffect(() => {
       return;
     }
 
+    if (!user?.id) {
+      alert('Не удалось получить Telegram ID');
+      return;
+    }
+
     try {
       const res = await fetch('https://bug-free-xylophone-4j664j57qwjgc5gwv-8000.app.github.dev/api/register', {
         method: 'POST',
@@ -58,7 +63,7 @@ useEffect(() => {
           firstName: form.name,
           lastName: form.surname,
           phone: form.phone,
-          tg_id: parseInt(user?.id)
+          tg_id: parseInt(user.id)
         }),
       });
 
