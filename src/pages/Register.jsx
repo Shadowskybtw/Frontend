@@ -8,14 +8,24 @@ const Register = () => {
   const [form, setForm] = useState({ name: '', surname: '', phone: '', agree: false });
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (!user) {
-      const savedUser = localStorage.getItem('user');
-      if (savedUser) {
-        setUser(JSON.parse(savedUser));
-      }
+useEffect(() => {
+  if (!user) {
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
+    } else if (window?.Telegram?.WebApp?.initDataUnsafe?.user) {
+      const tgUser = window.Telegram.WebApp.initDataUnsafe.user;
+      const newUser = {
+        id: tgUser.id,
+        first_name: tgUser.first_name,
+        last_name: tgUser.last_name,
+        username: tgUser.username
+      };
+      setUser(newUser);
+      localStorage.setItem('user', JSON.stringify(newUser));
     }
-  }, []);
+  }
+}, []);
 
   useEffect(() => {
     console.log('Текущий пользователь в Register:', user);
@@ -48,7 +58,7 @@ const Register = () => {
           firstName: form.name,
           lastName: form.surname,
           phone: form.phone,
-          tg_id: user?.id || 'test-id'
+          tg_id: parseInt(user?.id)
         }),
       });
 
