@@ -8,7 +8,7 @@ const Profile = () => {
   const [newAdminId, setNewAdminId] = useState('')
   const handleGrantAdmin = () => {
     if (!newAdminId) return alert("Введите Telegram ID")
-    fetch(`https://orange-garbanzo-jj996jv5rrg7hj69r-8000.app.github.dev/api/grant-admin`, {
+    fetch(`https://bug-free-xylophone-4j664j57qwjgc5gwv-8000.app.github.dev/api/grant-admin`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ targetId: parseInt(newAdminId), grantBy: user.id })
@@ -21,11 +21,11 @@ const Profile = () => {
   useEffect(() => {
     if (!user) return
 
-    fetch(`https://orange-garbanzo-jj996jv5rrg7hj69r-8000.app.github.dev/api/main/${user.id}`)
+    fetch(`https://bug-free-xylophone-4j664j57qwjgc5gwv-8000.app.github.dev/api/main/${user.id}`)
       .then(res => res.json())
       .then(data => {
         setCompletedStocks(data.completedStocks)
-        fetch(`https://orange-garbanzo-jj996jv5rrg7hj69r-8000.app.github.dev/api/free-hookahs/${user.id}`)
+        fetch(`https://bug-free-xylophone-4j664j57qwjgc5gwv-8000.app.github.dev/api/free-hookahs/${user.id}`)
           .then(res => res.json())
           .then(data => setFreeHookahs(data.count || 0))
       })
