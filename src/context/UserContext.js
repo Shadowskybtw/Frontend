@@ -7,6 +7,7 @@ export const UserProvider = ({ children }) => {
 
   useEffect(() => {
     const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user
+    console.log('initData:', window.Telegram?.WebApp?.initData);
     console.log('initDataUnsafe.user:', tgUser)
 
     if (tgUser) {
@@ -17,7 +18,15 @@ export const UserProvider = ({ children }) => {
         phone: ''
       })
     } else {
-      console.warn('Telegram user not found. Did you open from Telegram button?')
+      console.warn('Telegram user not found. Did you open from Telegram button?');
+
+      // TEMP fallback for local testing
+      setUser({
+        id: 999999999,
+        name: 'Test',
+        surname: 'User',
+        phone: ''
+      });
     }
   }, [])
 

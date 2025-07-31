@@ -24,8 +24,8 @@ function AppRoutes() {
           </>
         ) : (
           <>
-            <Route path="/profile" element={<Promo />} />
-            <Route path="/" element={<Profile />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/" element={<Promo />} />
             <Route path="*" element={<Navigate to="/profile" replace />} />
           </>
         )}
