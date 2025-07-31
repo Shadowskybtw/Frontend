@@ -6,6 +6,8 @@ export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null)
 
   useEffect(() => {
+    window.Telegram?.WebApp?.ready();
+
     const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user
     console.log('initData:', window.Telegram?.WebApp?.initData);
     console.log('initDataUnsafe.user:', tgUser)
