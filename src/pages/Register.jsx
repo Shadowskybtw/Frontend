@@ -4,7 +4,7 @@ import { UserContext } from '../context/UserContext';
 
 const Register = () => {
   console.log('Register rendered');
-  const { user, setUser } = useContext(UserContext);
+  const { user, setUser, telegramUser } = useContext(UserContext);
   const [form, setForm] = useState({ name: '', surname: '', phone: '', agree: false });
   const navigate = useNavigate();
 
@@ -51,7 +51,7 @@ useEffect(() => {
     }
 
     console.log("user перед отправкой:", user);
-    if (!user || typeof user.id !== 'number') {
+    if (!telegramUser || typeof telegramUser.id !== 'number') {
       alert('Telegram ID не определён. Пожалуйста, откройте WebApp внутри Telegram.');
       return;
     }
@@ -64,7 +64,7 @@ useEffect(() => {
           firstName: form.name,
           lastName: form.surname,
           phone: form.phone,
-          tg_id: parseInt(user.id)
+          tg_id: telegramUser.id
         }),
       });
 
