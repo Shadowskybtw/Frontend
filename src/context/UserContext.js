@@ -16,16 +16,6 @@ export const UserProvider = ({ children }) => {
         name: tgUser.first_name,
         surname: tgUser.last_name || '',
         phone: ''
-      })
-    } else {
-      console.warn('Telegram user not found. Did you open from Telegram button?');
-
-      // TEMP fallback for local testing
-      setUser({
-        id: 999999999,
-        name: 'Test',
-        surname: 'User',
-        phone: ''
       });
     }
   }, [])
