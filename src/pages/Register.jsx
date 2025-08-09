@@ -16,15 +16,25 @@ const Register = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!user) {
+    // Внутри Telegram не подтягиваем user из localStorage,
+    // иначе старая запись может скрыть форму регистрации
+    if (!user && !telegramUser?.id) {
       const savedUser = localStorage.getItem('user');
       if (savedUser) setUser(JSON.parse(savedUser));
     }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [telegramUser?.id]);
+
+  useEffect(() => {
+    if (telegramUser?.id) {
+      try { localStorage.removeItem('user') } catch {}
+      if (user) setUser(null)
+    }
+  }, [telegramUser?.id]);
 
   useEffect(() => {
     console.log('Текущий пользователь в Register:', user);
-    if (user && user.name) navigate('/promo');
+    const hasPhone = !!(user && user.phone && String(user.phone).trim().length > 0)
+    if (hasPhone) navigate('/promo');
   }, [user, navigate]);
 
   // Prefill from Telegram profile if available
@@ -100,9 +110,9 @@ const Register = () => {
 
   const [hover, setHover] = useState(false);
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start', padding: '5rem 1rem 2rem', minHeight: '100vh', backgroundColor: '#f4f4f4' }}>
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start', padding: '5rem 1rem 2rem', minHeight: '100vh', backgroundColor: 'var(--tg-theme-bg-color, #f4f4f4)', color: 'var(--tg-theme-text-color, #111111)' }}>
       <div>
-        <h1>Регистрация</h1>
+        <h1 style={{ color: 'var(--tg-theme-text-color, #111111)' }}>Регистрация</h1>
         <form
           onSubmit={handleSubmit}
           style={{
@@ -111,9 +121,11 @@ const Register = () => {
             gap: '1rem',
             padding: '2rem',
             maxWidth: '400px',
-            backgroundColor: '#fff',
+            backgroundColor: 'var(--tg-theme-secondary-bg-color, #ffffff)',
             borderRadius: '12px',
-            boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
+            boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+            color: 'var(--tg-theme-text-color, #111111)',
+            border: '1px solid var(--tg-theme-hint-color, #d0d7de)'
           }}
         >
           <div style={{ display: 'flex', gap: '1rem' }}>
@@ -123,7 +135,7 @@ const Register = () => {
               placeholder="Имя"
               value={form.name}
               onChange={handleChange}
-              style={{ padding: '0.75rem', fontSize: '1rem', width: '100%', border: '1px solid #ccc', borderRadius: '8px' }}
+              style={{ padding: '0.75rem', fontSize: '1rem', width: '100%', borderRadius: '8px', backgroundColor: 'var(--tg-theme-secondary-bg-color, #ffffff)', color: 'var(--tg-theme-text-color, #111111)', border: '1px solid var(--tg-theme-hint-color, #ccc)' }}
               required
             />
             <input
@@ -132,7 +144,7 @@ const Register = () => {
               placeholder="Фамилия"
               value={form.surname}
               onChange={handleChange}
-              style={{ padding: '0.75rem', fontSize: '1rem', width: '100%', border: '1px solid #ccc', borderRadius: '8px' }}
+              style={{ padding: '0.75rem', fontSize: '1rem', width: '100%', borderRadius: '8px', backgroundColor: 'var(--tg-theme-secondary-bg-color, #ffffff)', color: 'var(--tg-theme-text-color, #111111)', border: '1px solid var(--tg-theme-hint-color, #ccc)' }}
               required
             />
           </div>
@@ -142,7 +154,7 @@ const Register = () => {
             placeholder="Телефон"
             value={form.phone}
             onChange={handleChange}
-            style={{ padding: '0.75rem', fontSize: '1rem', width: '100%', border: '1px solid #ccc', borderRadius: '8px' }}
+            style={{ padding: '0.75rem', fontSize: '1rem', width: '100%', borderRadius: '8px', backgroundColor: 'var(--tg-theme-secondary-bg-color, #ffffff)', color: 'var(--tg-theme-text-color, #111111)', border: '1px solid var(--tg-theme-hint-color, #ccc)' }}
             required
           />
           <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem' }}>
@@ -164,8 +176,8 @@ const Register = () => {
             style={{
               padding: '0.75rem',
               fontSize: '1rem',
-              backgroundColor: hover ? '#0056b3' : '#007bff',
-              color: '#fff',
+              backgroundColor: hover ? '#0056b3' : 'var(--tg-theme-button-color, #007bff)',
+              color: 'var(--tg-theme-button-text-color, #ffffff)',
               border: 'none',
               borderRadius: '8px',
               cursor: 'pointer',
