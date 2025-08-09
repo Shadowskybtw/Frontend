@@ -2,27 +2,42 @@ import React, { useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
 
-const API_BASE = import.meta.env.REACT_APP_API_URL || '';
+// Read API base from both Vite and CRA envs without crashing at runtime
+const API_BASE = (
+  (typeof import.meta !== 'undefined' && import.meta?.env?.VITE_API_URL) ||
+  (typeof import.meta !== 'undefined' && import.meta?.env?.REACT_APP_API_URL) ||
+  (typeof process !== 'undefined' && process?.env?.REACT_APP_API_URL) ||
+  ''
+);
 
 const Register = () => {
-  console.log('Register rendered');
+  console.log('Register rendered, API_BASE =', API_BASE);
   const { user, setUser, telegramUser } = useContext(UserContext);
   const [form, setForm] = useState({ name: '', surname: '', phone: '', agree: false });
   const navigate = useNavigate();
 
-useEffect(() => {
-  if (!user) {
-    const savedUser = localStorage.getItem('user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
+  useEffect(() => {
+    if (!user) {
+      const savedUser = localStorage.getItem('user');
+      if (savedUser) setUser(JSON.parse(savedUser));
     }
-  }
-}, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     console.log('Текущий пользователь в Register:', user);
     if (user && (user.name || user.first_name)) navigate('/promo');
   }, [user, navigate]);
+
+  // Prefill from Telegram profile if available
+  useEffect(() => {
+    if (telegramUser && (!form.name && !form.surname)) {
+      setForm((prev) => ({
+        ...prev,
+        name: prev.name || telegramUser.first_name || '',
+        surname: prev.surname || telegramUser.last_name || '',
+      }));
+    }
+  }, [telegramUser]);
 
   console.log('Render form:', form);
 
@@ -34,6 +49,9 @@ useEffect(() => {
     }));
   };
 
+  // Helper: join base + path without double slashes
+  const api = (path) => `${(API_BASE || '').replace(/\/$/, '')}${path}`;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -42,21 +60,21 @@ useEffect(() => {
       return;
     }
 
-    console.log("user перед отправкой:", user);
+    console.log('user перед отправкой:', user);
     if (!telegramUser || typeof telegramUser.id !== 'number') {
       alert('Telegram ID не определён. Пожалуйста, откройте WebApp внутри Telegram.');
       return;
     }
 
     try {
-      const res = await fetch(`${API_BASE}/api/register`, {
+      const res = await fetch(api('/api/register'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           firstName: form.name,
           lastName: form.surname,
           phone: form.phone,
-          tg_id: telegramUser.id
+          tg_id: telegramUser.id,
         }),
       });
 
