@@ -2,13 +2,12 @@ import React, { useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
 
-// Read API base from both Vite and CRA envs without crashing at runtime
+// CRA-only base URL (with optional window fallback). No Vite usage here.
 const API_BASE = (
-  (typeof import.meta !== 'undefined' && import.meta?.env?.VITE_API_URL) ||
-  (typeof import.meta !== 'undefined' && import.meta?.env?.REACT_APP_API_URL) ||
   (typeof process !== 'undefined' && process?.env?.REACT_APP_API_URL) ||
+  (typeof window !== 'undefined' && window.__API_URL__) ||
   ''
-);
+).toString().trim().replace(/\/$/, '');
 
 const Register = () => {
   console.log('Register rendered, API_BASE =', API_BASE);
@@ -25,7 +24,7 @@ const Register = () => {
 
   useEffect(() => {
     console.log('Текущий пользователь в Register:', user);
-    if (user && (user.name || user.first_name)) navigate('/promo');
+    if (user && user.name) navigate('/promo');
   }, [user, navigate]);
 
   // Prefill from Telegram profile if available
@@ -33,8 +32,8 @@ const Register = () => {
     if (telegramUser && (!form.name && !form.surname)) {
       setForm((prev) => ({
         ...prev,
-        name: prev.name || telegramUser.first_name || '',
-        surname: prev.surname || telegramUser.last_name || '',
+        name: prev.name || telegramUser.name || '',
+        surname: prev.surname || telegramUser.surname || '',
       }));
     }
   }, [telegramUser]);
@@ -50,7 +49,7 @@ const Register = () => {
   };
 
   // Helper: join base + path without double slashes
-  const api = (path) => `${(API_BASE || '').replace(/\/$/, '')}${path}`;
+  const api = (path) => `${API_BASE}${path}`;
 
   const handleSubmit = async (e) => {
     e.preventDefault();

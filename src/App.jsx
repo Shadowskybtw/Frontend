@@ -8,7 +8,12 @@ import Promo from './pages/Promo'
 import NotFound from './pages/NotFound'
 import Register from './pages/Register'
 
-const API_BASE = import.meta.env.VITE_API_URL || ''
+// CRA-only: use REACT_APP_API_URL (with optional window fallback). No Vite vars here.
+const API_BASE = (
+  (typeof process !== 'undefined' && process.env && process.env.REACT_APP_API_URL) ||
+  (typeof window !== 'undefined' && window.__API_URL__) ||
+  ''
+).toString().trim().replace(/\/$/, '')
 
 function AppRoutes() {
   const { user, setUser, telegramUser } = useContext(UserContext)
