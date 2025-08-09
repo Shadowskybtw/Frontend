@@ -2,6 +2,8 @@ import React, { useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
 
+const API_BASE = import.meta.env.VITE_API_URL || '';
+
 const Register = () => {
   console.log('Register rendered');
   const { user, setUser, telegramUser } = useContext(UserContext);
@@ -13,16 +15,6 @@ useEffect(() => {
     const savedUser = localStorage.getItem('user');
     if (savedUser) {
       setUser(JSON.parse(savedUser));
-    } else if (window?.Telegram?.WebApp?.initDataUnsafe?.user) {
-      const tgUser = window.Telegram.WebApp.initDataUnsafe.user;
-      const newUser = {
-        id: tgUser.id,
-        first_name: tgUser.first_name,
-        last_name: tgUser.last_name,
-        username: tgUser.username
-      };
-      setUser(newUser);
-      localStorage.setItem('user', JSON.stringify(newUser));
     }
   }
 }, []);
@@ -57,7 +49,7 @@ useEffect(() => {
     }
 
     try {
-      const res = await fetch('https://refactored-cod-v6ww469vp657fwqpw-8000.app.github.dev/api/register', {
+      const res = await fetch(`${API_BASE}/api/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
