@@ -7,6 +7,8 @@ export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null)
   // Raw Telegram user from WebApp context
   const [telegramUser, setTelegramUser] = useState(null)
+  // Telegram context flag
+  const [isTg, setIsTg] = useState(false)
 
   // 1) Init Telegram WebApp and read Telegram user
   useEffect(() => {
@@ -30,19 +32,40 @@ export const UserProvider = ({ children }) => {
         username: tg.username || ''
       })
     }
+    setIsTg(!!tg)
+    // (Optional) Handle Telegram theme changes gracefully
+    try {
+      webApp?.onEvent?.('themeChanged', () => {
+        const theme = webApp?.themeParams || {}
+        webApp?.setBackgroundColor?.(theme.bg_color || '#ffffff')
+        webApp?.setHeaderColor?.(theme.bg_color || '#ffffff')
+      })
+    } catch (e) {}
   }, [])
 
-  // 2) Restore registered app user from localStorage on mount
+  // 2) Restore registered app user from localStorage on mount, only outside Telegram
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem('user')
-      if (saved) {
-        setUser(JSON.parse(saved))
+    // Внутри Telegram не подтягиваем user из localStorage,
+    // иначе старая запись может скрыть форму регистрации
+    if (!isTg) {
+      try {
+        const saved = localStorage.getItem('user')
+        if (saved) {
+          setUser(JSON.parse(saved))
+        }
+      } catch (e) {
+        // ignore
       }
-    } catch (e) {
-      // ignore
     }
-  }, [])
+  }, [isTg])
+
+  // 2b) Force clear stale user when inside Telegram
+  useEffect(() => {
+    if (isTg) {
+      try { localStorage.removeItem('user') } catch {}
+      if (user) setUser(null)
+    }
+  }, [isTg])
 
   // 3) Persist app user to localStorage when it changes
   useEffect(() => {
