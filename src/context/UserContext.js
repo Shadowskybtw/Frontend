@@ -4,26 +4,28 @@ export const UserContext = createContext()
 
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null)
+  const [telegramUser, setTelegramUser] = useState(null)
 
   useEffect(() => {
-    window.Telegram?.WebApp?.ready();
+    const webApp = window.Telegram?.WebApp
+    webApp?.ready()
 
-    const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user
-    console.log('initData:', window.Telegram?.WebApp?.initData);
-    console.log('initDataUnsafe.user:', tgUser)
+    const tg = webApp?.initDataUnsafe?.user
+    console.log('initData:', webApp?.initData)
+    console.log('initDataUnsafe.user:', tg)
 
-    if (tgUser) {
-      setUser({
-        id: tgUser.id,
-        name: tgUser.first_name,
-        surname: tgUser.last_name || '',
-        phone: ''
-      });
+    if (tg) {
+      setTelegramUser({
+        id: tg.id,
+        name: tg.first_name,
+        surname: tg.last_name || '',
+        username: tg.username
+      })
     }
   }, [])
 
   return (
-    <UserContext.Provider value={{ user, setUser }}>
+    <UserContext.Provider value={{ user, setUser, telegramUser, setTelegramUser }}>
       {children}
     </UserContext.Provider>
   )
