@@ -44,8 +44,10 @@ function AppRoutes() {
 
           // Бэкенд мог вернуть { registered, user } или просто объект пользователя.
           const payload = data?.user ?? data
+          const phoneVal = payload?.phone
           const hasPhone =
-            !!(payload && typeof payload.phone !== 'undefined' && String(payload.phone).trim().length > 0)
+            (typeof phoneVal === 'string' && phoneVal.trim().length > 0 && !['null','undefined'].includes(phoneVal.trim().toLowerCase())) ||
+            (typeof phoneVal === 'number' && String(phoneVal).trim().length > 0)
 
           if (hasPhone) {
             setUser({
