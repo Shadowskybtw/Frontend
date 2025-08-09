@@ -24,26 +24,52 @@ function AppRoutes() {
     let canceled = false
 
     async function check() {
+      // Нет данных от Telegram — завершить проверку и показать регистрацию по умолчанию
       if (!telegramUser?.id) {
         setChecking(false)
         return
       }
+
+      // Если базовый URL бэка не задан — тоже заканчиваем проверку
+      if (!API_BASE) {
+        console.warn('REACT_APP_API_URL is not set; skipping backend check')
+        setChecking(false)
+        return
+      }
+
       try {
         const res = await fetch(`${API_BASE}/api/main/${telegramUser.id}`)
         if (res.ok) {
           const data = await res.json()
-          if (data?.registered && data.user) {
+
+          // Бэкенд мог вернуть { registered, user } или просто объект пользователя.
+          const payload = data?.user ?? data
+          const hasPhone =
+            !!(payload && typeof payload.phone !== 'undefined' && String(payload.phone).trim().length > 0)
+
+          if (hasPhone) {
             setUser({
-              id: data.user.tg_id,
-              name: data.user.firstName || '',
-              surname: data.user.lastName || '',
-              phone: data.user.phone || '',
-              username: data.user.username || ''
+              id: payload.tg_id ?? payload.id ?? telegramUser.id,
+              name: payload.firstName ?? payload.name ?? '',
+              surname: payload.lastName ?? payload.surname ?? '',
+              phone: payload.phone ?? '',
+              username: payload.username ?? telegramUser.username ?? ''
             })
+          } else {
+            // Пользователь найден, но телефон не заполнен — отправляем на регистрацию
+            setUser(null)
           }
+        } else if (res.status === 404) {
+          // Пользователь не найден — на регистрацию
+          setUser(null)
+        } else {
+          console.error('check /api/main failed with status:', res.status)
+          // На всякий случай не блокируем — позволим пройти регистрацию
+          setUser(null)
         }
       } catch (e) {
-        console.error('check /api/main failed:', e)
+        console.error('check /api/main error:', e)
+        setUser(null)
       } finally {
         if (!canceled) setChecking(false)
       }
@@ -53,7 +79,8 @@ function AppRoutes() {
     return () => { canceled = true }
   }, [telegramUser?.id, setUser])
 
-  if (checking) return null // could be a loader/spinner
+  // Можно показать лоадер, чтобы избежать "мигания" при проверке
+  if (checking) return null
 
   return (
     <>
