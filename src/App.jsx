@@ -56,20 +56,24 @@ function AppRoutes() {
               username: payload.username ?? telegramUser.username ?? ''
             })
           } else {
-            // Пользователь найден, но телефон не заполнен — отправляем на регистрацию
+            // Пользователь найден, но телефон не заполнен — форсим регистрацию и чистим localStorage
             setUser(null)
+            try { localStorage.removeItem('user') } catch {}
           }
         } else if (res.status === 404) {
-          // Пользователь не найден — на регистрацию
+          // Пользователь не найден — на регистрацию и очистить localStorage
           setUser(null)
+          try { localStorage.removeItem('user') } catch {}
         } else {
           console.error('check /api/main failed with status:', res.status)
-          // На всякий случай не блокируем — позволим пройти регистрацию
+          // На всякий случай позволим пройти регистрацию и очистим localStorage
           setUser(null)
+          try { localStorage.removeItem('user') } catch {}
         }
       } catch (e) {
         console.error('check /api/main error:', e)
         setUser(null)
+        try { localStorage.removeItem('user') } catch {}
       } finally {
         if (!canceled) setChecking(false)
       }
