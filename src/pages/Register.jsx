@@ -3,20 +3,33 @@ import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
 
 /**
- * Base API URL
- * CRA reads env vars that start with REACT_APP_.
- * If not provided, we fallback to a global/window value, and then to the current hardcoded URL.
+ * Base API URL resolver
+ * Will use (in order): REACT_APP_API_URL -> window.__API_BASE__ -> hardcoded fallback.
+ * Guarantees full absolute URL (starts with http) and strips trailing slash.
  */
-const API_BASE =
-  (typeof process !== 'undefined' && process.env && process.env.REACT_APP_API_URL) ||
-  (typeof window !== 'undefined' && window.__API_BASE__) ||
-  'https://refactored-cod-v6ww469vp657fwqpw-8000.app.github.dev';
+const resolveApiBase = () => {
+  const envVal =
+    (typeof process !== 'undefined' &&
+      process.env &&
+      process.env.REACT_APP_API_URL) || null;
+  const winVal =
+    (typeof window !== 'undefined' && window.__API_BASE__) || null;
+  const fallback = 'https://refactored-cod-v6ww469vp657fwqpw-8000.app.github.dev';
 
+  let base = envVal || winVal || fallback;
+  if (!/^https?:\/\//.test(base)) {
+    // Misconfigured value (e.g. "/api"), fall back to hardcoded backend
+    base = fallback;
+  }
+  return base.replace(/\/+$/, '');
+};
+
+const API_BASE = resolveApiBase();
 // Helper to join base + path safely
-const api = (p) => `${API_BASE}${p}`;
+const api = (p) => `${API_BASE}${p.startsWith('/') ? p : `/${p}`}`;
 
 const Register = () => {
-  console.log('Register rendered, API_BASE =', API_BASE);
+  console.log('Register rendered, resolved API_BASE =', API_BASE);
   const { user, setUser, telegramUser } = useContext(UserContext);
   const [form, setForm] = useState({ name: '', surname: '', phone: '', agree: false });
   const navigate = useNavigate();
@@ -79,8 +92,16 @@ const Register = () => {
       return;
     }
 
+    console.log('POST URL =', api('/api/register'), 'payload:', {
+      firstName: form.name,
+      lastName: form.surname,
+      phone: form.phone,
+      tg_id: tgIdNum,
+      username: telegramUser?.username || null,
+    });
+
     try {
-      const res = await fetch(api('/api/register')), {
+      const res = await fetch(api('/api/register'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
