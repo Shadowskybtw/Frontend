@@ -3,7 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
 
 // CRA-only base URL (with optional window fallback). No Vite usage here.
-const API_BASE = 'https://refactored-cod-v6ww469vp657fwqpw-8000.app.github.dev';
+const API_BASE = (
+  (typeof process !== 'undefined' && process?.env?.REACT_APP_API_URL) ||
+  (typeof window !== 'undefined' && window.__API_URL__) ||
+  ''
+).toString().trim().replace(/\/$/, '');
 
 const Register = () => {
   console.log('Register rendered, API_BASE =', API_BASE);
