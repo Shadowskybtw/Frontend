@@ -2,12 +2,18 @@ import React, { useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
 
-// CRA-only base URL (with optional window fallback). No Vite usage here.
-const API_BASE = (
-  (typeof process !== 'undefined' && process?.env?.REACT_APP_API_URL) ||
-  (typeof window !== 'undefined' && window.__API_URL__) ||
-  ''
-).toString().trim().replace(/\/$/, '');
+/**
+ * Base API URL
+ * CRA reads env vars that start with REACT_APP_.
+ * If not provided, we fallback to a global/window value, and then to the current hardcoded URL.
+ */
+const API_BASE =
+  (typeof process !== 'undefined' && process.env && process.env.REACT_APP_API_URL) ||
+  (typeof window !== 'undefined' && window.__API_BASE__) ||
+  'https://refactored-cod-v6ww469vp657fwqpw-8000.app.github.dev';
+
+// Helper to join base + path safely
+const api = (p) => `${API_BASE}${p}`;
 
 const Register = () => {
   console.log('Register rendered, API_BASE =', API_BASE);
@@ -15,40 +21,40 @@ const Register = () => {
   const [form, setForm] = useState({ name: '', surname: '', phone: '', agree: false });
   const navigate = useNavigate();
 
+  // Если открыто в Telegram — игнорируем старый user из localStorage,
+  // чтобы не скрывать форму регистрации уже сохранёнными данными
   useEffect(() => {
-    // Внутри Telegram не подтягиваем user из localStorage,
-    // иначе старая запись может скрыть форму регистрации
-    if (!user && !telegramUser?.id) {
-      const savedUser = localStorage.getItem('user');
-      if (savedUser) setUser(JSON.parse(savedUser));
+    if (!telegramUser?.id && !user) {
+      try {
+        const saved = localStorage.getItem('user');
+        if (saved) setUser(JSON.parse(saved));
+      } catch {}
     }
   }, [telegramUser?.id]);
 
+  // Если Telegram user появился — чистим localStorage user,
+  // чтобы форма показалась (если телефон ещё не указан)
   useEffect(() => {
     if (telegramUser?.id) {
-      try { localStorage.removeItem('user') } catch {}
-      if (user) setUser(null)
+      try { localStorage.removeItem('user'); } catch {}
+      if (user) setUser(null);
     }
   }, [telegramUser?.id]);
 
+  // Если у текущего пользователя уже есть телефон — отправляем на промо
   useEffect(() => {
-    console.log('Текущий пользователь в Register:', user);
-    const hasPhone = !!(user && user.phone && String(user.phone).trim().length > 0)
+    const hasPhone = !!(user && user.phone && String(user.phone).trim().length > 0);
     if (hasPhone) navigate('/promo');
   }, [user, navigate]);
 
-  // Prefill from Telegram profile if available
+  // Префилл из Telegram-профиля (если доступно)
   useEffect(() => {
     if (telegramUser && (!form.name && !form.surname)) {
-      setForm((prev) => ({
-        ...prev,
-        name: prev.name || telegramUser.name || '',
-        surname: prev.surname || telegramUser.surname || '',
-      }));
+      const firstName = telegramUser.first_name || telegramUser.name || '';
+      const lastName = telegramUser.last_name || telegramUser.surname || '';
+      setForm((prev) => ({ ...prev, name: prev.name || firstName, surname: prev.surname || lastName }));
     }
   }, [telegramUser]);
-
-  console.log('Render form:', form);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -58,9 +64,6 @@ const Register = () => {
     }));
   };
 
-  // Helper: join base + path without double slashes
-  const api = (path) => `${API_BASE}${path}`;
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -69,21 +72,23 @@ const Register = () => {
       return;
     }
 
-    console.log('user перед отправкой:', user);
-    if (!telegramUser || typeof telegramUser.id !== 'number') {
+    // Надёжно приводим Telegram ID к числу
+    const tgIdNum = Number(telegramUser?.id);
+    if (!Number.isFinite(tgIdNum) || tgIdNum <= 0) {
       alert('Telegram ID не определён. Пожалуйста, откройте WebApp внутри Telegram.');
       return;
     }
 
     try {
-      const res = await fetch(api('/api/register'), {
+      const res = await fetch(api('/api/register')), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           firstName: form.name,
           lastName: form.surname,
           phone: form.phone,
-          tg_id: telegramUser.id,
+          tg_id: tgIdNum,
+          username: telegramUser?.username || null,
         }),
       });
 
@@ -93,10 +98,10 @@ const Register = () => {
       }
 
       const data = await res.json();
-      console.log('Ответ от сервера:', data);
+      console.log('Ответ от сервера /api/register:', data);
 
-      if (data.success) {
-        localStorage.setItem('user', JSON.stringify(data.user));
+      if (data.success && data.user) {
+        try { localStorage.setItem('user', JSON.stringify(data.user)); } catch {}
         setUser(data.user);
         navigate('/promo');
       } else {
@@ -109,8 +114,19 @@ const Register = () => {
   };
 
   const [hover, setHover] = useState(false);
+
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start', padding: '5rem 1rem 2rem', minHeight: '100vh', backgroundColor: 'var(--tg-theme-bg-color, #f4f4f4)', color: 'var(--tg-theme-text-color, #111111)' }}>
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'flex-start',
+        padding: '5rem 1rem 2rem',
+        minHeight: '100vh',
+        backgroundColor: 'var(--tg-theme-bg-color, #f4f4f4)',
+        color: 'var(--tg-theme-text-color, #111111)',
+      }}
+    >
       <div>
         <h1 style={{ color: 'var(--tg-theme-text-color, #111111)' }}>Регистрация</h1>
         <form
@@ -135,7 +151,15 @@ const Register = () => {
               placeholder="Имя"
               value={form.name}
               onChange={handleChange}
-              style={{ padding: '0.75rem', fontSize: '1rem', width: '100%', borderRadius: '8px', backgroundColor: 'var(--tg-theme-secondary-bg-color, #ffffff)', color: 'var(--tg-theme-text-color, #111111)', border: '1px solid var(--tg-theme-hint-color, #ccc)' }}
+              style={{
+                padding: '0.75rem',
+                fontSize: '1rem',
+                width: '100%',
+                borderRadius: '8px',
+                backgroundColor: 'var(--tg-theme-secondary-bg-color, #ffffff)',
+                color: 'var(--tg-theme-text-color, #111111)',
+                border: '1px solid var(--tg-theme-hint-color, #ccc)'
+              }}
               required
             />
             <input
@@ -144,7 +168,15 @@ const Register = () => {
               placeholder="Фамилия"
               value={form.surname}
               onChange={handleChange}
-              style={{ padding: '0.75rem', fontSize: '1rem', width: '100%', borderRadius: '8px', backgroundColor: 'var(--tg-theme-secondary-bg-color, #ffffff)', color: 'var(--tg-theme-text-color, #111111)', border: '1px solid var(--tg-theme-hint-color, #ccc)' }}
+              style={{
+                padding: '0.75rem',
+                fontSize: '1rem',
+                width: '100%',
+                borderRadius: '8px',
+                backgroundColor: 'var(--tg-theme-secondary-bg-color, #ffffff)',
+                color: 'var(--tg-theme-text-color, #111111)',
+                border: '1px solid var(--tg-theme-hint-color, #ccc)'
+              }}
               required
             />
           </div>
@@ -154,21 +186,21 @@ const Register = () => {
             placeholder="Телефон"
             value={form.phone}
             onChange={handleChange}
-            style={{ padding: '0.75rem', fontSize: '1rem', width: '100%', borderRadius: '8px', backgroundColor: 'var(--tg-theme-secondary-bg-color, #ffffff)', color: 'var(--tg-theme-text-color, #111111)', border: '1px solid var(--tg-theme-hint-color, #ccc)' }}
+            style={{
+              padding: '0.75rem',
+              fontSize: '1rem',
+              width: '100%',
+              borderRadius: '8px',
+              backgroundColor: 'var(--tg-theme-secondary-bg-color, #ffffff)',
+              color: 'var(--tg-theme-text-color, #111111)',
+              border: '1px solid var(--tg-theme-hint-color, #ccc)'
+            }}
             required
           />
           <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem' }}>
-            <input
-              type="checkbox"
-              name="agree"
-              checked={form.agree}
-              onChange={handleChange}
-              required
-            />
+            <input type="checkbox" name="agree" checked={form.agree} onChange={handleChange} required />
             <span>
-              Я согласен с{" "}
-              <a href="/rules">правилами</a> и{" "}
-              <a href="/privacy">политикой конфиденциальности</a>
+              Я согласен с <a href="/rules">правилами</a> и <a href="/privacy">политикой конфиденциальности</a>
             </span>
           </label>
           <button
