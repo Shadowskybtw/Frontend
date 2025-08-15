@@ -1,5 +1,5 @@
 {
   "rewrites": [
-    { "source": "/(.*)", "destination": "/" }
+    { "source": "/api/(.*)", "destination": "https://refactored-cod-v6ww469vp657fwqpw-8000.app.github.dev/api/$1" }
   ]
 }

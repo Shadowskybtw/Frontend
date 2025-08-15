@@ -2,10 +2,9 @@ import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { UserContext } from '../context/UserContext'
 import { QRCodeSVG } from 'qrcode.react'
 import QrScanner from '../components/QRScanner'
-
-// Reusable API base (works with Vercel env var or a global injected at build time)
-const API_BASE = (process.env.REACT_APP_API_URL || window.__API_BASE__ || '').replace(/\/$/, '')
-const api = (path) => `${API_BASE}${path}`
+import { userAPI, qrAPI, handleApiError } from '../utils/api'
+import styles from '../styles/Promo.module.css'
+import Loading from '../components/Loading'
 
 const Promo = () => {
   const { user } = useContext(UserContext)
@@ -28,119 +27,131 @@ const Promo = () => {
   useEffect(() => {
     if (!tgId) return
 
-    // 1) Progress (open slots)
-    fetch(api(`/api/stocks/${tgId}`))
-      .then((res) => (res.ok ? res.json() : []))
-      .then((data) => {
-        const list = Array.isArray(data) ? data : Array.isArray(data?.slots) ? data.slots : []
-        setSlots(list.filter((s) => !s.completed))
-      })
-      .catch(() => setSlots([]))
+    const loadUserData = async () => {
+      try {
+        // 1) Progress (open slots)
+        const stocksData = await userAPI.getStocks(tgId);
+        const list = Array.isArray(stocksData) ? stocksData : Array.isArray(stocksData?.slots) ? stocksData.slots : [];
+        setSlots(list.filter((s) => !s.completed));
 
-    // 2) Number of free hookahs
-    fetch(api(`/api/free-hookahs/${tgId}`))
-      .then((res) => (res.ok ? res.json() : { count: 0 }))
-      .then((data) => setFreeHookahs(Number(data?.count) || 0))
-      .catch(() => setFreeHookahs(0))
+        // 2) Number of free hookahs
+        const hookahData = await userAPI.getFreeHookahs(tgId);
+        setFreeHookahs(Number(hookahData?.count) || 0);
+      } catch (error) {
+        console.error('Ошибка при загрузке данных:', error);
+        setSlots([]);
+        setFreeHookahs(0);
+      }
+    };
+
+    loadUserData();
   }, [tgId])
 
   // 🎁 Guest claims a free hookah (only shown when available)
-  const handleUseFreeHookah = () => {
+  const handleUseFreeHookah = async () => {
     if (!tgId) return
 
-    fetch(api(`/api/use-free-slot/${tgId}`), { method: 'POST' })
-      .then((res) => (res.ok ? res.json() : Promise.reject()))
-      .then((result) => {
-        if (result?.success) {
-          alert('Бесплатный кальян выдан')
-          setFreeHookahs((prev) => Math.max(prev - 1, 0))
-        } else {
-          alert('Нет доступных бесплатных кальянов')
-        }
-      })
-      .catch(() => alert('Ошибка при выдаче бесплатного кальяна'))
+    try {
+      const result = await userAPI.useFreeSlot(tgId);
+      if (result?.success) {
+        alert('Бесплатный кальян выдан');
+        setFreeHookahs((prev) => Math.max(prev - 1, 0));
+      } else {
+        alert('Нет доступных бесплатных кальянов');
+      }
+    } catch (error) {
+      handleApiError(error, 'Ошибка при выдаче бесплатного кальяна');
+    }
   }
 
   // 📷 Admin scans a guest QR (QR contains backend /redeem/{guest_tg_id})
-  const handleScan = (url) => {
+  const handleScan = async (url) => {
     const adminId = window?.Telegram?.WebApp?.initDataUnsafe?.user?.id
     if (!adminId) return alert('Не удалось получить Telegram ID администратора')
 
-    fetch(url, {
-      method: 'POST', // endpoint should accept POST for state change
-      headers: { 'X-Telegram-ID': String(adminId) }
-    })
-      .then((res) => (res.ok ? res.json() : Promise.reject()))
-      .then((res) => {
-        alert(res?.message || 'Готово')
-        setShowScanner(false)
-        // После подтверждения перезагрузим прогресс гостя, если этот экран у гостя
-        if (tgId) {
-          fetch(api(`/api/stocks/${tgId}`))
-            .then((r) => (r.ok ? r.json() : []))
-            .then((data) => {
-              const list = Array.isArray(data) ? data : Array.isArray(data?.slots) ? data.slots : []
-              setSlots(list.filter((s) => !s.completed))
-            })
-            .catch(() => {})
+    try {
+      const result = await qrAPI.redeem(url, adminId);
+      alert(result?.message || 'Готово');
+      setShowScanner(false);
+      
+      // После подтверждения перезагрузим прогресс гостя, если этот экран у гостя
+      if (tgId) {
+        try {
+          const stocksData = await userAPI.getStocks(tgId);
+          const list = Array.isArray(stocksData) ? stocksData : Array.isArray(stocksData?.slots) ? stocksData.slots : [];
+          setSlots(list.filter((s) => !s.completed));
+        } catch (error) {
+          console.error('Ошибка при обновлении прогресса:', error);
         }
-      })
-      .catch(() => {
-        alert('Ошибка при подтверждении')
-        setShowScanner(false)
-      })
+      }
+    } catch (error) {
+      handleApiError(error, 'Ошибка при подтверждении');
+      setShowScanner(false);
+    }
   }
 
   if (!tgId) {
-    return <p style={{ textAlign: 'center', marginTop: '2rem' }}>Загрузка…</p>
+    return <Loading message="Загрузка…" size="medium" />
   }
 
   // URL в QR для гостя — админ сканирует и подтверждает визит
-  const qrUrl = api(`/redeem/${tgId}`)
+  const qrUrl = `${process.env.REACT_APP_API_URL || window.__API_BASE__ || 'https://refactored-cod-v6ww469vp657fwqpw-8000.app.github.dev'}/redeem/${tgId}`
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <h2>Акция: Выкури 5 кальянов — получи 1 бесплатный</h2>
+    <div className={styles.promoContainer}>
+      <h2 className={styles.promoTitle}>Акция: Выкури 5 кальянов — получи 1 бесплатный</h2>
 
       {/* Прогресс */}
-      <div style={{ display: 'flex', gap: '1rem', margin: '1rem 0' }}>
-        {[...Array(5)].map((_, i) => (
-          <div
-            key={i}
-            style={{
-              width: '30px',
-              height: '30px',
-              borderRadius: '50%',
-              background: i < slots.length ? '#007bff' : '#ddd'
-            }}
-          />
-        ))}
+      <div className={styles.progressSection}>
+        <h3 className={styles.progressTitle}>Прогресс</h3>
+        <div className={styles.progressBar}>
+          {[...Array(5)].map((_, i) => (
+            <div
+              key={i}
+              className={`${styles.progressSlot} ${i < slots.length ? styles.filled : styles.empty}`}
+            />
+          ))}
+        </div>
       </div>
 
       {/* Кнопка «получить бесплатный» — ТОЛЬКО когда доступен */}
       {freeHookahs > 0 && (
-        <button onClick={handleUseFreeHookah}>Получить бесплатный</button>
+        <div className={styles.freeHookahSection}>
+          <p className={styles.freeHookahCount}>Бесплатных кальянов доступно: {freeHookahs}</p>
+          <button 
+            onClick={handleUseFreeHookah} 
+            className={styles.claimButton}
+            disabled={freeHookahs === 0}
+          >
+            Получить бесплатный
+          </button>
+        </div>
       )}
 
-      <p style={{ marginTop: '1rem' }}>Бесплатных кальянов доступно: {freeHookahs}</p>
-
       {/* QR гостя. Админ сканирует — только так засчитывается слот */}
-      <div style={{ marginTop: '2rem' }}>
-        <h3>QR‑код для подтверждения кальяна:</h3>
-        <QRCodeSVG value={qrUrl} />
+      <div className={styles.qrSection}>
+        <h3 className={styles.qrTitle}>QR‑код для подтверждения кальяна:</h3>
+        <div className={styles.qrCode}>
+          <QRCodeSVG value={qrUrl} />
+        </div>
       </div>
 
       {/* Доп. блок для администратора: сканирование QR гостя */}
       {isAdmin && (
-        <>
-          <button onClick={() => setShowScanner(true)}>Сканировать QR гостя</button>
+        <div className={styles.adminSection}>
+          <h3 className={styles.adminTitle}>Админская панель</h3>
+          <button onClick={() => setShowScanner(true)} className={styles.scanButton}>
+            Сканировать QR гостя
+          </button>
           {showScanner && (
-            <div style={{ marginTop: '1rem' }}>
+            <div className={styles.scannerContainer}>
               <QrScanner onScan={handleScan} />
-              <button onClick={() => setShowScanner(false)}>Закрыть</button>
+              <button onClick={() => setShowScanner(false)} className={styles.closeButton}>
+                Закрыть
+              </button>
             </div>
           )}
-        </>
+        </div>
       )}
     </div>
   )

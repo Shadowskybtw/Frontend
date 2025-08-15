@@ -1,26 +1,16 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
+import styles from '../styles/Navbar.module.css'
 
 const Navbar = () => {
-  const navStyle = {
-    display: 'flex',
-    justifyContent: 'center',
-    gap: '2rem',
-    padding: '1rem',
-    background: '#f3f3f3',
-    borderBottom: '1px solid #ccc'
-  }
-
-  const linkStyle = ({ isActive }) => ({
-    textDecoration: 'none',
-    color: isActive ? '#007bff' : '#333',
-    fontWeight: isActive ? 'bold' : 'normal'
-  })
-
   return (
-    <nav style={navStyle}>
-      <NavLink to="/" style={linkStyle}>Профиль</NavLink>
-      <NavLink to="/promo" style={linkStyle}>Акция</NavLink>
+    <nav className={styles.navbar}>
+      <NavLink to="/" className={({ isActive }) => isActive ? styles.navLink + ' ' + styles.active : styles.navLink}>
+        Профиль
+      </NavLink>
+      <NavLink to="/promo" className={({ isActive }) => isActive ? styles.navLink + ' ' + styles.active : styles.navLink}>
+        Акция
+      </NavLink>
     </nav>
   )
 }

@@ -1,17 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { UserContext } from '../context/UserContext'
-
-// Resolve API base URL from env/window with a safe fallback
-const resolveApiBase = () => {
-  const env = (typeof process !== 'undefined' && process.env?.REACT_APP_API_URL) || null;
-  const win = (typeof window !== 'undefined' && window.__API_BASE__) || null;
-  const fallback = 'https://refactored-cod-v6ww469vp657fwqpw-8000.app.github.dev';
-  const base = (env || win || fallback).replace(/\/+$/, '');
-  return /^https?:\/\//.test(base) ? base : fallback;
-};
-
-const API_BASE = resolveApiBase();
-const api = (p) => `${API_BASE}${p.startsWith('/') ? p : `/${p}`}`;
+import { userAPI, handleApiError } from '../utils/api'
+import styles from '../styles/Profile.module.css'
+import Loading from '../components/Loading'
 
 const Profile = () => {
   const { user } = useContext(UserContext)
@@ -22,63 +13,89 @@ const Profile = () => {
   const [freeHookahs, setFreeHookahs] = useState(0)
   const [newAdminId, setNewAdminId] = useState('')
 
-  const handleGrantAdmin = () => {
+  const handleGrantAdmin = async () => {
     if (!newAdminId) return alert('Введите Telegram ID');
     if (!tgId) return alert('ID текущего пользователя не определён');
 
-    fetch(api('/api/grant-admin'), {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ targetId: parseInt(newAdminId, 10), grantBy: tgId })
-    })
-      .then((res) => res.json())
-      .then((data) => alert(data.message || 'Права выданы'))
-      .catch(() => alert('Ошибка при выдаче прав'))
+    try {
+      const result = await userAPI.grantAdmin(parseInt(newAdminId, 10), tgId);
+      alert(result.message || 'Права выданы');
+      setNewAdminId('');
+    } catch (error) {
+      handleApiError(error, 'Ошибка при выдаче прав');
+    }
   };
 
   useEffect(() => {
     if (!tgId) return; // ждём, пока появится телеграм‑ID
 
-    fetch(api(`/api/main/${tgId}`))
-      .then((res) => (res.ok ? res.json() : Promise.reject(res)))
-      .then((data) => {
-        setCompletedStocks(data?.completedStocks ?? null);
-        return fetch(api(`/api/free-hookahs/${tgId}`));
-      })
-      .then((res) => (res && res.ok ? res.json() : { count: 0 }))
-      .then((data) => setFreeHookahs(data?.count ?? 0))
-      .catch((err) => {
-        console.error('Ошибка при загрузке слотов:', err);
-      });
+    const loadUserData = async () => {
+      try {
+        const userData = await userAPI.checkUser(tgId);
+        setCompletedStocks(userData?.completedStocks ?? null);
+        
+        const hookahData = await userAPI.getFreeHookahs(tgId);
+        setFreeHookahs(hookahData?.count ?? 0);
+      } catch (error) {
+        console.error('Ошибка при загрузке данных пользователя:', error);
+      }
+    };
+
+    loadUserData();
   }, [tgId]);
 
   if (!user) {
-    return <p style={{ textAlign: 'center', marginTop: '2rem' }}>Загрузка профиля...</p>
+    return <Loading message="Загрузка профиля..." size="medium" />
   }
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <h2>Профиль пользователя</h2>
-      <ul style={{ listStyle: 'none', paddingLeft: 0 }}>
-        <li><strong>ID:</strong> {tgId ?? '—'}</li>
-        <li><strong>Имя:</strong> {user.firstName}</li>
-        <li><strong>Фамилия:</strong> {user.lastName || '—'}</li>
-        <li><strong>Юзернейм:</strong> @{username || '—'}</li>
-        <li><strong>Получено кальянов:</strong> {completedStocks ?? '—'}</li>
-        <li><strong>Бесплатных кальянов:</strong> {freeHookahs}</li>
-        <li><strong>Телефон:</strong> {user.phone || '—'}</li>
+    <div className={styles.profileContainer}>
+      <h2 className={styles.profileTitle}>Профиль пользователя</h2>
+      <ul className={styles.profileList}>
+        <li className={styles.profileItem}>
+          <span className={styles.profileLabel}>ID:</span>
+          <span className={styles.profileValue}>{tgId ?? '—'}</span>
+        </li>
+        <li className={styles.profileItem}>
+          <span className={styles.profileLabel}>Имя:</span>
+          <span className={styles.profileValue}>{user.firstName}</span>
+        </li>
+        <li className={styles.profileItem}>
+          <span className={styles.profileLabel}>Фамилия:</span>
+          <span className={styles.profileValue}>{user.lastName || '—'}</span>
+        </li>
+        <li className={styles.profileItem}>
+          <span className={styles.profileLabel}>Юзернейм:</span>
+          <span className={styles.profileValue}>@{username || '—'}</span>
+        </li>
+        <li className={styles.profileItem}>
+          <span className={styles.profileLabel}>Получено кальянов:</span>
+          <span className={styles.profileValue}>{completedStocks ?? '—'}</span>
+        </li>
+        <li className={styles.profileItem}>
+          <span className={styles.profileLabel}>Бесплатных кальянов:</span>
+          <span className={styles.profileValue}>{freeHookahs}</span>
+        </li>
+        <li className={styles.profileItem}>
+          <span className={styles.profileLabel}>Телефон:</span>
+          <span className={styles.profileValue}>{user.phone || '—'}</span>
+        </li>
       </ul>
       {tgId === 123456789 && (
-        <div style={{ marginTop: '2rem' }}>
-          <h3>Выдать админские права</h3>
-          <input
-            type="number"
-            placeholder="Введите TG ID"
-            value={newAdminId}
-            onChange={(e) => setNewAdminId(e.target.value)}
-            style={{ marginRight: '1rem' }}
-          />
-          <button onClick={handleGrantAdmin}>Выдать права</button>
+        <div className={styles.adminSection}>
+          <h3 className={styles.adminTitle}>Выдать админские права</h3>
+          <div className={styles.adminForm}>
+            <input
+              type="number"
+              placeholder="Введите TG ID"
+              value={newAdminId}
+              onChange={(e) => setNewAdminId(e.target.value)}
+              className={styles.adminInput}
+            />
+            <button onClick={handleGrantAdmin} className={styles.adminButton}>
+              Выдать права
+            </button>
+          </div>
         </div>
       )}
     </div>
