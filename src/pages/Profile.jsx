@@ -3,6 +3,7 @@ import { UserContext } from '../context/UserContext'
 import { userAPI, handleApiError } from '../utils/api'
 import styles from '../styles/Profile.module.css'
 import Loading from '../components/Loading'
+import ApiTester from '../components/ApiTester'
 
 const Profile = () => {
   const { user } = useContext(UserContext)
@@ -98,6 +99,11 @@ const Profile = () => {
           </div>
         </div>
       )}
+      
+      {/* API Tester для отладки */}
+      <div style={{ marginTop: '2rem' }}>
+        <ApiTester telegramId={tgId} />
+      </div>
     </div>
   )
 }

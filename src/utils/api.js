@@ -33,6 +33,11 @@ const apiRequest = async (endpoint, options = {}) => {
 
     if (!response.ok) {
       const errorText = await response.text()
+      // Для 404 ошибок возвращаем специальный объект вместо исключения
+      if (response.status === 404) {
+        console.log(`User not found (404) for endpoint: ${endpoint}`)
+        return { userExists: false, user: null }
+      }
       throw new Error(`HTTP ${response.status}: ${errorText || response.statusText}`)
     }
 

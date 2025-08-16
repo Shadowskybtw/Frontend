@@ -44,8 +44,11 @@ function AppRoutes() {
         // Проверяем существование пользователя через новый endpoint
         try {
           const response = await fetch(`/api/webapp/init/${telegramUser.id}`)
+          console.log('New API response status:', response.status)
+          
           if (response.ok) {
             const data = await response.json()
+            console.log('New API response data:', data)
             
             if (data.userExists && data.user) {
               // Пользователь найден и зарегистрирован
@@ -63,52 +66,101 @@ function AppRoutes() {
               setUser(null)
               try { localStorage.removeItem('user') } catch {}
             }
-          } else {
-            // Fallback на старый API если новый endpoint недоступен
+          } else if (response.status === 404) {
+            // Новый endpoint не найден - используем старый API
+            console.log('New API returned 404, using fallback')
             const data = await userAPI.checkUser(telegramUser.id)
             
-            const payload = data?.user ?? data
-            const phoneVal = payload?.phone
-            const hasPhone =
-              (typeof phoneVal === 'string' && phoneVal.trim().length > 0 && !['null','undefined'].includes(phoneVal.trim().toLowerCase())) ||
-              (typeof phoneVal === 'number' && String(phoneVal).trim().length > 0)
-
-            if (hasPhone) {
-              setUser({
-                id: payload.tg_id ?? payload.id ?? telegramUser.id,
-                name: payload.firstName ?? payload.name ?? '',
-                surname: payload.lastName ?? payload.surname ?? '',
-                phone: payload.phone ?? '',
-                username: payload.username ?? telegramUser.username ?? ''
-              })
-            } else {
+            // Проверяем формат ответа от fallback API
+            if (data && (data.userExists === false || !data.user)) {
+              // Пользователь не найден
               setUser(null)
               try { localStorage.removeItem('user') } catch {}
+            } else {
+              // Пользователь найден
+              const payload = data?.user ?? data
+              const phoneVal = payload?.phone
+              const hasPhone =
+                (typeof phoneVal === 'string' && phoneVal.trim().length > 0 && !['null','undefined'].includes(phoneVal.trim().toLowerCase())) ||
+                (typeof phoneVal === 'number' && String(phoneVal).trim().length > 0)
+
+              if (hasPhone) {
+                setUser({
+                  id: payload.tg_id ?? payload.id ?? telegramUser.id,
+                  name: payload.firstName ?? payload.name ?? '',
+                  surname: payload.lastName ?? payload.surname ?? '',
+                  phone: payload.phone ?? '',
+                  username: payload.username ?? telegramUser.username ?? ''
+                })
+              } else {
+                setUser(null)
+                try { localStorage.removeItem('user') } catch {}
+              }
+            }
+          } else {
+            // Другие ошибки - используем fallback
+            console.log('New API error status:', response.status, 'using fallback')
+            const data = await userAPI.checkUser(telegramUser.id)
+            
+            // Проверяем формат ответа от fallback API
+            if (data && (data.userExists === false || !data.user)) {
+              // Пользователь не найден
+              setUser(null)
+              try { localStorage.removeItem('user') } catch {}
+            } else {
+              // Пользователь найден
+              const payload = data?.user ?? data
+              const phoneVal = payload?.phone
+              const hasPhone =
+                (typeof phoneVal === 'string' && phoneVal.trim().length > 0 && !['null','undefined'].includes(phoneVal.trim().toLowerCase())) ||
+                (typeof phoneVal === 'number' && String(phoneVal).trim().length > 0)
+
+              if (hasPhone) {
+                setUser({
+                  id: payload.tg_id ?? payload.id ?? telegramUser.id,
+                  name: payload.firstName ?? payload.name ?? '',
+                  surname: payload.lastName ?? payload.surname ?? '',
+                  phone: payload.phone ?? '',
+                  username: payload.username ?? telegramUser.username ?? ''
+                })
+              } else {
+                setUser(null)
+                try { localStorage.removeItem('user') } catch {}
+              }
             }
           }
         } catch (apiError) {
           console.error('New API error:', apiError)
-          // Fallback на старый API
+          // Fallback на старый API при любых ошибках
           try {
+            console.log('Using fallback API due to error')
             const data = await userAPI.checkUser(telegramUser.id)
             
-            const payload = data?.user ?? data
-            const phoneVal = payload?.phone
-            const hasPhone =
-              (typeof phoneVal === 'string' && phoneVal.trim().length > 0 && !['null','undefined'].includes(phoneVal.trim().toLowerCase())) ||
-              (typeof phoneVal === 'number' && String(phoneVal).trim().length > 0)
-
-            if (hasPhone) {
-              setUser({
-                id: payload.tg_id ?? payload.id ?? telegramUser.id,
-                name: payload.firstName ?? payload.name ?? '',
-                surname: payload.lastName ?? payload.surname ?? '',
-                phone: payload.phone ?? '',
-                username: payload.username ?? telegramUser.username ?? ''
-              })
-            } else {
+            // Проверяем формат ответа от fallback API
+            if (data && (data.userExists === false || !data.user)) {
+              // Пользователь не найден
               setUser(null)
               try { localStorage.removeItem('user') } catch {}
+            } else {
+              // Пользователь найден
+              const payload = data?.user ?? data
+              const phoneVal = payload?.phone
+              const hasPhone =
+                (typeof phoneVal === 'string' && phoneVal.trim().length > 0 && !['null','undefined'].includes(phoneVal.trim().toLowerCase())) ||
+                (typeof phoneVal === 'number' && String(phoneVal).trim().length > 0)
+
+              if (hasPhone) {
+                setUser({
+                  id: payload.tg_id ?? payload.id ?? telegramUser.id,
+                  name: payload.firstName ?? payload.name ?? '',
+                  surname: payload.lastName ?? payload.surname ?? '',
+                  phone: payload.phone ?? '',
+                  username: payload.username ?? telegramUser.username ?? ''
+                })
+              } else {
+                setUser(null)
+                try { localStorage.removeItem('user') } catch {}
+              }
             }
           } catch (fallbackError) {
             console.error('Fallback API also failed:', fallbackError)
@@ -116,12 +168,16 @@ function AppRoutes() {
           }
         }
       } catch (e) {
+        console.error('Main check error:', e)
+        
+        // Проверяем, является ли это ошибкой 404 (пользователь не найден)
         if (e.message?.includes('404')) {
-          // Пользователь не найден — на регистрацию и очистить localStorage
+          console.log('User not found (404), showing registration')
           setUser(null)
           try { localStorage.removeItem('user') } catch {}
         } else {
-          console.error('check /api/main error:', e)
+          // Другие ошибки - показываем страницу ошибки
+          console.error('Critical error during initialization:', e)
           setInitError(e)
         }
       } finally {
