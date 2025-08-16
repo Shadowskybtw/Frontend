@@ -4,6 +4,7 @@ import { userAPI, handleApiError } from '../utils/api'
 import styles from '../styles/Profile.module.css'
 import Loading from '../components/Loading'
 import ApiTester from '../components/ApiTester'
+import InitStatus from '../components/InitStatus'
 
 const Profile = () => {
   const { user } = useContext(UserContext)
@@ -103,6 +104,11 @@ const Profile = () => {
       {/* API Tester для отладки */}
       <div style={{ marginTop: '2rem' }}>
         <ApiTester telegramId={tgId} />
+      </div>
+      
+      {/* Статус инициализации WebApp */}
+      <div style={{ marginTop: '2rem' }}>
+        <InitStatus />
       </div>
     </div>
   )

@@ -12,35 +12,69 @@ export const UserProvider = ({ children }) => {
 
   // 1) Init Telegram WebApp and read Telegram user
   useEffect(() => {
+    console.log('🔍 UserContext: Initializing Telegram WebApp...')
+    console.log('🔍 UserContext: window.Telegram:', window?.Telegram)
+    console.log('🔍 UserContext: window.Telegram?.WebApp:', window?.Telegram?.WebApp)
+    
     const webApp = window?.Telegram?.WebApp
-    try {
-      webApp?.ready()
-      webApp?.expand?.()
+    if (webApp) {
+      console.log('✅ UserContext: Telegram WebApp found')
+      try {
+        webApp.ready()
+        console.log('✅ UserContext: WebApp.ready() called')
+      } catch (e) {
+        console.warn('⚠️ UserContext: WebApp.ready() failed:', e)
+      }
+      
+      try {
+        webApp.expand()
+        console.log('✅ UserContext: WebApp.expand() called')
+      } catch (e) {
+        console.warn('⚠️ UserContext: WebApp.expand() failed:', e)
+      }
+      
       const theme = webApp?.themeParams || {}
-      webApp?.setBackgroundColor?.(theme.bg_color || '#ffffff')
-      webApp?.setHeaderColor?.(theme.bg_color || '#ffffff')
-    } catch (e) {
-      // no-op
+      try {
+        webApp?.setBackgroundColor?.(theme.bg_color || '#ffffff')
+        webApp?.setHeaderColor?.(theme.bg_color || '#ffffff')
+        console.log('✅ UserContext: Theme colors set')
+      } catch (e) {
+        console.warn('⚠️ UserContext: Theme colors failed:', e)
+      }
+    } else {
+      console.warn('⚠️ UserContext: Telegram WebApp not found')
     }
 
     const tg = webApp?.initDataUnsafe?.user
+    console.log('🔍 UserContext: initDataUnsafe.user:', tg)
+    
     if (tg) {
+      console.log('✅ UserContext: Telegram user found:', tg)
       setTelegramUser({
         id: tg.id,
         name: tg.first_name,
         surname: tg.last_name || '',
         username: tg.username || ''
       })
+    } else {
+      console.log('❌ UserContext: No Telegram user data')
     }
-    setIsTg(!!tg)
+    
+    const isTelegram = !!tg
+    setIsTg(isTelegram)
+    console.log('🔍 UserContext: isTg set to:', isTelegram)
+    
     // (Optional) Handle Telegram theme changes gracefully
     try {
       webApp?.onEvent?.('themeChanged', () => {
         const theme = webApp?.themeParams || {}
         webApp?.setBackgroundColor?.(theme.bg_color || '#ffffff')
         webApp?.setHeaderColor?.(theme.bg_color || '#ffffff')
+        console.log('✅ UserContext: Theme change handled')
       })
-    } catch (e) {}
+    } catch (e) {
+      console.warn('⚠️ UserContext: Theme change handler failed:', e)
+    }
   }, [])
 
   // 2) Restore registered app user from localStorage on mount

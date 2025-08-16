@@ -22,12 +22,33 @@ function AppRoutes() {
     let canceled = false
 
     async function check() {
-      try {
-        // Инициализируем Telegram WebApp
-        if (window.Telegram?.WebApp) {
-          window.Telegram.WebApp.ready()
-          window.Telegram.WebApp.expand()
-        }
+              try {
+          // Инициализируем Telegram WebApp
+          console.log('🔍 Checking Telegram WebApp availability...')
+          console.log('window.Telegram:', window.Telegram)
+          console.log('window.Telegram?.WebApp:', window.Telegram?.WebApp)
+          
+          if (window.Telegram?.WebApp) {
+            console.log('✅ Telegram WebApp found, initializing...')
+            try {
+              window.Telegram.WebApp.ready()
+              console.log('✅ WebApp.ready() called')
+            } catch (readyError) {
+              console.warn('⚠️ WebApp.ready() failed:', readyError)
+            }
+            
+            try {
+              window.Telegram.WebApp.expand()
+              console.log('✅ WebApp.expand() called')
+            } catch (expandError) {
+              console.warn('⚠️ WebApp.expand() failed:', expandError)
+            }
+            
+            console.log('WebApp initDataUnsafe:', window.Telegram.WebApp.initDataUnsafe)
+            console.log('WebApp user:', window.Telegram.WebApp.initDataUnsafe?.user)
+          } else {
+            console.warn('⚠️ Telegram WebApp not found - running outside Telegram')
+          }
 
         // If we already have a stored user with phone, skip backend check
         if (user && user.phone && String(user.phone).trim().length > 0) {
@@ -36,15 +57,22 @@ function AppRoutes() {
         }
 
         // Нет данных от Telegram — завершить проверку и показать регистрацию по умолчанию
+        console.log('🔍 Checking telegramUser:', telegramUser)
+        console.log('telegramUser?.id:', telegramUser?.id)
+        
         if (!telegramUser?.id) {
+          console.log('❌ No Telegram user ID, showing registration')
           setChecking(false)
           return
         }
+        
+        console.log('✅ Telegram user ID found:', telegramUser.id)
 
         // Проверяем существование пользователя через новый endpoint
+        console.log('🌐 Calling new API endpoint:', `/api/webapp/init/${telegramUser.id}`)
         try {
           const response = await fetch(`/api/webapp/init/${telegramUser.id}`)
-          console.log('New API response status:', response.status)
+          console.log('📡 New API response status:', response.status)
           
           if (response.ok) {
             const data = await response.json()
@@ -68,7 +96,8 @@ function AppRoutes() {
             }
           } else if (response.status === 404) {
             // Новый endpoint не найден - используем старый API
-            console.log('New API returned 404, using fallback')
+            console.log('🔄 New API returned 404, using fallback')
+            console.log('🌐 Calling fallback API:', `/api/main/${telegramUser.id}`)
             const data = await userAPI.checkUser(telegramUser.id)
             
             // Проверяем формат ответа от fallback API
@@ -99,7 +128,8 @@ function AppRoutes() {
             }
           } else {
             // Другие ошибки - используем fallback
-            console.log('New API error status:', response.status, 'using fallback')
+            console.log('🔄 New API error status:', response.status, 'using fallback')
+            console.log('🌐 Calling fallback API due to error')
             const data = await userAPI.checkUser(telegramUser.id)
             
             // Проверяем формат ответа от fallback API
@@ -130,10 +160,11 @@ function AppRoutes() {
             }
           }
         } catch (apiError) {
-          console.error('New API error:', apiError)
+          console.error('❌ New API error:', apiError)
           // Fallback на старый API при любых ошибках
           try {
-            console.log('Using fallback API due to error')
+            console.log('🔄 Using fallback API due to error')
+            console.log('🌐 Calling fallback API after error')
             const data = await userAPI.checkUser(telegramUser.id)
             
             // Проверяем формат ответа от fallback API
