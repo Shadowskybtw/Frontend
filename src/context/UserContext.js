@@ -43,29 +43,33 @@ export const UserProvider = ({ children }) => {
     } catch (e) {}
   }, [])
 
-  // 2) Restore registered app user from localStorage on mount, only outside Telegram
+  // 2) Restore registered app user from localStorage on mount
   useEffect(() => {
-    // Внутри Telegram не подтягиваем user из localStorage,
-    // иначе старая запись может скрыть форму регистрации
-    if (!isTg) {
-      try {
-        const saved = localStorage.getItem('user')
-        if (saved) {
-          setUser(JSON.parse(saved))
+    try {
+      const saved = localStorage.getItem('user')
+      if (saved) {
+        const savedUser = JSON.parse(saved)
+        // Проверяем, что сохраненный пользователь валиден
+        if (savedUser && savedUser.phone && String(savedUser.phone).trim().length > 0) {
+          setUser(savedUser)
+        } else {
+          // Очищаем невалидные данные
+          localStorage.removeItem('user')
         }
-      } catch (e) {
-        // ignore
       }
+    } catch (e) {
+      // ignore
     }
-  }, [isTg])
+  }, [])
 
-  // 2b) Force clear stale user when inside Telegram
+  // 2b) Handle Telegram context changes
   useEffect(() => {
-    if (isTg) {
-      try { localStorage.removeItem('user') } catch {}
-      if (user) setUser(null)
+    if (isTg && telegramUser?.id) {
+      // В Telegram контексте проверяем пользователя через API
+      // но не очищаем localStorage автоматически
+      console.log('Telegram context detected:', telegramUser.id)
     }
-  }, [isTg])
+  }, [isTg, telegramUser?.id])
 
   // 3) Persist app user to localStorage when it changes
   useEffect(() => {

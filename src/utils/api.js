@@ -45,8 +45,11 @@ const apiRequest = async (endpoint, options = {}) => {
 
 // User management API
 export const userAPI = {
-  // Check if user exists and get their data
+  // Check if user exists and get their data (legacy endpoint)
   checkUser: (telegramId) => apiRequest(`/api/main/${telegramId}`),
+  
+  // New WebApp initialization endpoint
+  initWebApp: (telegramId) => apiRequest(`/api/webapp/init/${telegramId}`),
   
   // Register new user
   register: (userData) => apiRequest('/api/register', {

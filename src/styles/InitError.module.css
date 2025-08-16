@@ -1,0 +1,139 @@
+.errorContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  text-align: center;
+  min-height: 100vh;
+  background-color: var(--tg-theme-bg-color, #f8f9fa);
+  color: var(--tg-theme-text-color, #111111);
+}
+
+.errorIcon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.errorTitle {
+  color: var(--tg-theme-text-color, #dc3545);
+  margin-bottom: 1rem;
+  font-size: 1.75rem;
+  font-weight: 600;
+}
+
+.errorMessage {
+  color: var(--tg-theme-text-color, #6c757d);
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+  max-width: 500px;
+}
+
+.errorList {
+  text-align: left;
+  margin-bottom: 2rem;
+  padding-left: 1.5rem;
+  color: var(--tg-theme-text-color, #6c757d);
+}
+
+.errorList li {
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+
+.errorDetails {
+  margin-bottom: 2rem;
+  width: 100%;
+  max-width: 600px;
+}
+
+.errorSummary {
+  cursor: pointer;
+  color: var(--tg-theme-button-color, #007bff);
+  font-weight: 600;
+  padding: 0.5rem;
+  border-radius: 6px;
+  background: var(--tg-theme-secondary-bg-color, #f8f9fa);
+  border: 1px solid var(--tg-theme-hint-color, #e1e5e9);
+}
+
+.errorSummary:hover {
+  background: var(--tg-theme-hint-color, #e9ecef);
+}
+
+.errorCode {
+  background: var(--tg-theme-secondary-bg-color, #ffffff);
+  border: 1px solid var(--tg-theme-hint-color, #e1e5e9);
+  border-radius: 6px;
+  padding: 1rem;
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--tg-theme-text-color, #6c757d);
+  overflow: auto;
+  text-align: left;
+}
+
+.errorActions {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.retryButton {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  background: var(--tg-theme-button-color, #007bff);
+  color: var(--tg-theme-button-text-color, #ffffff);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 600;
+}
+
+.retryButton:hover {
+  background: var(--tg-theme-button-color, #0056b3);
+  transform: translateY(-1px);
+}
+
+.reloadButton {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  background: var(--tg-theme-hint-color, #6c757d);
+  color: var(--tg-theme-button-text-color, #ffffff);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 600;
+}
+
+.reloadButton:hover {
+  background: var(--tg-theme-hint-color, #5a6268);
+  transform: translateY(-1px);
+}
+
+.errorNote {
+  color: var(--tg-theme-hint-color, #6c757d);
+  font-size: 0.9rem;
+  font-style: italic;
+  max-width: 400px;
+}
+
+@media (max-width: 768px) {
+  .errorContainer {
+    padding: 2rem 1rem;
+  }
+  
+  .errorActions {
+    flex-direction: column;
+    width: 100%;
+    max-width: 300px;
+  }
+  
+  .errorTitle {
+    font-size: 1.5rem;
+  }
+}

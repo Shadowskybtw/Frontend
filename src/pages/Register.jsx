@@ -69,20 +69,35 @@ const Register = () => {
     }
 
     try {
-      const result = await userAPI.register({
-        firstName: form.name,
-        lastName: form.surname,
-        phone: form.phone,
-        tg_id: tgIdNum,
-        username: telegramUser?.username || null,
+      // Используем новый API endpoint для регистрации
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          tg_id: tgIdNum,
+          firstName: form.name,
+          lastName: form.surname,
+          phone: form.phone,
+          username: telegramUser?.username || null,
+        }),
       });
 
-      if (result.success && result.user) {
-        try { localStorage.setItem('user', JSON.stringify(result.user)); } catch {}
-        setUser(result.user);
-        navigate('/promo');
+      if (response.ok) {
+        const result = await response.json();
+        
+        if (result.success && result.user) {
+          // Сохраняем пользователя в localStorage для персистентности
+          try { localStorage.setItem('user', JSON.stringify(result.user)); } catch {}
+          setUser(result.user);
+          navigate('/promo');
+        } else {
+          alert('Ошибка регистрации: ' + (result.message || 'неизвестная ошибка'));
+        }
       } else {
-        alert('Ошибка регистрации: ' + (result.message || 'неизвестная ошибка'));
+        const errorText = await response.text();
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
       }
     } catch (error) {
       handleApiError(error, 'Ошибка при отправке формы. Подробнее в консоли.');
