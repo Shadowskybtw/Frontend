@@ -77,46 +77,44 @@ const Register = () => {
     setSubmitting(true);
 
     try {
-      const response = await fetch('/api/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          tg_id: tgIdNum,
-          firstName: (form.name || '').trim(),
-          lastName: (form.surname || '').trim(),
-          phone: (form.phone || '').trim(),
-          username: telegramUser?.username || null,
-        }),
+      const payload = {
+        tg_id: tgIdNum,
+        firstName: (form.name || '').trim(),
+        lastName: (form.surname || '').trim(),
+        phone: (form.phone || '').trim(),
+        username: telegramUser?.username || null,
+      };
+
+      // Отправляем на бекенд через заранее сконфигурированный userAPI (baseURL берётся из REACT_APP_API_URL)
+      const res = await userAPI.post('/register', payload, {
+        // не бросать исключения для 4xx, чтобы можно было обработать 409 тут
+        validateStatus: () => true,
       });
 
-      // Специальная обработка конфликта (дубликат телефона/пользователя)
-      if (response.status === 409) {
+      if (res.status === 409) {
         let msg = 'Этот номер уже используется. Укажите другой номер.';
-        try {
-          const data = await response.json();
-          if (data?.detail) msg = typeof data.detail === 'string' ? data.detail : JSON.stringify(data.detail);
-        } catch (_) {
-          try { msg = await response.text(); } catch (_) {}
+        const data = res.data;
+        if (data?.detail) {
+          msg = typeof data.detail === 'string' ? data.detail : JSON.stringify(data.detail);
         }
         setError409(msg);
         return;
       }
 
-      if (response.ok) {
-        const result = await response.json();
-        if (result.success && result.user) {
+      if (res.status >= 200 && res.status < 300) {
+        const result = res.data;
+        if (result?.success && result.user) {
           try { localStorage.setItem('user', JSON.stringify(result.user)); } catch {}
           setUser(result.user);
           navigate('/promo');
         } else {
-          alert('Ошибка регистрации: ' + (result.message || 'неизвестная ошибка'));
+          alert('Ошибка регистрации: ' + (result?.message || 'неизвестная ошибка'));
         }
-      } else {
-        const errorText = await response.text();
-        throw new Error(`HTTP ${response.status}: ${errorText}`);
+        return;
       }
+
+      // Иные статусы считаем ошибкой
+      throw new Error(`HTTP ${res.status}: ${typeof res.data === 'string' ? res.data : JSON.stringify(res.data)}`);
     } catch (error) {
       handleApiError(error, 'Ошибка при отправке формы. Подробнее в консоли.');
     } finally {
