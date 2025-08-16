@@ -8,6 +8,8 @@ const Register = () => {
 
   const { user, setUser, telegramUser } = useContext(UserContext);
   const [form, setForm] = useState({ name: '', surname: '', phone: '', agree: false });
+  const [error409, setError409] = useState('');
+  const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
 
   // Если открыто в Telegram — игнорируем старый user из localStorage,
@@ -47,6 +49,7 @@ const Register = () => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
+    if (name === 'phone' && error409) setError409('');
     setForm((prev) => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value,
@@ -61,6 +64,8 @@ const Register = () => {
       return;
     }
 
+    setError409(''); // clear previous conflict
+
     // Надёжно приводим Telegram ID к числу
     const tgIdNum = Number(telegramUser?.id);
     if (!Number.isFinite(tgIdNum) || tgIdNum <= 0) {
@@ -68,8 +73,10 @@ const Register = () => {
       return;
     }
 
+    if (submitting) return;
+    setSubmitting(true);
+
     try {
-      // Используем новый API endpoint для регистрации
       const response = await fetch('/api/register', {
         method: 'POST',
         headers: {
@@ -77,18 +84,29 @@ const Register = () => {
         },
         body: JSON.stringify({
           tg_id: tgIdNum,
-          firstName: form.name,
-          lastName: form.surname,
-          phone: form.phone,
+          firstName: (form.name || '').trim(),
+          lastName: (form.surname || '').trim(),
+          phone: (form.phone || '').trim(),
           username: telegramUser?.username || null,
         }),
       });
 
+      // Специальная обработка конфликта (дубликат телефона/пользователя)
+      if (response.status === 409) {
+        let msg = 'Этот номер уже используется. Укажите другой номер.';
+        try {
+          const data = await response.json();
+          if (data?.detail) msg = typeof data.detail === 'string' ? data.detail : JSON.stringify(data.detail);
+        } catch (_) {
+          try { msg = await response.text(); } catch (_) {}
+        }
+        setError409(msg);
+        return;
+      }
+
       if (response.ok) {
         const result = await response.json();
-        
         if (result.success && result.user) {
-          // Сохраняем пользователя в localStorage для персистентности
           try { localStorage.setItem('user', JSON.stringify(result.user)); } catch {}
           setUser(result.user);
           navigate('/promo');
@@ -101,6 +119,8 @@ const Register = () => {
       }
     } catch (error) {
       handleApiError(error, 'Ошибка при отправке формы. Подробнее в консоли.');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -147,7 +167,18 @@ const Register = () => {
               className={`${styles.formInput} ${styles.phoneInput}`}
               pattern="[\+]?[0-9\s\-\(\)]+"
               required
+              aria-invalid={!!error409}
+              aria-describedby={error409 ? 'phone-error' : undefined}
             />
+            {error409 && (
+              <div id="phone-error" style={{
+                color: 'var(--tg-theme-destructive-text-color, #d93025)',
+                fontSize: '0.9rem',
+                marginTop: '0.25rem'
+              }}>
+                {error409}
+              </div>
+            )}
           </div>
           
           <div className={styles.agreementSection}>
@@ -165,8 +196,8 @@ const Register = () => {
             </span>
           </div>
           
-          <button type="submit" className={styles.submitButton}>
-            Зарегистрироваться
+          <button type="submit" className={styles.submitButton} disabled={submitting}>
+            {submitting ? 'Отправка…' : 'Зарегистрироваться'}
           </button>
         </form>
       </div>
