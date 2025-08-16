@@ -1,8 +1,14 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
-import { userAPI, handleApiError } from '../utils/api';
+import { handleApiError } from '../utils/api';
 import styles from '../styles/Register.module.css';
+
+// Базовый URL API: сначала берём VITE (Vite), иначе REACT_APP_ (CRA)
+const API_BASE =
+  (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_URL)
+    ? import.meta.env.VITE_API_URL
+    : (process.env.REACT_APP_API_URL || '');
 
 const Register = () => {
 
@@ -85,15 +91,22 @@ const Register = () => {
         username: telegramUser?.username || null,
       };
 
-      // Отправляем на бекенд через заранее сконфигурированный userAPI (baseURL берётся из REACT_APP_API_URL)
-      const res = await userAPI.post('/register', payload, {
-        // не бросать исключения для 4xx, чтобы можно было обработать 409 тут
-        validateStatus: () => true,
+      // Отправляем на бэкенд напрямую через fetch
+      if (!API_BASE) {
+        alert('API base URL не сконфигурирован. Задайте REACT_APP_API_URL (или VITE_API_URL) и перезапустите сборку.');
+        return;
+      }
+
+      const res = await fetch(`${API_BASE}/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        // credentials: 'include', // раскомментируйте при необходимости
       });
 
       if (res.status === 409) {
         let msg = 'Этот номер уже используется. Укажите другой номер.';
-        const data = res.data;
+        const data = await res.json().catch(() => ({}));
         if (data?.detail) {
           msg = typeof data.detail === 'string' ? data.detail : JSON.stringify(data.detail);
         }
@@ -101,8 +114,8 @@ const Register = () => {
         return;
       }
 
-      if (res.status >= 200 && res.status < 300) {
-        const result = res.data;
+      if (res.ok) {
+        const result = await res.json().catch(() => null);
         if (result?.success && result.user) {
           try { localStorage.setItem('user', JSON.stringify(result.user)); } catch {}
           setUser(result.user);
@@ -113,8 +126,8 @@ const Register = () => {
         return;
       }
 
-      // Иные статусы считаем ошибкой
-      throw new Error(`HTTP ${res.status}: ${typeof res.data === 'string' ? res.data : JSON.stringify(res.data)}`);
+      const text = await res.text().catch(() => '');
+      throw new Error(`HTTP ${res.status}: ${text}`);
     } catch (error) {
       handleApiError(error, 'Ошибка при отправке формы. Подробнее в консоли.');
     } finally {
