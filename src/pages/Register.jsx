@@ -4,11 +4,27 @@ import { UserContext } from '../context/UserContext';
 import { handleApiError } from '../utils/api';
 import styles from '../styles/Register.module.css';
 
-// Базовый URL API: сначала берём VITE (Vite), иначе REACT_APP_ (CRA)
-const API_BASE =
+// Базовый URL API: сначала берём VITE (Vite), иначе REACT_APP_ (CRA). Дополнительно санитизируем.
+const RAW_API_BASE = (
   (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_URL)
-    ? import.meta.env.VITE_API_URL
-    : (process.env.REACT_APP_API_URL || '');
+    ? String(import.meta.env.VITE_API_URL)
+    : String(process.env.REACT_APP_API_URL || '')
+);
+// убираем пробелы по краям и завершающие слэши
+const API_BASE = RAW_API_BASE.trim().replace(/\/+$/, '');
+
+// Простая проверка корректности API_BASE: должен быть валидный https-URL без user:pass@
+function validateApiBase(url) {
+  if (!url) return 'API base URL пуст. Задайте REACT_APP_API_URL (или VITE_API_URL).';
+  try {
+    const u = new URL(url);
+    if (u.protocol !== 'https:') return 'API URL должен начинаться с https://';
+    if (u.username || u.password || url.includes('@')) return 'API URL не должен содержать данные пользователя (user:pass@host).';
+    return null;
+  } catch (e) {
+    return 'Некорректный API URL: ' + String(e?.message || 'invalid URL');
+  }
+}
 
 const Register = () => {
 
@@ -83,6 +99,14 @@ const Register = () => {
     setSubmitting(true);
 
     try {
+      console.log('[Register] API_BASE =', API_BASE);
+
+      const apiBaseError = validateApiBase(API_BASE);
+      if (apiBaseError) {
+        alert(apiBaseError);
+        return;
+      }
+
       const payload = {
         tg_id: tgIdNum,
         firstName: (form.name || '').trim(),
@@ -99,7 +123,7 @@ const Register = () => {
 
       const res = await fetch(`${API_BASE}/register`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify(payload),
         // credentials: 'include', // раскомментируйте при необходимости
       });
