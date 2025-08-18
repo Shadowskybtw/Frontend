@@ -54,6 +54,42 @@ const Register = () => {
     }
   }, [telegramUser?.id]);
 
+  // Проверяем на бэкенде: если пользователь уже есть и у него указан телефон — сразу уходим на промо
+  useEffect(() => {
+    const run = async () => {
+      try {
+        const tgId = Number(telegramUser?.id);
+        if (!Number.isFinite(tgId) || tgId <= 0) return;
+        if (!API_BASE) return;
+
+        const url = `${API_BASE}${API_BASE.endsWith('/api') ? '' : '/api'}/webapp/init/${tgId}`;
+        const r = await fetch(url, { headers: { 'Accept': 'application/json' } });
+        if (!r.ok) return;
+        const data = await r.json().catch(() => null);
+        if (!data) return;
+
+        const exists = !!(data.userExists || data.user);
+        const u = data.user || {};
+        const phone = u.phone ?? u.Phone ?? '';
+        if (exists && String(phone).trim()) {
+          setUser({
+            id: u.tg_id ?? u.telegram_id ?? tgId,
+            firstName: u.firstName ?? u.first_name ?? '',
+            lastName:  u.lastName  ?? u.last_name  ?? '',
+            phone:     phone,
+            username:  u.username ?? null,
+          });
+          navigate('/promo');
+        }
+      } catch (e) {
+        // Тихо игнорируем, чтобы не мешать регистрации
+        console.warn('init check failed', e);
+      }
+    };
+    run();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [telegramUser?.id, API_BASE]);
+
   // Если у текущего пользователя уже есть телефон — отправляем на промо
   useEffect(() => {
     const hasPhone = !!(user && user.phone && String(user.phone).trim().length > 0);

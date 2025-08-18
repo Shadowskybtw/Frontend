@@ -9,6 +9,8 @@ export const UserProvider = ({ children }) => {
   const [telegramUser, setTelegramUser] = useState(null)
   // Telegram context flag
   const [isTg, setIsTg] = useState(false)
+  // Raw initData string from Telegram WebApp (for server verification)
+  const [initData, setInitData] = useState('')
 
   // 1) Init Telegram WebApp and read Telegram user
   useEffect(() => {
@@ -33,6 +35,15 @@ export const UserProvider = ({ children }) => {
         console.warn('⚠️ UserContext: WebApp.expand() failed:', e)
       }
       
+      // Save raw initData for backend verification (HMAC)
+      try {
+        const rawInit = webApp?.initData || ''
+        setInitData(rawInit)
+        console.log('🔍 UserContext: initData length:', rawInit?.length || 0)
+      } catch (e) {
+        console.warn('⚠️ UserContext: reading initData failed:', e)
+      }
+      
       const theme = webApp?.themeParams || {}
       try {
         webApp?.setBackgroundColor?.(theme.bg_color || '#ffffff')
@@ -54,6 +65,8 @@ export const UserProvider = ({ children }) => {
         id: tg.id,
         name: tg.first_name,
         surname: tg.last_name || '',
+        firstName: tg.first_name,
+        lastName: tg.last_name || '',
         username: tg.username || ''
       })
     } else {
@@ -123,7 +136,7 @@ export const UserProvider = ({ children }) => {
   }
 
   return (
-    <UserContext.Provider value={{ user, setUser, telegramUser, setTelegramUser, isRegistered, logout }}>
+    <UserContext.Provider value={{ user, setUser, telegramUser, setTelegramUser, isRegistered, logout, isTg, initData }}>
       {children}
     </UserContext.Provider>
   )
