@@ -1,8 +1,28 @@
 # Интеграция с Telegram Bot
 
+## Проблема с Vercel Deployment Protection
+
+**ВАЖНО:** Прод-деплой защищён Vercel Deployment Protection, что блокирует вебхуки Telegram (401 Unauthorized).
+
+### Решения:
+
+#### 1. Отключить защиту деплоя (рекомендуется)
+- Vercel → Project → Settings → Deployment Protection
+- Для Production выключи Protection
+
+#### 2. Использовать Protection Bypass Token
+- Vercel → Project → Settings → Deployment Protection → Generate Bypass Token
+- Добавить в вебхук URL: `?x-vercel-set-bypass-cookie=true&x-vercel-protection-bypass=<TOKEN>`
+
+#### 3. Тестирование через polling (временно)
+```bash
+# Запустить тестовый бот
+node scripts/test-bot.js
+```
+
 ## Настройка бота
 
-После деплоя на Vercel, добавьте следующий код в вашего бота:
+После решения проблемы с защитой, добавьте следующий код в вашего бота:
 
 ### Python (python-telegram-bot)
 
@@ -86,8 +106,10 @@ bot.on('web_app_data', (msg) => {
 В настройках проекта Vercel добавьте:
 
 ```
-TG_BOT_TOKEN=your_bot_token_here
-DATABASE_URL=your_neon_database_url
+TG_BOT_TOKEN=7829386579:AAGAUFZdd6PbuDtdEI1zxAkfY1vlj0Mu0WE
+DATABASE_URL=postgresql://neondb_owner:npg_Z9sDKnLjrX4l@ep-odd-surf-a2btswct-pooler.eu-central-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
+WEBAPP_URL=https://next-5th7g9hii-shadowskys-projects.vercel.app
+TG_WEBHOOK_SECRET=78256ad5d219d6c4851b24d7c386bc05bbe2456d3e3b965557cb25294a6e49f9
 ```
 
 ## Проверка работы
@@ -101,3 +123,20 @@ DATABASE_URL=your_neon_database_url
 
 Используйте URL:
 `https://next-5th7g9hii-shadowskys-projects.vercel.app/register`
+
+## Тестирование
+
+### Проверить бота:
+```bash
+curl "https://api.telegram.org/bot7829386579:AAGAUFZdd6PbuDtdEI1zxAkfY1vlj0Mu0WE/getMe"
+```
+
+### Запустить тестовый polling бот:
+```bash
+node scripts/test-bot.js
+```
+
+### Проверить вебхук (после отключения защиты):
+```bash
+curl "https://api.telegram.org/bot7829386579:AAGAUFZdd6PbuDtdEI1zxAkfY1vlj0Mu0WE/getWebhookInfo"
+```

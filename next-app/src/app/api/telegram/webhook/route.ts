@@ -3,8 +3,20 @@ import { NextRequest, NextResponse } from 'next/server'
 export async function POST(req: NextRequest) {
   try {
     const botToken = process.env.TG_BOT_TOKEN
+    const webhookSecret = process.env.TG_WEBHOOK_SECRET
+    
     if (!botToken) {
+      console.error('TG_BOT_TOKEN missing')
       return NextResponse.json({ ok: false, description: 'TG_BOT_TOKEN missing' }, { status: 500 })
+    }
+
+    // Check webhook secret if configured
+    if (webhookSecret) {
+      const secretToken = req.headers.get('x-telegram-bot-api-secret-token')
+      if (secretToken !== webhookSecret) {
+        console.error('Invalid webhook secret')
+        return NextResponse.json({ ok: false, description: 'Invalid secret' }, { status: 401 })
+      }
     }
 
     const update = await req.json()
@@ -12,14 +24,21 @@ export async function POST(req: NextRequest) {
     const chatId = message?.chat?.id
     const text: string | undefined = message?.text
 
-    if (!chatId) return NextResponse.json({ ok: true })
+    if (!chatId) {
+      console.log('No chat ID in update')
+      return NextResponse.json({ ok: true })
+    }
 
     // Compute WebApp URL
     const defaultOrigin = new URL(req.url).origin.replace(/\/api\/.+$/, '')
     const webAppUrl = `${process.env.WEBAPP_URL || defaultOrigin}/register`
 
+    console.log(`Received message: ${text} from chat ${chatId}`)
+
     if (text && text.startsWith('/start')) {
-      await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+      console.log(`Sending WebApp button to chat ${chatId}`)
+      
+      const response = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -35,10 +54,20 @@ export async function POST(req: NextRequest) {
           },
         }),
       })
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.error(`Telegram API error: ${response.status} ${errorText}`)
+        return NextResponse.json({ ok: false, description: `Telegram API error: ${response.status}` }, { status: 500 })
+      }
+
+      const result = await response.json()
+      console.log(`Message sent successfully: ${result.ok}`)
     }
 
     return NextResponse.json({ ok: true })
   } catch (e) {
+    console.error('Webhook error:', e)
     return NextResponse.json({ ok: false, description: (e as Error).message }, { status: 200 })
   }
 }
