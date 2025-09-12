@@ -140,3 +140,33 @@ node scripts/test-bot.js
 ```bash
 curl "https://api.telegram.org/bot7829386579:AAGAUFZdd6PbuDtdEI1zxAkfY1vlj0Mu0WE/getWebhookInfo"
 ```
+
+## Python варианты
+
+### Polling бот (запуск локально/на сервере)
+```bash
+cd next-app/python
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+export TG_BOT_TOKEN="7829386579:AAGAUFZdd6PbuDtdEI1zxAkfY1vlj0Mu0WE"
+export WEBAPP_URL="https://next-5th7g9hii-shadowskys-projects.vercel.app"
+python bot_polling.py
+```
+
+### FastAPI вебхук (если хост без защиты)
+```bash
+cd next-app/python
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+export TG_BOT_TOKEN="7829386579:AAGAUFZdd6PbuDtdEI1zxAkfY1vlj0Mu0WE"
+export WEBAPP_URL="https://next-5th7g9hii-shadowskys-projects.vercel.app"
+export TG_WEBHOOK_SECRET="78256ad5d219d6c4851b24d7c386bc05bbe2456d3e3b965557cb25294a6e49f9"
+uvicorn bot_webhook:app --host 0.0.0.0 --port 8080
+```
+
+Установка вебхука на FastAPI:
+```bash
+curl -s "https://api.telegram.org/bot$TG_BOT_TOKEN/setWebhook" \
+  --data-urlencode "url=https://<your-public-host>/telegram/webhook" \
+  --data "secret_token=$TG_WEBHOOK_SECRET"
+```
