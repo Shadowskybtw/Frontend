@@ -1,0 +1,10 @@
+{
+  "name": "webapp",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "cd next-app && npm run build",
+    "start": "cd next-app && npm start",
+    "dev": "cd next-app && npm run dev"
+  }
+}
