@@ -1,5 +1,13 @@
 {
-  "rewrites": [
-    { "source": "/api/(.*)", "destination": "https://refactored-cod-v6ww469vp657fwqpw-8000.app.github.dev/api/$1" }
-  ]
+  "buildCommand": "cd next-app && npm run build",
+  "outputDirectory": "next-app/.next",
+  "framework": "nextjs",
+  "installCommand": "cd next-app && npm install",
+  "devCommand": "cd next-app && npm run dev",
+  "regions": ["iad1"],
+  "functions": {
+    "next-app/src/app/api/**/*.ts": {
+      "maxDuration": 30
+    }
+  }
 }
