@@ -4,10 +4,5 @@
   "framework": "nextjs",
   "installCommand": "cd next-app && npm install",
   "devCommand": "cd next-app && npm run dev",
-  "regions": ["iad1"],
-  "functions": {
-    "next-app/src/app/api/**/*.ts": {
-      "maxDuration": 30
-    }
-  }
+  "regions": ["iad1"]
 }
