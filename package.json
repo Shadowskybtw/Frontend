@@ -6,5 +6,10 @@
     "build": "cd next-app && npm run build",
     "start": "cd next-app && npm start",
     "dev": "cd next-app && npm run dev"
+  },
+  "dependencies": {
+    "next": "15.5.0",
+    "react": "19.1.0",
+    "react-dom": "19.1.0"
   }
 }
