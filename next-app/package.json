@@ -7,10 +7,12 @@
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint",
-    "setup-db": "node scripts/setup-db.js"
+    "setup-db": "node scripts/setup-db.js",
+    "setup-webhook": "node scripts/setup-webhook.js"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.1",
+    "dotenv": "^16.4.5",
     "next": "15.5.0",
     "pg": "^8.16.3",
     "react": "19.1.0",

@@ -56,12 +56,21 @@ Webhook behavior: When the bot receives `/start`, it replies with an inline WebA
    ```
 
 2. **Set up environment variables:**
+   Create `.env.local` with:
    ```bash
-   cp .env.example .env.local
-   # Edit .env.local with your actual values
+   # Telegram bot
+   TG_BOT_TOKEN=123456789:ABCDEF
+   NEXT_PUBLIC_TG_BOT_USERNAME=your_bot_username_without_at
+   TG_WEBHOOK_SECRET=generate_a_random_secret_string
+   
+   # Public URL where your Next app is reachable
+   WEBAPP_URL=https://your-domain.example
+   
+   # Database (optional)
+   DATABASE_URL=postgresql://username:password@host:5432/database
    ```
 
-3. **Set up database:**
+3. **Set up database (optional):**
    ```bash
    npm run setup-db
    # Follow the instructions to create your Neon database
@@ -70,6 +79,11 @@ Webhook behavior: When the bot receives `/start`, it replies with an inline WebA
 4. **Start development server:**
    ```bash
    npm run dev
+   ```
+
+5. **Set up Telegram webhook:**
+   ```bash
+   npm run setup-webhook
    ```
 
 ## Database Setup
@@ -93,6 +107,27 @@ Or use the Neon SQL Editor to execute the contents of `src/lib/schema.sql`.
 - `POST /api/free-hookahs/[tgId]` - Use a free hookah
 
 All routes require valid Telegram `initData` in the `x-telegram-init-data` header.
+
+## Debugging & Testing
+
+### Test Webhook Manually
+```bash
+# Test webhook endpoint
+curl -X POST "https://your-domain.example/api/telegram/test" \
+  -H "Content-Type: application/json" \
+  -d '{"chatId": "YOUR_CHAT_ID"}'
+```
+
+### Check Webhook Status
+```bash
+# Get webhook info
+curl "https://api.telegram.org/bot$TG_BOT_TOKEN/getWebhookInfo"
+```
+
+### Debug Logs
+- Check Vercel function logs for webhook debug output
+- Look for "=== WEBHOOK DEBUG START ===" in logs
+- Test endpoint: `GET /api/telegram/test` shows current configuration
 
 ## Learn More
 
