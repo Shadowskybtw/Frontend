@@ -28,6 +28,9 @@ Create a `.env.local` in `next-app` with:
 # Telegram bot token for initData verification
 # Get this from @BotFather in Telegram
 TG_BOT_TOKEN=123456789:ABCDEF
+NEXT_PUBLIC_TG_BOT_USERNAME=your_bot_username_without_at
+TG_WEBHOOK_SECRET=generate_a_random_secret_string
+WEBAPP_URL=https://your-domain.example
 
 # Neon database connection string
 # Get this from your Neon dashboard
@@ -35,6 +38,15 @@ DATABASE_URL=postgresql://username:password@hostname/database
 ```
 
 Then restart the dev server. API routes run on the same domain as the frontend (no CORS) and verify Telegram `initData` via `TG_BOT_TOKEN`.
+
+### Telegram Bot Integration (all on Next.js)
+
+1. Set `NEXT_PUBLIC_TG_BOT_USERNAME` to your bot username (without `@`). The home page button will open Telegram using a deep link and fallback to `https://t.me/<bot>?start`.
+2. Set `WEBAPP_URL` to the public URL of this Next app (used by webhook to form the WebApp button URL `WEBAPP_URL/register`).
+3. Optionally set `TG_WEBHOOK_SECRET` for Telegram webhook verification.
+4. Configure Telegram webhook to point to: `https://<your-domain>/api/telegram/webhook` and, if you use secret, supply header `X-Telegram-Bot-Api-Secret-Token: <TG_WEBHOOK_SECRET>`.
+
+Webhook behavior: When the bot receives `/start`, it replies with an inline WebApp button pointing to `WEBAPP_URL/register`. Inside Telegram WebApp, the registration page validates `initData` server-side.
 
 ## Quick Setup
 

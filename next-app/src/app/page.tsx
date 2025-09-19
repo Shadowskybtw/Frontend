@@ -36,16 +36,43 @@ export default function HomePage() {
   }, [])
 
   const openWebApp = () => {
-    // This would be the URL that the bot sends after /start
     const webAppUrl = `${window.location.origin}/register`
-    
+    const botUsername = process.env.NEXT_PUBLIC_TG_BOT_USERNAME
+
     if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
-      // If already in Telegram, just navigate
+      // We are already inside Telegram WebApp
       window.location.href = webAppUrl
-    } else {
-      // If not in Telegram, show instructions
-      alert('Откройте эту ссылку в Telegram:\n' + webAppUrl)
+      return
     }
+
+    // Not inside Telegram WebApp: try to open the Telegram app directly if bot username is known
+    if (botUsername) {
+      const tgDeepLink = `tg://resolve?domain=${encodeURIComponent(botUsername)}&start` as const
+      const httpsFallback = `https://t.me/${encodeURIComponent(botUsername)}?start` as const
+
+      // Attempt deep link first (mobile Telegram app), fallback to https
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
+      const openFallback = () => {
+        window.location.href = httpsFallback
+      }
+      try {
+        // iOS needs immediate fallback due to lack of onblur on failed deeplink
+        if (isIOS) {
+          setTimeout(openFallback, 50)
+        } else {
+          const timeout = setTimeout(openFallback, 500)
+          const onBlur = () => clearTimeout(timeout)
+          window.addEventListener('blur', onBlur, { once: true })
+        }
+        window.location.href = tgDeepLink
+      } catch {
+        openFallback()
+      }
+      return
+    }
+
+    // If bot username is not configured, show the direct URL with instructions
+    alert('Откройте эту ссылку в Telegram:\n' + webAppUrl)
   }
 
   return (
