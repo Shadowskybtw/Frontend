@@ -1,7 +1,3 @@
 {
-  "buildCommand": "cd next-app && npm run build",
-  "outputDirectory": "next-app/.next",
-  "installCommand": "cd next-app && npm install",
-  "devCommand": "cd next-app && npm run dev",
   "regions": ["iad1"]
 }
