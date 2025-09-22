@@ -26,53 +26,77 @@ export default function HomePage() {
 
   useEffect(() => {
     // Check if we're inside Telegram WebApp
-    if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
-      setIsInTelegram(true)
-      const tgUser = window.Telegram.WebApp.initDataUnsafe?.user as TgUser | undefined
-      if (tgUser) {
-        setUser(tgUser)
+    try {
+      if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
+        setIsInTelegram(true)
+        const tgUser = window.Telegram.WebApp.initDataUnsafe?.user as TgUser | undefined
+        if (tgUser) {
+          setUser(tgUser)
+        }
       }
+    } catch (error) {
+      console.error('Error checking Telegram WebApp:', error)
     }
   }, [])
 
   const openWebApp = () => {
-    const webAppUrl = `${window.location.origin}/register`
-    const botUsername = process.env.NEXT_PUBLIC_TG_BOT_USERNAME
+    console.log('openWebApp called') // Debug log
+    
+    try {
+      // Check if we're in browser environment
+      if (typeof window === 'undefined') {
+        console.error('Window object is not available')
+        return
+      }
 
-    if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
-      // We are already inside Telegram WebApp
-      window.location.href = webAppUrl
-      return
-    }
+      const webAppUrl = `${window.location.origin}/register`
+      const botUsername = process.env.NEXT_PUBLIC_TG_BOT_USERNAME || 'pop_222_bot' // Fallback to known bot name
+      
+      console.log('Bot username:', botUsername) // Debug log
+      console.log('WebApp URL:', webAppUrl) // Debug log
 
-    // Not inside Telegram WebApp: try to open the Telegram app directly if bot username is known
-    if (botUsername) {
-      const tgDeepLink = `tg://resolve?domain=${encodeURIComponent(botUsername)}&start` as const
-      const httpsFallback = `https://t.me/${encodeURIComponent(botUsername)}?start` as const
+      if (window.Telegram?.WebApp) {
+        console.log('Already in Telegram WebApp, redirecting to register')
+        // We are already inside Telegram WebApp
+        window.location.href = webAppUrl
+        return
+      }
+
+      // Not inside Telegram WebApp: try to open the Telegram app directly
+      const tgDeepLink = `tg://resolve?domain=${encodeURIComponent(botUsername)}&start`
+      const httpsFallback = `https://t.me/${encodeURIComponent(botUsername)}?start`
+      
+      console.log('Opening Telegram deep link:', tgDeepLink)
+      console.log('Fallback URL:', httpsFallback)
 
       // Attempt deep link first (mobile Telegram app), fallback to https
       const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
       const openFallback = () => {
+        console.log('Opening fallback URL')
         window.location.href = httpsFallback
       }
+      
       try {
         // iOS needs immediate fallback due to lack of onblur on failed deeplink
         if (isIOS) {
           setTimeout(openFallback, 50)
         } else {
           const timeout = setTimeout(openFallback, 500)
-          const onBlur = () => clearTimeout(timeout)
+          const onBlur = () => {
+            console.log('Window blurred, clearing timeout')
+            clearTimeout(timeout)
+          }
           window.addEventListener('blur', onBlur, { once: true })
         }
         window.location.href = tgDeepLink
-      } catch {
+      } catch (error) {
+        console.error('Error opening Telegram deep link:', error)
         openFallback()
       }
-      return
+    } catch (error) {
+      console.error('Error in openWebApp:', error)
+      alert('Произошла ошибка. Попробуйте обновить страницу.')
     }
-
-    // If bot username is not configured, show the direct URL with instructions
-    alert('Откройте эту ссылку в Telegram:\n' + webAppUrl)
   }
 
   return (
@@ -108,14 +132,35 @@ export default function HomePage() {
               <button
                 onClick={openWebApp}
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center"
+                type="button"
               >
                 🔗 Открыть в Telegram
+              </button>
+              
+              {/* Test button */}
+              <button
+                onClick={() => {
+                  console.log('Test button clicked');
+                  alert('Кнопка работает! Проверьте консоль для debug информации.');
+                }}
+                className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200 flex items-center justify-center text-sm"
+                type="button"
+              >
+                🧪 Тест кнопки
               </button>
               
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
                 <p className="text-yellow-800 text-sm">
                   💡 Для полного доступа к функциям откройте приложение в Telegram
                 </p>
+              </div>
+              
+              {/* Debug info */}
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 text-xs text-gray-600">
+                <p>Debug: Bot username = {process.env.NEXT_PUBLIC_TG_BOT_USERNAME || 'не настроен'}</p>
+                <p>Debug: URL = {typeof window !== 'undefined' ? window.location.origin : 'не доступен'}</p>
+                <p>Debug: Expected bot = pop_222_bot</p>
+                <p>Debug: Window.Telegram = {typeof window !== 'undefined' && window.Telegram ? 'доступен' : 'не доступен'}</p>
               </div>
             </div>
           )}
