@@ -26,6 +26,11 @@ export default function HomePage() {
   const [jsLoaded, setJsLoaded] = useState(false)
 
   useEffect(() => {
+    console.log('useEffect running - JavaScript is working!')
+    
+    // Check if JavaScript is working
+    setJsLoaded(true)
+    
     // Load Telegram WebApp script
     const loadTelegramScript = () => {
       if (typeof window !== 'undefined' && !window.Telegram) {
@@ -35,6 +40,9 @@ export default function HomePage() {
         script.onload = () => {
           console.log('Telegram WebApp script loaded')
           checkTelegramWebApp()
+        }
+        script.onerror = () => {
+          console.error('Failed to load Telegram WebApp script')
         }
         document.head.appendChild(script)
       } else {
@@ -56,10 +64,8 @@ export default function HomePage() {
       }
     }
 
-    loadTelegramScript()
-    
-    // Check if JavaScript is working
-    setJsLoaded(true)
+    // Delay loading Telegram script to ensure basic JS works first
+    setTimeout(loadTelegramScript, 100)
   }, [])
 
   const openWebApp = () => {

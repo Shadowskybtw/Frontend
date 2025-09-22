@@ -6,23 +6,16 @@ const nextConfig: NextConfig = {
       bodySizeLimit: '2mb',
     },
   },
-  // Disable preload warnings
-  onDemandEntries: {
-    // period (in ms) where the server will keep pages in the buffer
-    maxInactiveAge: 25 * 1000,
-    // number of pages that should be kept simultaneously without being disposed
-    pagesBufferLength: 2,
-  },
   // Disable source maps in production to reduce bundle size
   productionBrowserSourceMaps: false,
-  // Fix JavaScript generation issues
-  output: 'standalone',
-  // Ensure proper asset handling
-  assetPrefix: process.env.NODE_ENV === 'production' ? '' : '',
-  // Disable problematic optimizations
-  compress: true,
   // Fix preload issues
   poweredByHeader: false,
+  // Ensure proper asset handling
+  trailingSlash: false,
+  // Disable problematic optimizations that cause HTML in JS
+  compress: false,
+  // Ensure proper JavaScript generation
+  swcMinify: false,
 };
 
 export default nextConfig;
