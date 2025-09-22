@@ -23,6 +23,7 @@ declare const window: TelegramWindow & Window
 export default function HomePage() {
   const [isInTelegram, setIsInTelegram] = useState(false)
   const [user, setUser] = useState<TgUser | null>(null)
+  const [jsLoaded, setJsLoaded] = useState(false)
 
   useEffect(() => {
     // Load Telegram WebApp script
@@ -56,6 +57,9 @@ export default function HomePage() {
     }
 
     loadTelegramScript()
+    
+    // Check if JavaScript is working
+    setJsLoaded(true)
   }, [])
 
   const openWebApp = () => {
@@ -68,7 +72,9 @@ export default function HomePage() {
         return
       }
 
-      const webAppUrl = `${window.location.origin}/register`
+      const webAppUrl = typeof window !== 'undefined' && window.location 
+        ? `${window.location.origin}/register` 
+        : '/register'
       const botUsername = process.env.NEXT_PUBLIC_TG_BOT_USERNAME || 'pop_222_bot' // Fallback to known bot name
       
       console.log('Bot username:', botUsername) // Debug log
@@ -176,10 +182,12 @@ export default function HomePage() {
               
               {/* Debug info */}
               <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 text-xs text-gray-600">
+                <p>Debug: JavaScript loaded = {jsLoaded ? '✅ да' : '❌ нет'}</p>
                 <p>Debug: Bot username = {process.env.NEXT_PUBLIC_TG_BOT_USERNAME || 'не настроен'}</p>
-                <p>Debug: URL = {typeof window !== 'undefined' ? window.location.origin : 'не доступен'}</p>
+                <p>Debug: URL = {typeof window !== 'undefined' && window.location ? window.location.origin : 'не доступен'}</p>
                 <p>Debug: Expected bot = pop_222_bot</p>
                 <p>Debug: Window.Telegram = {typeof window !== 'undefined' && window.Telegram ? 'доступен' : 'не доступен'}</p>
+                <p>Debug: Window object = {typeof window !== 'undefined' ? 'доступен' : 'не доступен'}</p>
               </div>
             </div>
           )}

@@ -15,6 +15,14 @@ const nextConfig: NextConfig = {
   },
   // Disable source maps in production to reduce bundle size
   productionBrowserSourceMaps: false,
+  // Fix JavaScript generation issues
+  output: 'standalone',
+  // Ensure proper asset handling
+  assetPrefix: process.env.NODE_ENV === 'production' ? '' : '',
+  // Disable problematic optimizations
+  compress: true,
+  // Fix preload issues
+  poweredByHeader: false,
 };
 
 export default nextConfig;
