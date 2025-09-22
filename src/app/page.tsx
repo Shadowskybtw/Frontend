@@ -25,18 +25,37 @@ export default function HomePage() {
   const [user, setUser] = useState<TgUser | null>(null)
 
   useEffect(() => {
-    // Check if we're inside Telegram WebApp
-    try {
-      if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
-        setIsInTelegram(true)
-        const tgUser = window.Telegram.WebApp.initDataUnsafe?.user as TgUser | undefined
-        if (tgUser) {
-          setUser(tgUser)
+    // Load Telegram WebApp script
+    const loadTelegramScript = () => {
+      if (typeof window !== 'undefined' && !window.Telegram) {
+        const script = document.createElement('script')
+        script.src = 'https://telegram.org/js/telegram-web-app.js'
+        script.async = true
+        script.onload = () => {
+          console.log('Telegram WebApp script loaded')
+          checkTelegramWebApp()
         }
+        document.head.appendChild(script)
+      } else {
+        checkTelegramWebApp()
       }
-    } catch (error) {
-      console.error('Error checking Telegram WebApp:', error)
     }
+
+    const checkTelegramWebApp = () => {
+      try {
+        if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
+          setIsInTelegram(true)
+          const tgUser = window.Telegram.WebApp.initDataUnsafe?.user as TgUser | undefined
+          if (tgUser) {
+            setUser(tgUser)
+          }
+        }
+      } catch (error) {
+        console.error('Error checking Telegram WebApp:', error)
+      }
+    }
+
+    loadTelegramScript()
   }, [])
 
   const openWebApp = () => {

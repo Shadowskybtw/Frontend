@@ -13,8 +13,6 @@ const nextConfig: NextConfig = {
     // number of pages that should be kept simultaneously without being disposed
     pagesBufferLength: 2,
   },
-  // Optimize for production
-  swcMinify: true,
   // Disable source maps in production to reduce bundle size
   productionBrowserSourceMaps: false,
 };
