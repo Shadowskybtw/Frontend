@@ -26,7 +26,13 @@ export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false)
   const [editForm, setEditForm] = useState({ first_name: '', last_name: '' })
   const [isSaving, setIsSaving] = useState(false)
-  const [profileData, setProfileData] = useState<any>(null)
+  const [profileData, setProfileData] = useState<{
+    id: number
+    first_name: string
+    last_name: string
+    phone: string
+    username?: string
+  } | null>(null)
 
   useEffect(() => {
     // Load Telegram WebApp script

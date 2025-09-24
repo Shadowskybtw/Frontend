@@ -14,8 +14,6 @@ const nextConfig: NextConfig = {
   trailingSlash: false,
   // Disable problematic optimizations that cause HTML in JS
   compress: false,
-  // Ensure proper JavaScript generation
-  swcMinify: false,
 };
 
 export default nextConfig;
