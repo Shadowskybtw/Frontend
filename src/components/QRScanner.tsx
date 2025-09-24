@@ -59,6 +59,26 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
 
       await qrScannerRef.current.start()
       console.log('QR Scanner started successfully')
+      
+      // Убеждаемся, что видео отображается
+      const video = videoRef.current
+      if (video) {
+        video.style.display = 'block'
+        video.style.visibility = 'visible'
+        
+        // Добавляем обработчик для отображения видео
+        video.addEventListener('loadeddata', () => {
+          console.log('Video data loaded')
+          video.style.display = 'block'
+          video.style.visibility = 'visible'
+        })
+        
+        video.addEventListener('canplay', () => {
+          console.log('Video can play')
+          video.style.display = 'block'
+          video.style.visibility = 'visible'
+        })
+      }
 
     } catch (err) {
       console.error('Error starting QR scanner:', err)
@@ -104,8 +124,10 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
         <div className="relative">
           <video
             ref={videoRef}
-            className="w-full h-64 bg-gray-200 rounded-lg"
+            className="w-full h-64 bg-gray-200 rounded-lg object-cover"
             playsInline
+            autoPlay
+            muted
           />
           {isScanning && (
             <div className="absolute inset-0 flex items-center justify-center">
