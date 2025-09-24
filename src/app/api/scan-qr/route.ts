@@ -3,7 +3,7 @@ import { db } from '@/lib/db'
 
 export async function POST(request: NextRequest) {
   try {
-    const { qr_data, admin_key } = await request.json()
+    const { qr_data, phone_digits, admin_key } = await request.json()
     
     // Проверяем админский ключ (более гибкая проверка)
     const expectedAdminKey = process.env.ADMIN_KEY || process.env.NEXT_PUBLIC_ADMIN_KEY || 'admin123'
@@ -12,22 +12,43 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 })
     }
 
-    if (!qr_data) {
-      return NextResponse.json({ success: false, message: 'QR data is required' }, { status: 400 })
+    let user
+
+    // Если передан QR код
+    if (qr_data) {
+      // Парсим данные QR кода
+      const userData = JSON.parse(qr_data)
+      const tgId = userData.tg_id
+
+      if (!tgId) {
+        return NextResponse.json({ success: false, message: 'Invalid QR code' }, { status: 400 })
+      }
+
+      // Получаем пользователя по TG ID
+      user = await db.getUserByTgId(tgId)
+      if (!user) {
+        return NextResponse.json({ success: false, message: 'User not found' }, { status: 404 })
+      }
     }
+    // Если передан номер телефона
+    else if (phone_digits) {
+      if (phone_digits.length !== 4 || !/^\d{4}$/.test(phone_digits)) {
+        return NextResponse.json({ success: false, message: 'Phone digits must be exactly 4 digits' }, { status: 400 })
+      }
 
-    // Парсим данные QR кода
-    const userData = JSON.parse(qr_data)
-    const tgId = userData.tg_id
+      // Ищем пользователя по последним 4 цифрам номера телефона
+      const allUsers = await db.getAllUsers()
+      user = allUsers.find(u => {
+        const phone = u.phone.replace(/\D/g, '') // Убираем все нецифровые символы
+        return phone.endsWith(phone_digits)
+      })
 
-    if (!tgId) {
-      return NextResponse.json({ success: false, message: 'Invalid QR code' }, { status: 400 })
+      if (!user) {
+        return NextResponse.json({ success: false, message: 'Пользователь с такими последними цифрами номера не найден' }, { status: 404 })
+      }
     }
-
-    // Получаем пользователя
-    const user = await db.getUserByTgId(tgId)
-    if (!user) {
-      return NextResponse.json({ success: false, message: 'User not found' }, { status: 404 })
+    else {
+      return NextResponse.json({ success: false, message: 'QR data or phone digits is required' }, { status: 400 })
     }
 
     // Получаем или создаем акцию "5+1 кальян"

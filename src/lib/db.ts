@@ -80,6 +80,29 @@ export const db = {
     }
   },
 
+  async getAllUsers(): Promise<User[]> {
+    try {
+      console.log('Getting all users')
+      const users = await prisma.user.findMany({
+        orderBy: { created_at: 'desc' }
+      })
+      console.log('Users found:', users.length)
+      return users.map(user => ({
+        id: user.id,
+        tg_id: Number(user.tg_id),
+        first_name: user.first_name,
+        last_name: user.last_name,
+        phone: user.phone,
+        username: user.username,
+        created_at: user.created_at,
+        updated_at: user.updated_at
+      }))
+    } catch (error) {
+      console.error('Error getting all users:', error)
+      return []
+    }
+  },
+
   async createUser(userData: {
     tg_id: number
     first_name: string
