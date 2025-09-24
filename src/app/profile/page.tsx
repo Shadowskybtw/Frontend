@@ -42,7 +42,7 @@ export default function ProfilePage() {
     slotsFilled: number
     isPromotionCompleted: boolean
   } | null>(null)
-  const [usedFreeHookahs, setUsedFreeHookahs] = useState<Array<{
+  const [, setUsedFreeHookahs] = useState<Array<{
     id: number
     used_at: string
     created_at: string

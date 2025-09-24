@@ -41,7 +41,7 @@ export interface HookahHistory {
   id: number
   user_id: number
   hookah_type: string
-  slot_number?: number
+  slot_number?: number | null
   created_at: Date
 }
 
