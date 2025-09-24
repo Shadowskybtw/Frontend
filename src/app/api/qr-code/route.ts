@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
       console.log('QR code generated for temp user, buffer size:', qrCodeBuffer.length)
 
       // Возвращаем изображение с правильным Content-Type
-      return new NextResponse(qrCodeBuffer.buffer, {
+      return new NextResponse(new Uint8Array(qrCodeBuffer), {
         status: 200,
         headers: {
           'Content-Type': 'image/png',
@@ -87,7 +87,7 @@ export async function GET(request: NextRequest) {
     console.log('QR code generated, buffer size:', qrCodeBuffer.length)
 
     // Возвращаем изображение с правильным Content-Type
-    return new NextResponse(qrCodeBuffer.buffer, {
+    return new NextResponse(new Uint8Array(qrCodeBuffer), {
       status: 200,
       headers: {
         'Content-Type': 'image/png',
