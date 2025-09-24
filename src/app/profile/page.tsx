@@ -167,7 +167,7 @@ export default function ProfilePage() {
         body: JSON.stringify({
           tg_id: tgId,
           action: 'check_admin',
-          admin_key: 'admin123'
+          admin_key: process.env.NEXT_PUBLIC_ADMIN_KEY || 'admin123'
         }),
       })
 

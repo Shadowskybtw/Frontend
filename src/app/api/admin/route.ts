@@ -8,7 +8,9 @@ export async function POST(request: NextRequest) {
     console.log('Request data:', { tg_id, action, admin_key })
     
     // Проверяем админский ключ (более гибкая проверка)
-    const expectedAdminKey = process.env.ADMIN_KEY || 'admin123'
+    const expectedAdminKey = process.env.ADMIN_KEY || process.env.NEXT_PUBLIC_ADMIN_KEY || 'admin123'
+    console.log('Admin key check:', { received: admin_key, expected: expectedAdminKey, envAdmin: process.env.ADMIN_KEY, envPublic: process.env.NEXT_PUBLIC_ADMIN_KEY })
+    
     if (admin_key !== expectedAdminKey) {
       console.log('Unauthorized request, admin_key:', admin_key, 'expected:', expectedAdminKey)
       return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 })
