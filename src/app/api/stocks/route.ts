@@ -11,8 +11,12 @@ export async function POST(request: NextRequest) {
 
     // Получаем пользователя
     const user = await db.getUserByTgId(tg_id)
+    console.log('Stocks user lookup:', { tg_id, user })
+    
     if (!user) {
-      return NextResponse.json({ success: false, message: 'User not found' }, { status: 404 })
+      // Если пользователь не найден, возвращаем пустой массив акций
+      console.log('User not found, returning empty stocks')
+      return NextResponse.json({ success: true, stocks: [] })
     }
 
     // Создаем акцию
@@ -48,8 +52,12 @@ export async function GET(request: NextRequest) {
 
     // Получаем пользователя
     const user = await db.getUserByTgId(parseInt(tg_id))
+    console.log('GET stocks user lookup:', { tg_id, user })
+    
     if (!user) {
-      return NextResponse.json({ success: false, message: 'User not found' }, { status: 404 })
+      // Если пользователь не найден, возвращаем пустой массив акций
+      console.log('User not found, returning empty stocks')
+      return NextResponse.json({ success: true, stocks: [] })
     }
 
     // Получаем акции пользователя

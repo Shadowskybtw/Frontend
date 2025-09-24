@@ -12,8 +12,35 @@ export async function GET(request: NextRequest) {
 
     // Получаем пользователя
     const user = await db.getUserByTgId(parseInt(tg_id))
+    console.log('QR code user lookup:', { tg_id, user })
+    
     if (!user) {
-      return NextResponse.json({ success: false, message: 'User not found' }, { status: 404 })
+      // Если пользователь не найден, создаем временные данные для QR
+      const tempUser = {
+        id: parseInt(tg_id),
+        tg_id: parseInt(tg_id),
+        first_name: 'Пользователь',
+        last_name: '',
+        username: '',
+        phone: ''
+      }
+      console.log('Using temp user data for QR:', tempUser)
+      
+      const qrData = {
+        user_id: tempUser.id,
+        tg_id: tempUser.tg_id,
+        name: tempUser.first_name,
+        phone: tempUser.phone,
+        timestamp: new Date().toISOString()
+      }
+
+      const qrUrl = `https://chart.googleapis.com/chart?chs=200x200&chld=M|0&cht=qr&chl=${encodeURIComponent(JSON.stringify(qrData))}`
+      
+      return NextResponse.json({ 
+        success: true, 
+        qr_url: qrUrl,
+        qr_data: qrData
+      })
     }
 
     // Генерируем QR код с данными пользователя

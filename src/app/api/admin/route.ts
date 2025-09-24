@@ -16,7 +16,19 @@ export async function POST(request: NextRequest) {
 
     // Получаем пользователя
     const user = await db.getUserByTgId(tg_id)
+    console.log('User lookup result:', { tg_id, user })
+    
     if (!user) {
+      // Если пользователь не найден, но это админский ID, все равно даем права
+      const adminTgId = parseInt(process.env.ADMIN_TG_ID || '937011437')
+      if (tg_id === adminTgId) {
+        console.log('Admin TG ID detected, granting admin rights')
+        return NextResponse.json({ 
+          success: true, 
+          is_admin: true,
+          message: 'Admin rights granted by TG ID'
+        })
+      }
       return NextResponse.json({ success: false, message: 'User not found' }, { status: 404 })
     }
 
