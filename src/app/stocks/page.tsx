@@ -208,34 +208,6 @@ export default function StocksPage() {
                 </p>
               </div>
 
-              {/* Ваши акции */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <h3 className="font-semibold text-blue-900 mb-2">📋 Ваши активные акции</h3>
-                {isLoading ? (
-                  <p className="text-blue-800 text-sm">⏳ Загрузка акций...</p>
-                ) : stocks.length > 0 ? (
-                  <div className="space-y-2">
-                    {stocks.map((stock, index) => (
-                      <div key={index} className="bg-white rounded-lg p-3 border border-blue-200">
-                        <div className="flex justify-between items-center">
-                          <span className="text-blue-900 font-medium">{stock.stock_name}</span>
-                          <span className="text-blue-600 text-sm">{stock.progress}%</span>
-                        </div>
-                        <div className="w-full bg-blue-200 rounded-full h-2 mt-2">
-                          <div 
-                            className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
-                            style={{ width: `${stock.progress}%` }}
-                          ></div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-blue-800 text-sm">
-                    У вас пока нет активных акций. Создайте акцию выше!
-                  </p>
-                )}
-              </div>
               
               {/* QR код */}
               {qrCode && (

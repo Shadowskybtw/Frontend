@@ -33,6 +33,10 @@ export default function ProfilePage() {
     phone: string
     username?: string
   } | null>(null)
+  const [isAdmin, setIsAdmin] = useState(false)
+  const [qrScannerOpen, setQrScannerOpen] = useState(false)
+  const [qrData, setQrData] = useState('')
+  const [scanResult, setScanResult] = useState<any>(null)
 
   useEffect(() => {
     // Load Telegram WebApp script
@@ -130,12 +134,72 @@ export default function ProfilePage() {
   useEffect(() => {
     if (user?.id && isInTelegram) {
       loadProfileData(user.id)
+      checkAdminRights(user.id)
     }
   }, [user, isInTelegram])
 
   const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setEditForm(prev => ({ ...prev, [name]: value }))
+  }
+
+  // Проверяем админские права
+  const checkAdminRights = async (tgId: number) => {
+    try {
+      const response = await fetch('/api/admin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          tg_id: tgId,
+          action: 'check_admin',
+          admin_key: 'admin123'
+        }),
+      })
+
+      const data = await response.json()
+      if (data.success) {
+        setIsAdmin(data.is_admin)
+      }
+    } catch (error) {
+      console.error('Error checking admin rights:', error)
+    }
+  }
+
+  // Сканируем QR код
+  const scanQrCode = async () => {
+    if (!qrData.trim()) {
+      alert('Введите данные QR кода')
+      return
+    }
+
+    try {
+      const response = await fetch('/api/scan-qr', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          qr_data: qrData,
+          admin_key: process.env.NEXT_PUBLIC_ADMIN_KEY || 'admin123'
+        }),
+      })
+
+      const data = await response.json()
+      setScanResult(data)
+      
+      if (data.success) {
+        alert(`QR код отсканирован! Пользователь: ${data.user.first_name} ${data.user.last_name}`)
+        setQrData('')
+        setQrScannerOpen(false)
+      } else {
+        alert('Ошибка: ' + data.message)
+      }
+    } catch (error) {
+      console.error('Error scanning QR:', error)
+      alert('Ошибка сканирования QR кода')
+    }
   }
 
   return (
@@ -229,6 +293,38 @@ export default function ProfilePage() {
                 </div>
               </div>
               
+              {/* Админские функции */}
+              {isAdmin && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                  <h3 className="font-semibold text-red-900 mb-2">🔧 Админ панель</h3>
+                  <div className="space-y-3">
+                    <button
+                      onClick={() => setQrScannerOpen(!qrScannerOpen)}
+                      className="w-full bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-md text-sm font-medium"
+                    >
+                      {qrScannerOpen ? '❌ Закрыть сканер' : '📱 Открыть QR сканер'}
+                    </button>
+                    
+                    {qrScannerOpen && (
+                      <div className="space-y-2">
+                        <textarea
+                          value={qrData}
+                          onChange={(e) => setQrData(e.target.value)}
+                          placeholder="Вставьте данные QR кода сюда..."
+                          className="w-full px-3 py-2 border border-red-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 h-20 resize-none text-sm"
+                        />
+                        <button
+                          onClick={scanQrCode}
+                          className="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-md text-sm font-medium"
+                        >
+                          🔍 Сканировать QR код
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
               <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                 <h3 className="font-semibold text-green-900 mb-2">Настройки</h3>
                 <p className="text-green-800 text-sm">

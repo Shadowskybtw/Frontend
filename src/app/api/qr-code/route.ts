@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Создаем URL для QR кода (можно использовать любой QR генератор)
-    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(JSON.stringify(qrData))}`
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(JSON.stringify(qrData))}&format=png`
 
     return NextResponse.json({ 
       success: true, 
