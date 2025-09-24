@@ -3,16 +3,20 @@ import { db } from '@/lib/db'
 
 export async function GET(request: NextRequest) {
   try {
+    console.log('QR code API called')
     const { searchParams } = new URL(request.url)
     const tg_id = searchParams.get('tg_id')
+    console.log('QR code request for TG ID:', tg_id)
     
     if (!tg_id) {
+      console.log('No TG ID provided for QR code')
       return NextResponse.json({ success: false, message: 'TG ID is required' }, { status: 400 })
     }
 
     // Получаем пользователя
+    console.log('Looking up user for QR code with TG ID:', tg_id)
     const user = await db.getUserByTgId(parseInt(tg_id))
-    console.log('QR code user lookup:', { tg_id, user })
+    console.log('QR code user lookup result:', { tg_id, user })
     
     if (!user) {
       // Если пользователь не найден, создаем временные данные для QR
