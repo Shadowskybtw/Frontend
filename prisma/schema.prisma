@@ -24,6 +24,8 @@ model User {
   stocks      Stock[]
   free_hookahs FreeHookah[]
   hookah_history HookahHistory[]
+  admin_rights Admin? @relation("AdminUser")
+  granted_admins Admin[] @relation("AdminGranter")
 
   @@map("users")
 }
@@ -66,4 +68,17 @@ model HookahHistory {
   user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@map("hookah_history")
+}
+
+model Admin {
+  id         Int      @id @default(autoincrement())
+  user_id    Int      @unique
+  granted_by Int      // ID админа, который выдал права
+  created_at DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user User @relation("AdminUser", fields: [user_id], references: [id], onDelete: Cascade)
+  granter User @relation("AdminGranter", fields: [granted_by], references: [id], onDelete: Cascade)
+
+  @@map("admins")
 }

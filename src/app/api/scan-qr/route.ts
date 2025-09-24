@@ -79,15 +79,29 @@ export async function POST(request: NextRequest) {
     const maxSlots = 5
     
     if (currentSlots >= maxSlots) {
+      // Если все слоты заполнены, создаем новую акцию
+      const newStock = await db.createStock({
+        user_id: user.id,
+        stock_name: '5+1 кальян',
+        progress: 0
+      })
+      
+      // Заполняем первый слот новой акции
+      const updatedStock = await db.updateStockProgress(newStock.id, 20)
+      
+      // Добавляем запись в историю кальянов
+      await db.addHookahToHistory(user.id, 'regular', 1)
+      
       return NextResponse.json({ 
-        success: false, 
-        message: 'Все слоты уже заполнены!',
+        success: true, 
+        message: 'Создана новая акция! Слот заполнен.',
         user: {
           id: user.id,
           first_name: user.first_name,
           last_name: user.last_name
         },
-        stock: stock
+        stock: updatedStock,
+        newPromotion: true
       })
     }
     

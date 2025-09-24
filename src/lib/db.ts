@@ -305,6 +305,34 @@ export const db = {
     })
     console.log('Hookah added to history:', history)
     return history
+  },
+
+  // Admin operations
+  async isUserAdmin(userId: number): Promise<boolean> {
+    try {
+      const admin = await prisma.admin.findUnique({
+        where: { user_id: userId }
+      })
+      return !!admin
+    } catch (error) {
+      console.error('Error checking admin status:', error)
+      return false
+    }
+  },
+
+  async grantAdminRights(userId: number, grantedBy: number): Promise<boolean> {
+    try {
+      await prisma.admin.create({
+        data: {
+          user_id: userId,
+          granted_by: grantedBy
+        }
+      })
+      return true
+    } catch (error) {
+      console.error('Error granting admin rights:', error)
+      return false
+    }
   }
 }
 

@@ -639,7 +639,7 @@ export default function ProfilePage() {
                                   setPhoneDigits(value)
                                 }}
                                 placeholder="Например: 1234"
-                                className="w-full px-3 py-2 border border-red-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 text-sm text-center text-lg font-mono text-gray-900 bg-white"
+                                className="w-full px-3 py-2 border-2 border-red-400 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 text-center text-xl font-bold text-black bg-white shadow-inner"
                                 maxLength={4}
                               />
                             </div>

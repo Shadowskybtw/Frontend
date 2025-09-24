@@ -45,8 +45,10 @@ export async function POST(request: NextRequest) {
     if (action === 'check_admin') {
       // Проверяем, является ли пользователь админом
       const adminTgId = parseInt(process.env.ADMIN_TG_ID || '937011437')
-      const isAdmin = Number(user.tg_id) === adminTgId
-      console.log('Checking admin rights:', { userTgId: Number(user.tg_id), adminTgId, isAdmin })
+      const isHardcodedAdmin = Number(user.tg_id) === adminTgId
+      const isDbAdmin = await db.isUserAdmin(user.id)
+      const isAdmin = isHardcodedAdmin || isDbAdmin
+      console.log('Checking admin rights:', { userTgId: Number(user.tg_id), adminTgId, isHardcodedAdmin, isDbAdmin, isAdmin })
       return NextResponse.json({ 
         success: true, 
         is_admin: isAdmin
@@ -66,8 +68,24 @@ export async function POST(request: NextRequest) {
         }, { status: 404 })
       }
       
-      // В реальном приложении здесь должна быть логика сохранения админских прав
-      // Пока просто возвращаем успех с информацией о пользователе
+      // Проверяем, не является ли пользователь уже админом
+      const isAlreadyAdmin = await db.isUserAdmin(targetUser.id)
+      if (isAlreadyAdmin) {
+        return NextResponse.json({ 
+          success: false, 
+          message: 'Пользователь уже является админом' 
+        }, { status: 400 })
+      }
+      
+      // Выдаем админские права
+      const granted = await db.grantAdminRights(targetUser.id, user.id)
+      if (!granted) {
+        return NextResponse.json({ 
+          success: false, 
+          message: 'Ошибка при выдаче админских прав' 
+        }, { status: 500 })
+      }
+      
       return NextResponse.json({ 
         success: true, 
         message: 'Админские права успешно предоставлены',
