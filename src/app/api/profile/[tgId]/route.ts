@@ -30,6 +30,10 @@ export async function GET(
     const usedHookahs = freeHookahs.filter(h => h.used)
     const unusedHookahs = freeHookahs.filter(h => !h.used)
 
+    // Считаем слоты как выкуренные кальяны (один слот = один кальян)
+    const slotsFilled = hookahStock ? Math.floor(hookahStock.progress / 20) : 0
+    const totalSmokedHookahs = slotsFilled + usedHookahs.length // Слоты + использованные бесплатные
+
     return NextResponse.json({ 
       success: true, 
       user: {
@@ -42,22 +46,18 @@ export async function GET(
         created_at: user.created_at,
         updated_at: user.updated_at
       },
-      hookahStock: hookahStock ? {
-        id: hookahStock.id,
-        progress: hookahStock.progress,
-        slots_filled: Math.floor(hookahStock.progress / 20),
-        is_completed: hookahStock.progress >= 100
-      } : null,
-      freeHookahs: {
-        total: freeHookahs.length,
-        used: usedHookahs.length,
-        unused: unusedHookahs.length,
-        used_list: usedHookahs.map(h => ({
-          id: h.id,
-          used_at: h.used_at,
-          created_at: h.created_at
-        }))
-      }
+      stats: {
+        totalSmokedHookahs, // Общее количество выкуренных кальянов
+        freeHookahsReceived: freeHookahs.length, // Количество полученных бесплатных кальянов
+        freeHookahsUsed: usedHookahs.length, // Количество использованных бесплатных кальянов
+        slotsFilled, // Количество заполненных слотов (выкуренных кальянов в акции)
+        isPromotionCompleted: hookahStock ? hookahStock.progress >= 100 : false
+      },
+      usedFreeHookahs: usedHookahs.map(h => ({
+        id: h.id,
+        used_at: h.used_at,
+        created_at: h.created_at
+      }))
     })
   } catch (error) {
     console.error('Database error:', error)

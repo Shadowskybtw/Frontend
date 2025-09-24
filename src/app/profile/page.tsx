@@ -35,23 +35,17 @@ export default function ProfilePage() {
     username?: string
   } | null>(null)
   const [profileStats, setProfileStats] = useState<{
-    hookahStock: {
-      id: number
-      progress: number
-      slots_filled: number
-      is_completed: boolean
-    } | null
-    freeHookahs: {
-      total: number
-      used: number
-      unused: number
-      used_list: Array<{
-        id: number
-        used_at: string
-        created_at: string
-      }>
-    }
+    totalSmokedHookahs: number
+    freeHookahsReceived: number
+    freeHookahsUsed: number
+    slotsFilled: number
+    isPromotionCompleted: boolean
   } | null>(null)
+  const [usedFreeHookahs, setUsedFreeHookahs] = useState<Array<{
+    id: number
+    used_at: string
+    created_at: string
+  }>>([])
   const [isAdmin, setIsAdmin] = useState(false)
   const [qrScannerOpen, setQrScannerOpen] = useState(false)
   const [showQRScanner, setShowQRScanner] = useState(false)
@@ -134,10 +128,8 @@ export default function ProfilePage() {
       const response = await fetch(`/api/profile/${tgId}`)
       const data = await response.json()
       if (data.success) {
-        setProfileStats({
-          hookahStock: data.hookahStock,
-          freeHookahs: data.freeHookahs
-        })
+        setProfileStats(data.stats)
+        setUsedFreeHookahs(data.usedFreeHookahs || [])
       }
     } catch (error) {
       console.error('Error loading profile stats:', error)
@@ -352,20 +344,17 @@ export default function ProfilePage() {
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                 <h3 className="font-semibold text-blue-900 mb-2">Статистика</h3>
                 <div className="text-left space-y-2 text-blue-800 text-sm">
-                  <p>Зарегистрирован: Сегодня</p>
-                  <p>Акций выполнено: {profileStats?.hookahStock?.is_completed ? '1' : '0'}</p>
-                  <p>Слотов заполнено: {profileStats?.hookahStock?.slots_filled || 0}/5</p>
-                  <p>Кальянов получено: {profileStats?.freeHookahs?.total || 0}</p>
-                  <p>Кальянов использовано: {profileStats?.freeHookahs?.used || 0}</p>
-                  <p>Кальянов доступно: {profileStats?.freeHookahs?.unused || 0}</p>
+                  <p>Зарегистрирован: {profileData?.created_at ? new Date(profileData.created_at).toLocaleDateString('ru-RU') : 'Сегодня'}</p>
+                  <p>Всего выкурено кальянов: {profileStats?.totalSmokedHookahs || 0}</p>
+                  <p>Получено бесплатных: {profileStats?.freeHookahsReceived || 0}</p>
                 </div>
                 
-                {/* История выкуренных кальянов */}
-                {profileStats?.freeHookahs?.used_list && profileStats.freeHookahs.used_list.length > 0 && (
+                {/* История выкуренных бесплатных кальянов */}
+                {usedFreeHookahs.length > 0 && (
                   <div className="mt-3 pt-3 border-t border-blue-200">
-                    <h4 className="font-medium text-blue-900 mb-2">История выкуренных кальянов:</h4>
+                    <h4 className="font-medium text-blue-900 mb-2">История бесплатных кальянов:</h4>
                     <div className="space-y-1">
-                      {profileStats.freeHookahs.used_list.map((hookah, index) => (
+                      {usedFreeHookahs.map((hookah, index) => (
                         <div key={hookah.id} className="text-xs text-blue-700 bg-blue-100 rounded px-2 py-1">
                           #{index + 1} - {new Date(hookah.used_at).toLocaleDateString('ru-RU')} в {new Date(hookah.used_at).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}
                         </div>
