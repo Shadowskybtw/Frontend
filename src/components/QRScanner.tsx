@@ -107,10 +107,13 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
 
         // Очищаем интервал при остановке
         const originalStopScanner = stopScanner
-        stopScanner = () => {
+        const stopScannerWithCleanup = () => {
           clearInterval(healthCheck)
           originalStopScanner()
         }
+        
+        // Заменяем stopScanner на версию с очисткой
+        stopScanner = stopScannerWithCleanup
 
       } catch (err) {
         console.error('Error starting QR scanner:', err)
@@ -124,7 +127,7 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
     return () => {
       stopScanner()
     }
-  }, [onScan])
+  }, [onScan, isScanning])
 
   const handleClose = () => {
     if (qrScannerRef.current) {
@@ -271,10 +274,13 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
 
                         // Очищаем интервал при остановке
                         const originalStopScannerLocal = stopScannerLocal
-                        stopScannerLocal = () => {
+                        const stopScannerLocalWithCleanup = () => {
                           clearInterval(healthCheck)
                           originalStopScannerLocal()
                         }
+                        
+                        // Заменяем stopScannerLocal на версию с очисткой
+                        stopScannerLocal = stopScannerLocalWithCleanup
 
                       } catch (err) {
                         console.error('Error restarting QR scanner:', err)
