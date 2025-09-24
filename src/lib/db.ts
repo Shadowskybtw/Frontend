@@ -37,6 +37,14 @@ export interface FreeHookah {
   created_at: Date
 }
 
+export interface HookahHistory {
+  id: number
+  user_id: number
+  hookah_type: string
+  slot_number?: number
+  created_at: Date
+}
+
 // Database queries
 export const db = {
   // Helper to check if database is connected
@@ -245,6 +253,35 @@ export const db = {
       console.error('Error getting unused free hookahs:', error)
       return []
     }
+  },
+
+  // Hookah history operations
+  async getHookahHistory(userId: number): Promise<HookahHistory[]> {
+    try {
+      console.log('Getting hookah history for user:', userId)
+      const history = await prisma.hookahHistory.findMany({
+        where: { user_id: userId },
+        orderBy: { created_at: 'desc' }
+      })
+      console.log('Hookah history found:', history)
+      return history
+    } catch (error) {
+      console.error('Error getting hookah history:', error)
+      return []
+    }
+  },
+
+  async addHookahToHistory(userId: number, hookahType: string, slotNumber?: number): Promise<HookahHistory> {
+    console.log('Adding hookah to history:', { userId, hookahType, slotNumber })
+    const history = await prisma.hookahHistory.create({
+      data: {
+        user_id: userId,
+        hookah_type: hookahType,
+        slot_number: slotNumber
+      }
+    })
+    console.log('Hookah added to history:', history)
+    return history
   }
 }
 

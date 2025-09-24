@@ -23,6 +23,7 @@ model User {
   // Relations
   stocks      Stock[]
   free_hookahs FreeHookah[]
+  hookah_history HookahHistory[]
 
   @@map("users")
 }
@@ -52,4 +53,17 @@ model FreeHookah {
   user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@map("free_hookahs")
+}
+
+model HookahHistory {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  hookah_type String  // 'regular' or 'free'
+  slot_number Int?    // Номер слота для обычных кальянов (1-5)
+  created_at DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("hookah_history")
 }

@@ -29,6 +29,9 @@ export async function GET(
     const freeHookahs = await db.getFreeHookahs(user.id)
     const usedHookahs = freeHookahs.filter(h => h.used)
 
+    // Получаем историю кальянов
+    const hookahHistory = await db.getHookahHistory(user.id)
+
     // Считаем слоты как выкуренные кальяны (один слот = один кальян)
     const slotsFilled = hookahStock ? Math.floor(hookahStock.progress / 20) : 0
     const totalSmokedHookahs = slotsFilled + usedHookahs.length // Слоты + использованные бесплатные
@@ -55,6 +58,12 @@ export async function GET(
       usedFreeHookahs: usedHookahs.map(h => ({
         id: h.id,
         used_at: h.used_at,
+        created_at: h.created_at
+      })),
+      hookahHistory: hookahHistory.map(h => ({
+        id: h.id,
+        hookah_type: h.hookah_type,
+        slot_number: h.slot_number,
         created_at: h.created_at
       }))
     })

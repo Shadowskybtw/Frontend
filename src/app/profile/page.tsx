@@ -47,6 +47,12 @@ export default function ProfilePage() {
     used_at: string
     created_at: string
   }>>([])
+  const [hookahHistory, setHookahHistory] = useState<Array<{
+    id: number
+    hookah_type: string
+    slot_number?: number
+    created_at: string
+  }>>([])
   const [isAdmin, setIsAdmin] = useState(false)
   const [qrScannerOpen, setQrScannerOpen] = useState(false)
   const [showQRScanner, setShowQRScanner] = useState(false)
@@ -131,6 +137,7 @@ export default function ProfilePage() {
       if (data.success) {
         setProfileStats(data.stats)
         setUsedFreeHookahs(data.usedFreeHookahs || [])
+        setHookahHistory(data.hookahHistory || [])
       }
     } catch (error) {
       console.error('Error loading profile stats:', error)
@@ -396,14 +403,22 @@ export default function ProfilePage() {
                   <p>Получено бесплатных: {profileStats?.freeHookahsReceived || 0}</p>
                 </div>
                 
-                {/* История выкуренных бесплатных кальянов */}
-                {usedFreeHookahs.length > 0 && (
+                {/* История всех выкуренных кальянов */}
+                {hookahHistory.length > 0 && (
                   <div className="mt-3 pt-3 border-t border-blue-200">
-                    <h4 className="font-medium text-blue-900 mb-2">История бесплатных кальянов:</h4>
-                    <div className="space-y-1">
-                      {usedFreeHookahs.map((hookah, index) => (
-                        <div key={hookah.id} className="text-xs text-blue-700 bg-blue-100 rounded px-2 py-1">
-                          #{index + 1} - {new Date(hookah.used_at).toLocaleDateString('ru-RU')} в {new Date(hookah.used_at).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}
+                    <h4 className="font-medium text-blue-900 mb-2">История кальянов:</h4>
+                    <div className="space-y-1 max-h-32 overflow-y-auto">
+                      {hookahHistory.map((hookah, index) => (
+                        <div key={hookah.id} className="text-xs text-blue-700 bg-blue-100 rounded px-2 py-1 flex justify-between items-center">
+                          <span>
+                            {hookah.hookah_type === 'regular' 
+                              ? `🚬 Слот ${hookah.slot_number}` 
+                              : '🎁 Бесплатный'
+                            }
+                          </span>
+                          <span className="text-blue-600">
+                            {new Date(hookah.created_at).toLocaleDateString('ru-RU')} в {new Date(hookah.created_at).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}
+                          </span>
                         </div>
                       ))}
                     </div>

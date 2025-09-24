@@ -68,6 +68,10 @@ export async function POST(
       return NextResponse.json({ success: false, message: 'Failed to use hookah' }, { status: 500 })
     }
 
+    // Добавляем запись в историю кальянов
+    await db.addHookahToHistory(user.id, 'free')
+    console.log('Added free hookah to history')
+
     return NextResponse.json({ 
       success: true, 
       message: 'Hookah used successfully',
