@@ -665,7 +665,7 @@ export default function ProfilePage() {
                             value={newAdminTgId}
                             onChange={(e) => setNewAdminTgId(e.target.value)}
                             placeholder="Введите Telegram ID..."
-                            className="w-full px-3 py-2 border border-red-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
+                            className="w-full px-3 py-2 border-2 border-red-400 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 text-sm text-black bg-white shadow-inner font-mono"
                           />
                         </div>
                         <button
