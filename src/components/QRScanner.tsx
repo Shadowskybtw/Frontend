@@ -145,6 +145,15 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
                 // Перезапускаем сканер
                 setTimeout(() => {
                   if (videoRef.current) {
+                    const stopScannerLocal = () => {
+                      if (qrScannerRef.current) {
+                        qrScannerRef.current.stop()
+                        qrScannerRef.current.destroy()
+                        qrScannerRef.current = null
+                      }
+                      setIsScanning(false)
+                    }
+                    
                     const startScanner = async () => {
                       try {
                         setError(null)
@@ -154,7 +163,7 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
                           (result) => {
                             console.log('QR Code detected:', result.data)
                             onScan(result.data)
-                            stopScanner()
+                            stopScannerLocal()
                           },
                           {
                             onDecodeError: (err) => {

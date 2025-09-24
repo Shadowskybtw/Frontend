@@ -1,5 +1,6 @@
 "use client"
 import React, { useEffect, useState, useCallback } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 
 type TgUser = {
@@ -304,7 +305,7 @@ export default function StocksPage() {
           <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
             <h3 className="font-semibold text-gray-900 mb-2">📱 Ваш QR код</h3>
             <div className="flex justify-center">
-              <img
+              <Image
                 src={qrCode} 
                 alt="QR Code" 
                 width={128}

@@ -24,7 +24,6 @@ export default function RegisterPage() {
   const [form, setForm] = useState({ name: '', surname: '', phone: '', agree: false })
   const [initData, setInitData] = useState('')
   const [isInTelegram, setIsInTelegram] = useState(false)
-  const [isRegistered, setIsRegistered] = useState<boolean | null>(null)
   const [isChecking, setIsChecking] = useState(false)
   const [hasCheckedRegistration, setHasCheckedRegistration] = useState(false)
 
