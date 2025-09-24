@@ -193,7 +193,7 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
                 // Перезапускаем сканер
                 setTimeout(() => {
                   if (videoRef.current) {
-                    const stopScannerLocal = () => {
+                    let stopScannerLocal = () => {
                       if (qrScannerRef.current) {
                         qrScannerRef.current.stop()
                         qrScannerRef.current.destroy()
