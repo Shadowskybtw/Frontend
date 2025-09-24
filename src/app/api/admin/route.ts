@@ -22,7 +22,9 @@ export async function POST(request: NextRequest) {
 
     if (action === 'check_admin') {
       // Проверяем, является ли пользователь админом
-      const isAdmin = user.tg_id === parseInt(process.env.ADMIN_TG_ID || '0')
+      const adminTgId = parseInt(process.env.ADMIN_TG_ID || '937011437')
+      const isAdmin = user.tg_id === adminTgId
+      console.log('Checking admin rights:', { userTgId: user.tg_id, adminTgId, isAdmin })
       return NextResponse.json({ 
         success: true, 
         is_admin: isAdmin

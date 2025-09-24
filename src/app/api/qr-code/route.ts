@@ -25,8 +25,8 @@ export async function GET(request: NextRequest) {
       timestamp: new Date().toISOString()
     }
 
-    // Создаем URL для QR кода (можно использовать любой QR генератор)
-    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(JSON.stringify(qrData))}&format=png`
+    // Создаем URL для QR кода (используем более надежный сервис)
+    const qrUrl = `https://chart.googleapis.com/chart?chs=200x200&chld=M|0&cht=qr&chl=${encodeURIComponent(JSON.stringify(qrData))}`
 
     return NextResponse.json({ 
       success: true, 

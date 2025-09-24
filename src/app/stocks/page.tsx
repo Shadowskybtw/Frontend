@@ -84,10 +84,15 @@ export default function StocksPage() {
   // Загружаем QR код
   const loadQrCode = async (tgId: number) => {
     try {
+      console.log('Loading QR code for TG ID:', tgId)
       const response = await fetch(`/api/qr-code?tg_id=${tgId}`)
       const data = await response.json()
+      console.log('QR code response:', data)
       if (data.success) {
         setQrCode(data.qr_url)
+        console.log('QR code URL set:', data.qr_url)
+      } else {
+        console.error('QR code API error:', data.message)
       }
     } catch (error) {
       console.error('Error loading QR code:', error)
