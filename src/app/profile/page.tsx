@@ -36,7 +36,7 @@ export default function ProfilePage() {
   const [isAdmin, setIsAdmin] = useState(false)
   const [qrScannerOpen, setQrScannerOpen] = useState(false)
   const [qrData, setQrData] = useState('')
-  const [scanResult, setScanResult] = useState<{
+  const [, setScanResult] = useState<{
     success: boolean
     message: string
     user?: {
