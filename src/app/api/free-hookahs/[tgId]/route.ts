@@ -21,16 +21,6 @@ export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ tgId: string }> }
 ) {
-  const tgBotToken = process.env.TG_BOT_TOKEN || ''
-  if (!tgBotToken) {
-    return NextResponse.json({ success: false, message: 'Server misconfigured' }, { status: 500 })
-  }
-
-  const initData = req.headers.get('x-telegram-init-data') || ''
-  if (!initData || !verifyTelegramInitData(initData, tgBotToken)) {
-    return NextResponse.json({ success: false, message: 'Invalid Telegram initData' }, { status: 401 })
-  }
-
   const resolvedParams = await params
   const tgId = parseInt(resolvedParams.tgId)
   if (isNaN(tgId)) {
@@ -66,16 +56,6 @@ export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ tgId: string }> }
 ) {
-  const tgBotToken = process.env.TG_BOT_TOKEN || ''
-  if (!tgBotToken) {
-    return NextResponse.json({ success: false, message: 'Server misconfigured' }, { status: 500 })
-  }
-
-  const initData = req.headers.get('x-telegram-init-data') || ''
-  if (!initData || !verifyTelegramInitData(initData, tgBotToken)) {
-    return NextResponse.json({ success: false, message: 'Invalid Telegram initData' }, { status: 401 })
-  }
-
   const resolvedParams = await params
   const tgId = parseInt(resolvedParams.tgId)
   if (isNaN(tgId)) {

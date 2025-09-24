@@ -32,6 +32,14 @@ export default function StocksPage() {
     updated_at: string
   }[]>([])
   const [qrCode, setQrCode] = useState<string | null>(null)
+  const [freeHookahs, setFreeHookahs] = useState<{
+    id: number
+    user_id: number
+    used: boolean
+    used_at?: string
+    created_at: string
+  }[]>([])
+  const [isUsingHookah, setIsUsingHookah] = useState(false)
 
   useEffect(() => {
     // Load Telegram WebApp script
@@ -102,6 +110,49 @@ export default function StocksPage() {
     }
   }
 
+  // Загружаем бесплатные кальяны
+  const loadFreeHookahs = async (tgId: number) => {
+    try {
+      console.log('Loading free hookahs for TG ID:', tgId)
+      const response = await fetch(`/api/free-hookahs/${tgId}`)
+      const data = await response.json()
+      if (data.success) {
+        setFreeHookahs(data.hookahs)
+        console.log('Free hookahs loaded:', data.hookahs)
+      }
+    } catch (error) {
+      console.error('Error loading free hookahs:', error)
+    }
+  }
+
+  // Используем бесплатный кальян
+  const useFreeHookah = async () => {
+    if (!user?.id || isUsingHookah) return
+    
+    setIsUsingHookah(true)
+    try {
+      const response = await fetch(`/api/free-hookahs/${user.id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      
+      const data = await response.json()
+      if (data.success) {
+        alert('🎉 Бесплатный кальян успешно получен!')
+        await loadFreeHookahs(user.id) // Перезагружаем данные
+      } else {
+        alert('❌ Ошибка: ' + data.message)
+      }
+    } catch (error) {
+      console.error('Error using free hookah:', error)
+      alert('❌ Произошла ошибка при получении бесплатного кальяна')
+    } finally {
+      setIsUsingHookah(false)
+    }
+  }
+
   // Создаем акцию "5+1 кальян" автоматически при первом заходе
   const ensureStockExists = useCallback(async (tgId: number) => {
     try {
@@ -132,8 +183,21 @@ export default function StocksPage() {
       ensureStockExists(user.id) // Создаем акцию если её нет
       loadStocks(user.id)
       loadQrCode(user.id)
+      loadFreeHookahs(user.id) // Загружаем бесплатные кальяны
     }
   }, [user, isInTelegram, ensureStockExists])
+
+  // Добавляем периодическое обновление данных для отслеживания изменений
+  useEffect(() => {
+    if (!user?.id || !isInTelegram) return
+
+    const interval = setInterval(() => {
+      loadStocks(user.id)
+      loadFreeHookahs(user.id)
+    }, 5000) // Обновляем каждые 5 секунд
+
+    return () => clearInterval(interval)
+  }, [user, isInTelegram])
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center p-4">
@@ -254,9 +318,22 @@ export default function StocksPage() {
               
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
                 <h3 className="font-semibold text-yellow-900 mb-2">🎁 Бесплатные кальяны</h3>
-                <p className="text-yellow-800 text-sm">
-                  Количество доступных бесплатных кальянов: {stocks.filter(s => s.stock_name === '5+1 кальян' && s.progress >= 100).length}
+                <p className="text-yellow-800 text-sm mb-3">
+                  Доступно бесплатных кальянов: {freeHookahs.filter(h => !h.used).length}
                 </p>
+                {freeHookahs.filter(h => !h.used).length > 0 ? (
+                  <button
+                    onClick={useFreeHookah}
+                    disabled={isUsingHookah}
+                    className="w-full bg-yellow-600 hover:bg-yellow-700 disabled:bg-yellow-400 text-white py-2 px-4 rounded-md text-sm font-medium transition-colors"
+                  >
+                    {isUsingHookah ? '⏳ Получаем...' : '🎉 Получить бесплатный кальян'}
+                  </button>
+                ) : (
+                  <p className="text-yellow-700 text-xs text-center">
+                    Нет доступных бесплатных кальянов
+                  </p>
+                )}
               </div>
             </div>
           ) : (
