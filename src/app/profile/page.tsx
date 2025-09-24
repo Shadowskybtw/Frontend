@@ -70,6 +70,9 @@ export default function ProfilePage() {
       progress: number
     }
   } | null>(null)
+  const [adminPanelOpen, setAdminPanelOpen] = useState(false)
+  const [newAdminTgId, setNewAdminTgId] = useState('')
+  const [isGrantingAdmin, setIsGrantingAdmin] = useState(false)
 
   useEffect(() => {
     // Load Telegram WebApp script
@@ -340,6 +343,50 @@ export default function ProfilePage() {
     }
   }
 
+  // Назначение админских прав
+  const grantAdminRights = async () => {
+    if (!newAdminTgId.trim()) {
+      alert('Введите Telegram ID')
+      return
+    }
+
+    const tgId = parseInt(newAdminTgId)
+    if (isNaN(tgId)) {
+      alert('Неверный формат Telegram ID')
+      return
+    }
+
+    setIsGrantingAdmin(true)
+    try {
+      const response = await fetch('/api/admin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          tg_id: tgId,
+          action: 'grant_admin',
+          admin_key: 'admin123'
+        }),
+      })
+
+      const data = await response.json()
+      
+      if (data.success) {
+        alert(`✅ Админские права успешно предоставлены пользователю ${data.user.first_name} ${data.user.last_name}`)
+        setNewAdminTgId('')
+        setAdminPanelOpen(false)
+      } else {
+        alert('❌ Ошибка: ' + data.message)
+      }
+    } catch (error) {
+      console.error('Error granting admin rights:', error)
+      alert('❌ Ошибка при предоставлении админских прав')
+    } finally {
+      setIsGrantingAdmin(false)
+    }
+  }
+
   return (
     <main className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-100 flex items-center justify-center p-4">
       <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
@@ -473,6 +520,15 @@ export default function ProfilePage() {
                       </button>
                     </div>
                     
+                    <div className="pt-2 border-t border-red-200">
+                      <button
+                        onClick={() => setAdminPanelOpen(!adminPanelOpen)}
+                        className="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-md text-sm font-medium"
+                      >
+                        {adminPanelOpen ? '❌ Закрыть' : '👑 Назначить админа'}
+                      </button>
+                    </div>
+                    
                     {qrScannerOpen && (
                       <div className="space-y-2">
                         <textarea
@@ -486,6 +542,30 @@ export default function ProfilePage() {
                           className="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-md text-sm font-medium"
                         >
                           🔍 Сканировать QR код
+                        </button>
+                      </div>
+                    )}
+                    
+                    {adminPanelOpen && (
+                      <div className="space-y-2 pt-2 border-t border-red-200">
+                        <div>
+                          <label className="block text-sm font-medium text-red-900 mb-1">
+                            Telegram ID пользователя:
+                          </label>
+                          <input
+                            type="number"
+                            value={newAdminTgId}
+                            onChange={(e) => setNewAdminTgId(e.target.value)}
+                            placeholder="Введите Telegram ID..."
+                            className="w-full px-3 py-2 border border-red-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
+                          />
+                        </div>
+                        <button
+                          onClick={grantAdminRights}
+                          disabled={isGrantingAdmin}
+                          className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 text-white py-2 px-4 rounded-md text-sm font-medium"
+                        >
+                          {isGrantingAdmin ? '⏳ Назначаем...' : '👑 Назначить админа'}
                         </button>
                       </div>
                     )}

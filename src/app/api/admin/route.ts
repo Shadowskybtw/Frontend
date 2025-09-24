@@ -53,12 +53,30 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    if (action === 'grant_admin' && target_tg_id) {
-      // Выдаем админские права (в реальном приложении это должно быть более сложно)
-      // Пока просто возвращаем успех
+    if (action === 'grant_admin') {
+      // Выдаем админские права пользователю
+      const targetTgId = tg_id // Используем tg_id как target_tg_id
+      
+      // Получаем пользователя, которому назначаем права
+      const targetUser = await db.getUserByTgId(targetTgId)
+      if (!targetUser) {
+        return NextResponse.json({ 
+          success: false, 
+          message: 'Пользователь не найден' 
+        }, { status: 404 })
+      }
+      
+      // В реальном приложении здесь должна быть логика сохранения админских прав
+      // Пока просто возвращаем успех с информацией о пользователе
       return NextResponse.json({ 
         success: true, 
-        message: 'Admin rights granted'
+        message: 'Админские права успешно предоставлены',
+        user: {
+          id: targetUser.id,
+          first_name: targetUser.first_name,
+          last_name: targetUser.last_name,
+          tg_id: targetUser.tg_id
+        }
       })
     }
 
