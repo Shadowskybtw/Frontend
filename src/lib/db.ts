@@ -52,7 +52,20 @@ export const db = {
         where: { tg_id: BigInt(tgId) }
       })
       console.log('User found:', user)
-      return user as User | null
+      
+      if (!user) return null
+      
+      // Convert BigInt to number for JSON serialization
+      return {
+        id: user.id,
+        tg_id: Number(user.tg_id),
+        first_name: user.first_name,
+        last_name: user.last_name,
+        phone: user.phone,
+        username: user.username,
+        created_at: user.created_at,
+        updated_at: user.updated_at
+      } as User
     } catch (error) {
       console.error('Error getting user by TG ID:', error)
       return null
@@ -77,7 +90,18 @@ export const db = {
       }
     })
     console.log('User created:', user)
-    return user as User
+    
+    // Convert BigInt to number for JSON serialization
+    return {
+      id: user.id,
+      tg_id: Number(user.tg_id),
+      first_name: user.first_name,
+      last_name: user.last_name,
+      phone: user.phone,
+      username: user.username,
+      created_at: user.created_at,
+      updated_at: user.updated_at
+    } as User
   },
 
   async updateUser(tgId: number, updates: Partial<User>): Promise<User | null> {
@@ -93,7 +117,18 @@ export const db = {
         }
       })
       console.log('User updated:', user)
-      return user as User
+      
+      // Convert BigInt to number for JSON serialization
+      return {
+        id: user.id,
+        tg_id: Number(user.tg_id),
+        first_name: user.first_name,
+        last_name: user.last_name,
+        phone: user.phone,
+        username: user.username,
+        created_at: user.created_at,
+        updated_at: user.updated_at
+      } as User
     } catch (error) {
       console.error('Error updating user:', error)
       return null

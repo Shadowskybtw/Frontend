@@ -31,7 +31,16 @@ export async function GET() {
     return NextResponse.json({ 
       success: true, 
       isConnected,
-      user: user || 'User not found',
+      user: user ? {
+        id: user.id,
+        tg_id: Number(user.tg_id),
+        first_name: user.first_name,
+        last_name: user.last_name,
+        phone: user.phone,
+        username: user.username,
+        created_at: user.created_at,
+        updated_at: user.updated_at
+      } : 'User not found',
       message: 'Database test completed'
     })
     

@@ -1,6 +1,7 @@
 "use client"
 import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
+import QRScanner from '@/components/QRScanner'
 
 type TgUser = {
   id: number
@@ -35,6 +36,7 @@ export default function ProfilePage() {
   } | null>(null)
   const [isAdmin, setIsAdmin] = useState(false)
   const [qrScannerOpen, setQrScannerOpen] = useState(false)
+  const [showQRScanner, setShowQRScanner] = useState(false)
   const [qrData, setQrData] = useState('')
   const [, setScanResult] = useState<{
     success: boolean
@@ -217,6 +219,19 @@ export default function ProfilePage() {
     }
   }
 
+  // Обработка сканирования QR кода с камеры
+  const handleQRScan = (result: string) => {
+    console.log('QR Code scanned:', result)
+    setQrData(result)
+    setShowQRScanner(false)
+    setQrScannerOpen(true)
+    
+    // Автоматически сканируем QR код
+    setTimeout(() => {
+      scanQrCode()
+    }, 100)
+  }
+
   return (
     <main className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-100 flex items-center justify-center p-4">
       <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
@@ -313,12 +328,20 @@ export default function ProfilePage() {
                 <div className="bg-red-50 border border-red-200 rounded-lg p-4">
                   <h3 className="font-semibold text-red-900 mb-2">🔧 Админ панель</h3>
                   <div className="space-y-3">
-                    <button
-                      onClick={() => setQrScannerOpen(!qrScannerOpen)}
-                      className="w-full bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-md text-sm font-medium"
-                    >
-                      {qrScannerOpen ? '❌ Закрыть сканер' : '📱 Открыть QR сканер'}
-                    </button>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        onClick={() => setShowQRScanner(true)}
+                        className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md text-sm font-medium"
+                      >
+                        📷 Камера
+                      </button>
+                      <button
+                        onClick={() => setQrScannerOpen(!qrScannerOpen)}
+                        className="bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-md text-sm font-medium"
+                      >
+                        {qrScannerOpen ? '❌ Закрыть' : '📝 Ввод'}
+                      </button>
+                    </div>
                     
                     {qrScannerOpen && (
                       <div className="space-y-2">
@@ -375,6 +398,14 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
+      
+      {/* QR Scanner Modal */}
+      {showQRScanner && (
+        <QRScanner
+          onScan={handleQRScan}
+          onClose={() => setShowQRScanner(false)}
+        />
+      )}
     </main>
   )
 }
