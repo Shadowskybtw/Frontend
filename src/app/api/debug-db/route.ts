@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 
 export async function GET() {
@@ -60,12 +60,14 @@ export async function GET() {
 
   } catch (error) {
     console.error('Database test error:', error)
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+    const errorStack = error instanceof Error ? error.stack : undefined
     return NextResponse.json(
       { 
         success: false, 
         message: 'Database test failed',
-        error: error.message,
-        stack: error.stack
+        error: errorMessage,
+        stack: errorStack
       },
       { status: 500 }
     )
