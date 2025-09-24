@@ -408,7 +408,7 @@ export default function ProfilePage() {
                   <div className="mt-3 pt-3 border-t border-blue-200">
                     <h4 className="font-medium text-blue-900 mb-2">История кальянов:</h4>
                     <div className="space-y-1 max-h-32 overflow-y-auto">
-                      {hookahHistory.map((hookah, index) => (
+                      {hookahHistory.map((hookah) => (
                         <div key={hookah.id} className="text-xs text-blue-700 bg-blue-100 rounded px-2 py-1 flex justify-between items-center">
                           <span>
                             {hookah.hookah_type === 'regular' 
