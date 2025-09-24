@@ -1,5 +1,5 @@
 "use client"
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -99,7 +99,7 @@ export default function StocksPage() {
   }
 
   // Создаем акцию "5+1 кальян" автоматически при первом заходе
-  const ensureStockExists = async (tgId: number) => {
+  const ensureStockExists = useCallback(async (tgId: number) => {
     try {
       const response = await fetch('/api/stocks', {
         method: 'POST',
@@ -120,7 +120,7 @@ export default function StocksPage() {
     } catch (error) {
       console.error('Error ensuring stock exists:', error)
     }
-  }
+  }, [])
 
   // Загружаем данные когда получаем пользователя
   useEffect(() => {
@@ -129,7 +129,7 @@ export default function StocksPage() {
       loadStocks(user.id)
       loadQrCode(user.id)
     }
-  }, [user, isInTelegram])
+  }, [user, isInTelegram, ensureStockExists])
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center p-4">

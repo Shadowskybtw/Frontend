@@ -4,7 +4,20 @@ import React, { useState } from 'react'
 export default function AdminPage() {
   const [qrData, setQrData] = useState('')
   const [isScanning, setIsScanning] = useState(false)
-  const [result, setResult] = useState<any>(null)
+  const [result, setResult] = useState<{
+    success: boolean
+    message: string
+    user?: {
+      id: number
+      first_name: string
+      last_name: string
+    }
+    stock?: {
+      stock_name: string
+      progress: number
+    }
+    completed?: boolean
+  } | null>(null)
 
   const handleScan = async () => {
     if (!qrData.trim()) {
@@ -104,7 +117,7 @@ export default function AdminPage() {
                 <p>1. Пользователь показывает QR код</p>
                 <p>2. Скопируйте данные QR кода</p>
                 <p>3. Вставьте в поле выше</p>
-                <p>4. Нажмите "Сканировать"</p>
+                <p>4. Нажмите &quot;Сканировать&quot;</p>
                 <p>5. Слот активируется автоматически</p>
               </div>
             </div>
