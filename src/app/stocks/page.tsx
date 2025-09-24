@@ -159,21 +159,38 @@ export default function StocksPage() {
   // Создаем акцию "5+1 кальян" автоматически при первом заходе
   const ensureStockExists = useCallback(async (tgId: number) => {
     try {
-      const response = await fetch('/api/stocks', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          tg_id: tgId,
-          stock_name: '5+1 кальян',
-          progress: 0
-        }),
-      })
-
+      // Сначала загружаем существующие акции
+      const response = await fetch(`/api/stocks?tg_id=${tgId}`)
       const data = await response.json()
+      
       if (data.success) {
-        await loadStocks(tgId) // Перезагружаем акции
+        // Проверяем, есть ли уже акция "5+1 кальян"
+        const existingStock = data.stocks.find((stock: any) => stock.stock_name === '5+1 кальян')
+        
+        if (!existingStock) {
+          // Создаем акцию только если её нет
+          console.log('Creating new 5+1 кальян stock for user:', tgId)
+          const createResponse = await fetch('/api/stocks', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              tg_id: tgId,
+              stock_name: '5+1 кальян',
+              progress: 0
+            }),
+          })
+
+          const createData = await createResponse.json()
+          if (createData.success) {
+            await loadStocks(tgId) // Перезагружаем акции
+          }
+        } else {
+          console.log('5+1 кальян stock already exists for user:', tgId)
+          // Просто загружаем акции
+          await loadStocks(tgId)
+        }
       }
     } catch (error) {
       console.error('Error ensuring stock exists:', error)

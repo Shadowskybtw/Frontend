@@ -23,7 +23,10 @@ export async function GET(
 
     // Получаем акции пользователя
     const stocks = await db.getUserStocks(user.id)
-    const hookahStock = stocks.find(s => s.stock_name === '5+1 кальян')
+    const hookahStocks = stocks.filter(s => s.stock_name === '5+1 кальян')
+    const hookahStock = hookahStocks.length > 0 
+      ? hookahStocks.reduce((latest, current) => current.id > latest.id ? current : latest)
+      : null
     
     // Получаем бесплатные кальяны
     const freeHookahs = await db.getFreeHookahs(user.id)

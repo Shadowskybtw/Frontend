@@ -33,9 +33,18 @@ export async function POST(request: NextRequest) {
     }
 
     // Получаем или создаем акцию "5+1 кальян"
-    let stock = await db.getUserStocks(user.id).then(stocks => 
-      stocks.find(s => s.stock_name === '5+1 кальян')
-    )
+    const userStocks = await db.getUserStocks(user.id)
+    let stock = userStocks.find(s => s.stock_name === '5+1 кальян')
+    
+    // Если есть несколько акций, берем самую последнюю (с наибольшим ID)
+    if (!stock && userStocks.length > 0) {
+      const hookahStocks = userStocks.filter(s => s.stock_name === '5+1 кальян')
+      if (hookahStocks.length > 0) {
+        stock = hookahStocks.reduce((latest, current) => 
+          current.id > latest.id ? current : latest
+        )
+      }
+    }
 
     if (!stock) {
       // Создаем акцию если её нет
