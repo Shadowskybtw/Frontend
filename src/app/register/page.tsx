@@ -98,15 +98,12 @@ export default function RegisterPage() {
       })
 
       const data = await response.json()
-      console.log('Registration check result on register page:', data)
 
       if (data.success) {
         setIsRegistered(data.registered)
         
         // Если пользователь уже зарегистрирован, перенаправляем на главную
         if (data.registered) {
-          console.log('User is already registered, redirecting to main page')
-          alert('Вы уже зарегистрированы! Переходим на главную страницу...')
           window.location.href = '/'
         }
       } else {

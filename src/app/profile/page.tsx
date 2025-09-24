@@ -493,15 +493,6 @@ export default function ProfilePage() {
                 </div>
               )}
 
-              {/* Отладочная информация */}
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                <h3 className="font-semibold text-yellow-900 mb-2">🔧 Отладка</h3>
-                <div className="text-yellow-800 text-xs space-y-1">
-                  <p><strong>TG ID:</strong> {user.id}</p>
-                  <p><strong>Админ:</strong> {isAdmin ? '✅ Да' : '❌ Нет'}</p>
-                  <p><strong>В Telegram:</strong> {isInTelegram ? '✅ Да' : '❌ Нет'}</p>
-                </div>
-              </div>
 
               <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                 <h3 className="font-semibold text-green-900 mb-2">Настройки</h3>
