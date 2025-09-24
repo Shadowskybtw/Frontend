@@ -41,7 +41,7 @@ export async function GET(
     const regularHookahs = hookahHistory.filter(h => h.hookah_type === 'regular').length
     const totalSmokedHookahs = regularHookahs + usedFreeHookahs.length // Обычные + использованные бесплатные
     
-    console.log('Profile stats calculation:', {
+    console.log('Profile stats calculation (UPDATED):', {
       hookahStock: hookahStock ? {
         id: hookahStock.id,
         progress: hookahStock.progress,
