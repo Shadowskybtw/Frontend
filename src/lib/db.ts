@@ -11,7 +11,7 @@ if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
 // Database types
 export interface User {
   id: number
-  tg_id: bigint
+  tg_id: number
   first_name: string
   last_name: string
   phone: string
