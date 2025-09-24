@@ -37,7 +37,9 @@ export async function GET(
 
     // Считаем слоты как выкуренные кальяны (один слот = один кальян)
     const slotsFilled = hookahStock ? Math.floor(hookahStock.progress / 20) : 0
-    const totalSmokedHookahs = slotsFilled + usedFreeHookahs.length // Слоты + использованные бесплатные
+    // Считаем обычные кальяны из истории (не из прогресса акции)
+    const regularHookahs = hookahHistory.filter(h => h.hookah_type === 'regular').length
+    const totalSmokedHookahs = regularHookahs + usedFreeHookahs.length // Обычные + использованные бесплатные
     
     console.log('Profile stats calculation:', {
       hookahStock: hookahStock ? {
@@ -45,6 +47,7 @@ export async function GET(
         progress: hookahStock.progress,
         slotsFilled: slotsFilled
       } : null,
+      regularHookahs: regularHookahs,
       usedFreeHookahs: usedFreeHookahs.length,
       totalSmokedHookahs,
       hookahHistory: hookahHistory.length
