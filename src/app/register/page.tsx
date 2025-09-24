@@ -99,19 +99,15 @@ export default function RegisterPage() {
       const data = await response.json()
 
       if (data.success) {
-        setIsRegistered(data.registered)
-        
         // Если пользователь уже зарегистрирован, перенаправляем на главную
         if (data.registered) {
           window.location.href = '/'
         }
       } else {
         console.error('Failed to check registration:', data.message)
-        setIsRegistered(false)
       }
     } catch (error) {
       console.error('Error checking registration:', error)
-      setIsRegistered(false)
     } finally {
       setIsChecking(false)
     }
