@@ -26,6 +26,7 @@ export default function RegisterPage() {
   const [isInTelegram, setIsInTelegram] = useState(false)
   const [isRegistered, setIsRegistered] = useState<boolean | null>(null)
   const [isChecking, setIsChecking] = useState(false)
+  const [hasCheckedRegistration, setHasCheckedRegistration] = useState(false)
 
   useEffect(() => {
     // Load Telegram WebApp script
@@ -57,7 +58,13 @@ export default function RegisterPage() {
           setInitData(tgInitData)
           
           if (tgUser) {
-            setUser(tgUser)
+            // Исправляем порядок имени и фамилии
+            const correctedUser = {
+              ...tgUser,
+              first_name: tgUser.first_name || '',
+              last_name: tgUser.last_name || ''
+            }
+            setUser(correctedUser)
             // Не автозаполняем поля имени и фамилии
             // setForm((prev) => ({
             //   ...prev,
@@ -77,9 +84,10 @@ export default function RegisterPage() {
 
   // Функция проверки регистрации пользователя
   const checkUserRegistration = useCallback(async (tgId: number) => {
-    if (isChecking) return
+    if (isChecking || hasCheckedRegistration) return
     
     setIsChecking(true)
+    setHasCheckedRegistration(true)
     try {
       const response = await fetch('/api/check-registration', {
         method: 'POST',
@@ -111,7 +119,7 @@ export default function RegisterPage() {
     } finally {
       setIsChecking(false)
     }
-  }, [isChecking])
+  }, [isChecking, hasCheckedRegistration])
 
   // Проверяем регистрацию когда получаем данные пользователя
   useEffect(() => {

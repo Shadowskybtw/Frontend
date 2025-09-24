@@ -26,6 +26,7 @@ export default function HomePage() {
   const [jsLoaded, setJsLoaded] = useState(false)
   const [isRegistered, setIsRegistered] = useState<boolean | null>(null)
   const [isChecking, setIsChecking] = useState(false)
+  const [hasCheckedRegistration, setHasCheckedRegistration] = useState(false)
 
   useEffect(() => {
     console.log('useEffect running - JavaScript is working!')
@@ -58,7 +59,13 @@ export default function HomePage() {
           setIsInTelegram(true)
           const tgUser = window.Telegram.WebApp.initDataUnsafe?.user as TgUser | undefined
           if (tgUser) {
-            setUser(tgUser)
+            // Исправляем порядок имени и фамилии
+            const correctedUser = {
+              ...tgUser,
+              first_name: tgUser.first_name || '',
+              last_name: tgUser.last_name || ''
+            }
+            setUser(correctedUser)
           }
         }
       } catch (error) {
@@ -72,9 +79,10 @@ export default function HomePage() {
 
   // Функция проверки регистрации пользователя
   const checkUserRegistration = useCallback(async (tgId: number) => {
-    if (isChecking) return // Предотвращаем множественные запросы
+    if (isChecking || hasCheckedRegistration) return // Предотвращаем множественные запросы
     
     setIsChecking(true)
+    setHasCheckedRegistration(true)
     try {
       const response = await fetch('/api/check-registration', {
         method: 'POST',
@@ -104,7 +112,7 @@ export default function HomePage() {
     } finally {
       setIsChecking(false)
     }
-  }, [isChecking])
+  }, [isChecking, hasCheckedRegistration])
 
   // Проверяем регистрацию когда получаем данные пользователя
   useEffect(() => {
@@ -191,7 +199,7 @@ export default function HomePage() {
               {user && (
                 <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
                   <p className="text-green-800 text-sm">
-                    👋 Привет, {user.first_name}!
+                    👋 Привет, {user.first_name || user.last_name || 'пользователь'}!
                   </p>
                   {isChecking && (
                     <p className="text-green-600 text-xs mt-1">
