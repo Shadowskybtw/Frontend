@@ -22,18 +22,54 @@ declare const window: TelegramWindow & Window
 export default function RegisterPage() {
   const [user, setUser] = useState<TgUser | null>(null)
   const [form, setForm] = useState({ name: '', surname: '', phone: '', agree: false })
-  const initData = useMemo(() => (typeof window !== 'undefined' ? window.Telegram?.WebApp?.initData || '' : ''), [])
+  const [initData, setInitData] = useState('')
+  const [isInTelegram, setIsInTelegram] = useState(false)
 
   useEffect(() => {
-    const tgUser = (typeof window !== 'undefined' ? window.Telegram?.WebApp?.initDataUnsafe?.user : null) as TgUser | undefined
-    if (tgUser) {
-      setUser(tgUser)
-      setForm((prev) => ({
-        ...prev,
-        name: prev.name || tgUser.first_name || '',
-        surname: prev.surname || tgUser.last_name || '',
-      }))
+    // Load Telegram WebApp script
+    const loadTelegramScript = () => {
+      if (typeof window !== 'undefined' && !window.Telegram) {
+        const script = document.createElement('script')
+        script.src = 'https://telegram.org/js/telegram-web-app.js'
+        script.async = true
+        script.onload = () => {
+          console.log('Telegram WebApp script loaded on register page')
+          checkTelegramWebApp()
+        }
+        script.onerror = () => {
+          console.error('Failed to load Telegram WebApp script on register page')
+        }
+        document.head.appendChild(script)
+      } else {
+        checkTelegramWebApp()
+      }
     }
+
+    const checkTelegramWebApp = () => {
+      try {
+        if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
+          setIsInTelegram(true)
+          const tgUser = window.Telegram.WebApp.initDataUnsafe?.user as TgUser | undefined
+          const tgInitData = window.Telegram.WebApp.initData || ''
+          
+          setInitData(tgInitData)
+          
+          if (tgUser) {
+            setUser(tgUser)
+            setForm((prev) => ({
+              ...prev,
+              name: prev.name || tgUser.first_name || '',
+              surname: prev.surname || tgUser.last_name || '',
+            }))
+          }
+        }
+      } catch (error) {
+        console.error('Error checking Telegram WebApp on register page:', error)
+      }
+    }
+
+    // Delay loading Telegram script to ensure basic JS works first
+    setTimeout(loadTelegramScript, 100)
   }, [])
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,10 +79,22 @@ export default function RegisterPage() {
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    console.log('Form submission started')
+    console.log('User:', user)
+    console.log('InitData:', initData)
+    console.log('IsInTelegram:', isInTelegram)
+    
     if (!form.agree) return alert('Нужно согласиться с правилами')
+    
     const tgIdNum = Number(user?.id)
-    if (!Number.isFinite(tgIdNum) || tgIdNum <= 0) return alert('Откройте приложение в Telegram')
+    console.log('TG ID:', tgIdNum)
+    
+    if (!Number.isFinite(tgIdNum) || tgIdNum <= 0) {
+      console.error('Invalid TG ID or not in Telegram')
+      return alert('Откройте приложение в Telegram. Debug: TG ID = ' + tgIdNum + ', User = ' + JSON.stringify(user))
+    }
 
+    console.log('Sending registration request...')
     const resp = await fetch('/api/register', {
       method: 'POST',
       headers: {
@@ -61,11 +109,16 @@ export default function RegisterPage() {
         username: user?.username || null,
       }),
     })
+    
+    console.log('Response status:', resp.status)
+    
     if (!resp.ok) {
       const txt = await resp.text()
+      console.error('Registration error:', txt)
       return alert(`Ошибка: ${resp.status} ${txt}`)
     }
     const data = await resp.json()
+    console.log('Registration response:', data)
     if (!data?.success) return alert(data?.message || 'Ошибка регистрации')
     alert('Успешно!')
   }
@@ -73,6 +126,15 @@ export default function RegisterPage() {
   return (
     <main className="mx-auto max-w-md p-6">
       <h1 className="text-2xl font-semibold mb-4">Регистрация</h1>
+      
+      {/* Debug info */}
+      <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 text-xs text-gray-600 mb-4">
+        <p>Debug: IsInTelegram = {isInTelegram ? '✅ да' : '❌ нет'}</p>
+        <p>Debug: User ID = {user?.id || 'не загружен'}</p>
+        <p>Debug: InitData = {initData ? 'есть' : 'нет'}</p>
+        <p>Debug: Window.Telegram = {typeof window !== 'undefined' && window.Telegram ? 'доступен' : 'не доступен'}</p>
+      </div>
+      
       <form onSubmit={onSubmit} className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <div>
