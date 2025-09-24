@@ -66,10 +66,21 @@ export async function POST(request: NextRequest) {
     // Заполняем следующий слот (увеличиваем прогресс на 20%)
     const newProgress = Math.min(stock.progress + 20, 100)
     
+    console.log('Updating stock progress:', {
+      stockId: stock.id,
+      currentProgress: stock.progress,
+      newProgress: newProgress,
+      currentSlots: currentSlots,
+      newSlots: Math.floor(newProgress / 20)
+    })
+    
     const updatedStock = await db.updateStockProgress(stock.id, newProgress)
+    
+    console.log('Stock updated successfully:', updatedStock)
 
     // Если акция завершена, создаем бесплатный кальян
     if (newProgress >= 100) {
+      console.log('Creating free hookah for completed promotion')
       await db.createFreeHookah(user.id)
     }
 

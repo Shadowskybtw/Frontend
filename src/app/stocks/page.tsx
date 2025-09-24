@@ -78,10 +78,13 @@ export default function StocksPage() {
   // Загружаем акции пользователя
   const loadStocks = async (tgId: number) => {
     try {
+      console.log('Loading stocks for TG ID:', tgId)
       const response = await fetch(`/api/stocks?tg_id=${tgId}`)
       const data = await response.json()
+      console.log('Stocks API response:', data)
       if (data.success) {
         setStocks(data.stocks)
+        console.log('Stocks loaded:', data.stocks)
       }
     } catch (error) {
       console.error('Error loading stocks:', error)

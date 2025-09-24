@@ -227,7 +227,7 @@ export default function ProfilePage() {
         },
         body: JSON.stringify({
           qr_data: qrData,
-          admin_key: process.env.NEXT_PUBLIC_ADMIN_KEY || 'admin123'
+          admin_key: 'admin123'
         }),
       })
 
@@ -238,6 +238,13 @@ export default function ProfilePage() {
         alert(`QR код отсканирован! Пользователь: ${data.user.first_name} ${data.user.last_name}`)
         setQrData('')
         setQrScannerOpen(false)
+        
+        // Обновляем статистику профиля после успешного сканирования
+        if (user?.id) {
+          setTimeout(() => {
+            loadProfileStats(user.id)
+          }, 1000)
+        }
       } else {
         alert('Ошибка: ' + data.message)
       }
@@ -252,12 +259,51 @@ export default function ProfilePage() {
     console.log('QR Code scanned:', result)
     setQrData(result)
     setShowQRScanner(false)
-    setQrScannerOpen(true)
     
-    // Автоматически сканируем QR код
-    setTimeout(() => {
-      scanQrCode()
-    }, 100)
+    // Автоматически сканируем QR код без показа поля ввода
+    scanQrCodeDirectly(result)
+  }
+
+  // Прямое сканирование QR кода без проверки поля ввода
+  const scanQrCodeDirectly = async (qrData: string) => {
+    if (!qrData.trim()) {
+      alert('Ошибка: пустые данные QR кода')
+      return
+    }
+
+    try {
+      const response = await fetch('/api/scan-qr', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          qr_data: qrData,
+          admin_key: 'admin123'
+        }),
+      })
+
+      const data = await response.json()
+      setScanResult(data)
+      
+      if (data.success) {
+        alert(`QR код отсканирован! Пользователь: ${data.user.first_name} ${data.user.last_name}`)
+        setQrData('')
+        setQrScannerOpen(false)
+        
+        // Обновляем статистику профиля после успешного сканирования
+        if (user?.id) {
+          setTimeout(() => {
+            loadProfileStats(user.id)
+          }, 1000)
+        }
+      } else {
+        alert('Ошибка: ' + data.message)
+      }
+    } catch (error) {
+      console.error('Error scanning QR:', error)
+      alert('Ошибка сканирования QR кода')
+    }
   }
 
   return (
