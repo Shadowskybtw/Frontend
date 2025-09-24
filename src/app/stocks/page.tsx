@@ -165,7 +165,7 @@ export default function StocksPage() {
       
       if (data.success) {
         // Проверяем, есть ли уже акция "5+1 кальян"
-        const existingStock = data.stocks.find((stock: any) => stock.stock_name === '5+1 кальян')
+        const existingStock = data.stocks.find((stock: { stock_name: string }) => stock.stock_name === '5+1 кальян')
         
         if (!existingStock) {
           // Создаем акцию только если её нет
