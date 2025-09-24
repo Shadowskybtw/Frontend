@@ -132,22 +132,15 @@ export default function RegisterPage() {
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log('Form submission started')
-    console.log('User:', user)
-    console.log('InitData:', initData)
-    console.log('IsInTelegram:', isInTelegram)
     
     if (!form.agree) return alert('Нужно согласиться с правилами')
     
     const tgIdNum = Number(user?.id)
-    console.log('TG ID:', tgIdNum)
     
     if (!Number.isFinite(tgIdNum) || tgIdNum <= 0) {
       console.error('Invalid TG ID or not in Telegram')
-      return alert('Откройте приложение в Telegram. Debug: TG ID = ' + tgIdNum + ', User = ' + JSON.stringify(user))
+      return alert('Откройте приложение в Telegram')
     }
-
-    console.log('Sending registration request...')
     const resp = await fetch('/api/register', {
       method: 'POST',
       headers: {
