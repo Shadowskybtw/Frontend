@@ -187,6 +187,30 @@ export default function ProfilePage() {
     }
   }, [user, isInTelegram])
 
+  // Добавляем периодическое обновление данных для отслеживания изменений
+  useEffect(() => {
+    if (!user?.id || !isInTelegram) return
+
+    const interval = setInterval(() => {
+      loadProfileStats(user.id)
+    }, 5000) // Обновляем каждые 5 секунд
+
+    return () => clearInterval(interval)
+  }, [user, isInTelegram])
+
+  // Добавляем обработчик для обновления данных при возвращении на страницу
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && user?.id && isInTelegram) {
+        console.log('Profile page became visible, refreshing data...')
+        loadProfileStats(user.id)
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
+  }, [user, isInTelegram])
+
   const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setEditForm(prev => ({ ...prev, [name]: value }))
@@ -250,7 +274,11 @@ export default function ProfilePage() {
         if (user?.id) {
           setTimeout(() => {
             loadProfileStats(user.id)
-          }, 1000)
+          }, 500)
+          // Дополнительное обновление через 2 секунды для надежности
+          setTimeout(() => {
+            loadProfileStats(user.id)
+          }, 2000)
         }
       } else {
         alert('Ошибка: ' + data.message)
@@ -302,7 +330,11 @@ export default function ProfilePage() {
         if (user?.id) {
           setTimeout(() => {
             loadProfileStats(user.id)
-          }, 1000)
+          }, 500)
+          // Дополнительное обновление через 2 секунды для надежности
+          setTimeout(() => {
+            loadProfileStats(user.id)
+          }, 2000)
         }
       } else {
         alert('Ошибка: ' + data.message)
@@ -412,7 +444,7 @@ export default function ProfilePage() {
                         <div key={hookah.id} className="text-xs text-blue-700 bg-blue-100 rounded px-2 py-1 flex justify-between items-center">
                           <span>
                             {hookah.hookah_type === 'regular' 
-                              ? `🚬 Слот ${hookah.slot_number}` 
+                              ? '🚬 Кальян' 
                               : '🎁 Бесплатный'
                             }
                           </span>

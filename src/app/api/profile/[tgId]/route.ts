@@ -35,6 +35,17 @@ export async function GET(
     // Считаем слоты как выкуренные кальяны (один слот = один кальян)
     const slotsFilled = hookahStock ? Math.floor(hookahStock.progress / 20) : 0
     const totalSmokedHookahs = slotsFilled + usedFreeHookahs.length // Слоты + использованные бесплатные
+    
+    console.log('Profile stats calculation:', {
+      hookahStock: hookahStock ? {
+        id: hookahStock.id,
+        progress: hookahStock.progress,
+        slotsFilled: slotsFilled
+      } : null,
+      usedFreeHookahs: usedFreeHookahs.length,
+      totalSmokedHookahs,
+      hookahHistory: hookahHistory.length
+    })
 
     return NextResponse.json({ 
       success: true, 
