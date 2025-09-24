@@ -24,6 +24,8 @@ export default function HomePage() {
   const [isInTelegram, setIsInTelegram] = useState(false)
   const [user, setUser] = useState<TgUser | null>(null)
   const [jsLoaded, setJsLoaded] = useState(false)
+  const [isRegistered, setIsRegistered] = useState<boolean | null>(null)
+  const [isChecking, setIsChecking] = useState(false)
 
   useEffect(() => {
     console.log('useEffect running - JavaScript is working!')
@@ -67,6 +69,49 @@ export default function HomePage() {
     // Delay loading Telegram script to ensure basic JS works first
     setTimeout(loadTelegramScript, 100)
   }, [])
+
+  // Функция проверки регистрации пользователя
+  const checkUserRegistration = async (tgId: number) => {
+    if (isChecking) return // Предотвращаем множественные запросы
+    
+    setIsChecking(true)
+    try {
+      const response = await fetch('/api/check-registration', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ tg_id: tgId }),
+      })
+
+      const data = await response.json()
+      console.log('Registration check result:', data)
+
+      if (data.success) {
+        setIsRegistered(data.registered)
+        
+        // Если пользователь зарегистрирован, показываем сообщение и остаемся на главной
+        if (data.registered) {
+          console.log('User is already registered, staying on main page')
+        }
+      } else {
+        console.error('Failed to check registration:', data.message)
+        setIsRegistered(false)
+      }
+    } catch (error) {
+      console.error('Error checking registration:', error)
+      setIsRegistered(false)
+    } finally {
+      setIsChecking(false)
+    }
+  }
+
+  // Проверяем регистрацию когда получаем данные пользователя
+  useEffect(() => {
+    if (user?.id && isInTelegram) {
+      checkUserRegistration(user.id)
+    }
+  }, [user, isInTelegram])
 
   const openWebApp = () => {
     console.log('openWebApp called') // Debug log
@@ -148,31 +193,59 @@ export default function HomePage() {
                   <p className="text-green-800 text-sm">
                     👋 Привет, {user.first_name}!
                   </p>
+                  {isChecking && (
+                    <p className="text-green-600 text-xs mt-1">
+                      🔍 Проверяем статус регистрации...
+                    </p>
+                  )}
+                  {isRegistered === true && (
+                    <p className="text-green-600 text-xs mt-1">
+                      ✅ Вы зарегистрированы!
+                    </p>
+                  )}
+                  {isRegistered === false && (
+                    <p className="text-orange-600 text-xs mt-1">
+                      ⚠️ Требуется регистрация
+                    </p>
+                  )}
                 </div>
               )}
               
-              <div className="grid grid-cols-1 gap-3">
-                <Link 
-                  href="/register"
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center"
-                >
-                  📝 Зарегистрироваться
-                </Link>
-                
-                <Link 
-                  href="/stocks"
-                  className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center"
-                >
-                  📈 Мои акции
-                </Link>
-                
-                <Link 
-                  href="/profile"
-                  className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center"
-                >
-                  👤 Профиль
-                </Link>
-              </div>
+              {isRegistered === true ? (
+                // Показываем кнопки для зарегистрированных пользователей
+                <div className="grid grid-cols-1 gap-3">
+                  <Link 
+                    href="/stocks"
+                    className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center"
+                  >
+                    📈 Мои акции
+                  </Link>
+                  
+                  <Link 
+                    href="/profile"
+                    className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center"
+                  >
+                    👤 Профиль
+                  </Link>
+                </div>
+              ) : isRegistered === false ? (
+                // Показываем кнопку регистрации для незарегистрированных
+                <div className="grid grid-cols-1 gap-3">
+                  <Link 
+                    href="/register"
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center"
+                  >
+                    📝 Зарегистрироваться
+                  </Link>
+                </div>
+              ) : (
+                // Показываем загрузку пока проверяем статус
+                <div className="grid grid-cols-1 gap-3">
+                  <div className="w-full bg-gray-300 text-gray-600 font-semibold py-3 px-6 rounded-lg flex items-center justify-center">
+                    🔍 Проверяем статус...
+                  </div>
+                </div>
+              )}
             </div>
           ) : (
             <div className="space-y-4">

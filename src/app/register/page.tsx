@@ -24,6 +24,8 @@ export default function RegisterPage() {
   const [form, setForm] = useState({ name: '', surname: '', phone: '', agree: false })
   const [initData, setInitData] = useState('')
   const [isInTelegram, setIsInTelegram] = useState(false)
+  const [isRegistered, setIsRegistered] = useState<boolean | null>(null)
+  const [isChecking, setIsChecking] = useState(false)
 
   useEffect(() => {
     // Load Telegram WebApp script
@@ -72,6 +74,51 @@ export default function RegisterPage() {
     // Delay loading Telegram script to ensure basic JS works first
     setTimeout(loadTelegramScript, 100)
   }, [])
+
+  // Функция проверки регистрации пользователя
+  const checkUserRegistration = async (tgId: number) => {
+    if (isChecking) return
+    
+    setIsChecking(true)
+    try {
+      const response = await fetch('/api/check-registration', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ tg_id: tgId }),
+      })
+
+      const data = await response.json()
+      console.log('Registration check result on register page:', data)
+
+      if (data.success) {
+        setIsRegistered(data.registered)
+        
+        // Если пользователь уже зарегистрирован, перенаправляем на главную
+        if (data.registered) {
+          console.log('User is already registered, redirecting to main page')
+          alert('Вы уже зарегистрированы! Переходим на главную страницу...')
+          window.location.href = '/'
+        }
+      } else {
+        console.error('Failed to check registration:', data.message)
+        setIsRegistered(false)
+      }
+    } catch (error) {
+      console.error('Error checking registration:', error)
+      setIsRegistered(false)
+    } finally {
+      setIsChecking(false)
+    }
+  }
+
+  // Проверяем регистрацию когда получаем данные пользователя
+  useEffect(() => {
+    if (user?.id && isInTelegram) {
+      checkUserRegistration(user.id)
+    }
+  }, [user, isInTelegram])
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, checked, type } = e.target
@@ -154,6 +201,9 @@ export default function RegisterPage() {
         <p>Debug: User ID = {user?.id || 'не загружен'}</p>
         <p>Debug: InitData = {initData ? 'есть' : 'нет'}</p>
         <p>Debug: Window.Telegram = {typeof window !== 'undefined' && window.Telegram ? 'доступен' : 'не доступен'}</p>
+        {isChecking && <p>Debug: Проверяем регистрацию...</p>}
+        {isRegistered === true && <p>Debug: Пользователь зарегистрирован</p>}
+        {isRegistered === false && <p>Debug: Пользователь не зарегистрирован</p>}
       </div>
       
       <form onSubmit={onSubmit} className="space-y-4">
