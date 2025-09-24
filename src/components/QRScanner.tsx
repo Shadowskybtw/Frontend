@@ -16,7 +16,7 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
   useEffect(() => {
     if (!videoRef.current) return
 
-    const stopScanner = () => {
+    let stopScanner = () => {
       if (qrScannerRef.current) {
         qrScannerRef.current.stop()
         qrScannerRef.current.destroy()
@@ -107,13 +107,10 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
 
         // Очищаем интервал при остановке
         const originalStopScanner = stopScanner
-        const stopScannerWithCleanup = () => {
+        stopScanner = () => {
           clearInterval(healthCheck)
           originalStopScanner()
         }
-        
-        // Заменяем stopScanner на версию с очисткой
-        stopScanner = stopScannerWithCleanup
 
       } catch (err) {
         console.error('Error starting QR scanner:', err)
@@ -274,13 +271,10 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
 
                         // Очищаем интервал при остановке
                         const originalStopScannerLocal = stopScannerLocal
-                        const stopScannerLocalWithCleanup = () => {
+                        stopScannerLocal = () => {
                           clearInterval(healthCheck)
                           originalStopScannerLocal()
                         }
-                        
-                        // Заменяем stopScannerLocal на версию с очисткой
-                        stopScannerLocal = stopScannerLocalWithCleanup
 
                       } catch (err) {
                         console.error('Error restarting QR scanner:', err)
