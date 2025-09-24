@@ -33,7 +33,6 @@ export default function StocksPage() {
     updated_at: string
   }[]>([])
   const [qrCode, setQrCode] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     // Load Telegram WebApp script
@@ -71,7 +70,6 @@ export default function StocksPage() {
 
   // Загружаем акции пользователя
   const loadStocks = async (tgId: number) => {
-    setIsLoading(true)
     try {
       const response = await fetch(`/api/stocks?tg_id=${tgId}`)
       const data = await response.json()
@@ -80,8 +78,6 @@ export default function StocksPage() {
       }
     } catch (error) {
       console.error('Error loading stocks:', error)
-    } finally {
-      setIsLoading(false)
     }
   }
 

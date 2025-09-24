@@ -36,7 +36,19 @@ export default function ProfilePage() {
   const [isAdmin, setIsAdmin] = useState(false)
   const [qrScannerOpen, setQrScannerOpen] = useState(false)
   const [qrData, setQrData] = useState('')
-  const [scanResult, setScanResult] = useState<any>(null)
+  const [scanResult, setScanResult] = useState<{
+    success: boolean
+    message: string
+    user?: {
+      id: number
+      first_name: string
+      last_name: string
+    }
+    stock?: {
+      stock_name: string
+      progress: number
+    }
+  } | null>(null)
 
   useEffect(() => {
     // Load Telegram WebApp script
