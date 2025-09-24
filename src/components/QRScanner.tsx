@@ -30,6 +30,14 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
         setError(null)
         setIsScanning(true)
 
+        // Проверяем доступность камеры
+        const hasCamera = await QrScanner.hasCamera()
+        if (!hasCamera) {
+          setError('Камера не найдена на устройстве')
+          setIsScanning(false)
+          return
+        }
+
         qrScannerRef.current = new QrScanner(
           videoRef.current!,
           (result) => {
@@ -45,13 +53,19 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
             highlightScanRegion: true,
             highlightCodeOutline: true,
             preferredCamera: 'environment', // Используем заднюю камеру
-            maxScansPerSecond: 5, // Ограничиваем частоту сканирования
+            maxScansPerSecond: 3, // Уменьшаем частоту сканирования
+            calculateScanRegion: (video) => ({
+              x: 0,
+              y: 0,
+              width: video.videoWidth,
+              height: video.videoHeight,
+            }),
           }
         )
 
         await qrScannerRef.current.start()
         
-        // Добавляем обработчик для предотвращения автоматической остановки
+        // Добавляем обработчики для предотвращения автоматической остановки
         const video = videoRef.current
         if (video) {
           video.addEventListener('loadedmetadata', () => {
@@ -63,7 +77,41 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
             console.error('Video error:', e)
             setError('Ошибка камеры. Попробуйте перезапустить сканер.')
           })
+
+          // Предотвращаем автоматическое отключение камеры
+          video.addEventListener('pause', () => {
+            console.log('Video paused, restarting...')
+            if (qrScannerRef.current && isScanning) {
+              qrScannerRef.current.start()
+            }
+          })
+
+          video.addEventListener('suspend', () => {
+            console.log('Video suspended, restarting...')
+            if (qrScannerRef.current && isScanning) {
+              qrScannerRef.current.start()
+            }
+          })
         }
+
+        // Периодически проверяем состояние камеры
+        const healthCheck = setInterval(() => {
+          if (qrScannerRef.current && isScanning) {
+            const video = videoRef.current
+            if (video && (video.paused || video.ended || video.readyState < 2)) {
+              console.log('Camera health check failed, restarting...')
+              qrScannerRef.current.start()
+            }
+          }
+        }, 2000)
+
+        // Очищаем интервал при остановке
+        const originalStopScanner = stopScanner
+        stopScanner = () => {
+          clearInterval(healthCheck)
+          originalStopScanner()
+        }
+
       } catch (err) {
         console.error('Error starting QR scanner:', err)
         setError('Не удалось запустить камеру. Проверьте разрешения.')
@@ -154,10 +202,19 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
                       setIsScanning(false)
                     }
                     
-                    const startScanner = async () => {
+                    const startScannerLocal = async () => {
                       try {
                         setError(null)
                         setIsScanning(true)
+
+                        // Проверяем доступность камеры
+                        const hasCamera = await QrScanner.hasCamera()
+                        if (!hasCamera) {
+                          setError('Камера не найдена на устройстве')
+                          setIsScanning(false)
+                          return
+                        }
+
                         qrScannerRef.current = new QrScanner(
                           videoRef.current!,
                           (result) => {
@@ -172,17 +229,60 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
                             highlightScanRegion: true,
                             highlightCodeOutline: true,
                             preferredCamera: 'environment',
-                            maxScansPerSecond: 5,
+                            maxScansPerSecond: 3,
+                            calculateScanRegion: (video) => ({
+                              x: 0,
+                              y: 0,
+                              width: video.videoWidth,
+                              height: video.videoHeight,
+                            }),
                           }
                         )
                         await qrScannerRef.current.start()
+
+                        // Добавляем обработчики для предотвращения автоматической остановки
+                        const video = videoRef.current
+                        if (video) {
+                          video.addEventListener('pause', () => {
+                            console.log('Video paused, restarting...')
+                            if (qrScannerRef.current && isScanning) {
+                              qrScannerRef.current.start()
+                            }
+                          })
+
+                          video.addEventListener('suspend', () => {
+                            console.log('Video suspended, restarting...')
+                            if (qrScannerRef.current && isScanning) {
+                              qrScannerRef.current.start()
+                            }
+                          })
+                        }
+
+                        // Периодически проверяем состояние камеры
+                        const healthCheck = setInterval(() => {
+                          if (qrScannerRef.current && isScanning) {
+                            const video = videoRef.current
+                            if (video && (video.paused || video.ended || video.readyState < 2)) {
+                              console.log('Camera health check failed, restarting...')
+                              qrScannerRef.current.start()
+                            }
+                          }
+                        }, 2000)
+
+                        // Очищаем интервал при остановке
+                        const originalStopScannerLocal = stopScannerLocal
+                        stopScannerLocal = () => {
+                          clearInterval(healthCheck)
+                          originalStopScannerLocal()
+                        }
+
                       } catch (err) {
                         console.error('Error restarting QR scanner:', err)
                         setError('Не удалось перезапустить камеру.')
                         setIsScanning(false)
                       }
                     }
-                    startScanner()
+                    startScannerLocal()
                   }
                 }, 100)
               }}
