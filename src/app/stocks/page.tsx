@@ -98,11 +98,8 @@ export default function StocksPage() {
     }
   }
 
-  // Создаем акцию "5+1 кальян"
-  const createStock = async (stockName: string) => {
-    if (!user?.id) return
-
-    setIsLoading(true)
+  // Создаем акцию "5+1 кальян" автоматически при первом заходе
+  const ensureStockExists = async (tgId: number) => {
     try {
       const response = await fetch('/api/stocks', {
         method: 'POST',
@@ -110,30 +107,25 @@ export default function StocksPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          tg_id: user.id,
-          stock_name: stockName,
+          tg_id: tgId,
+          stock_name: '5+1 кальян',
           progress: 0
         }),
       })
 
       const data = await response.json()
       if (data.success) {
-        await loadStocks(user.id) // Перезагружаем акции
-        alert('Акция создана успешно!')
-      } else {
-        alert('Ошибка создания акции: ' + data.message)
+        await loadStocks(tgId) // Перезагружаем акции
       }
     } catch (error) {
-      console.error('Error creating stock:', error)
-      alert('Ошибка создания акции')
-    } finally {
-      setIsLoading(false)
+      console.error('Error ensuring stock exists:', error)
     }
   }
 
   // Загружаем данные когда получаем пользователя
   useEffect(() => {
     if (user?.id && isInTelegram) {
+      ensureStockExists(user.id) // Создаем акцию если её нет
       loadStocks(user.id)
       loadQrCode(user.id)
     }
@@ -158,34 +150,62 @@ export default function StocksPage() {
                 </p>
               </div>
               
-              {/* Акция 5+1 кальян */}
+              {/* Акция 5+1 кальян - визуальные слоты */}
               <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                <h3 className="font-semibold text-red-900 mb-2">🔥 Акция &quot;5+1 кальян&quot;</h3>
-                <p className="text-red-800 text-sm mb-3">
+                <h3 className="font-semibold text-red-900 mb-3">🔥 Акция &quot;5+1 кальян&quot;</h3>
+                <p className="text-red-800 text-sm mb-4">
                   Купите 5 кальянов и получите 1 бесплатно!
                 </p>
-                <button
-                  onClick={() => createStock('5+1 кальян')}
-                  disabled={isLoading}
-                  className="w-full bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white py-2 px-4 rounded-md text-sm font-medium"
-                >
-                  {isLoading ? '⏳ Создание...' : '🎯 Начать акцию'}
-                </button>
-              </div>
-
-              {/* Слоты с нарисовым кальяном */}
-              <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-                <h3 className="font-semibold text-purple-900 mb-2">🎨 Слоты с нарисовым кальяном</h3>
-                <p className="text-purple-800 text-sm mb-3">
-                  Забронируйте слот для нарисового кальяна
+                
+                {/* Визуальные слоты */}
+                <div className="grid grid-cols-5 gap-2 mb-4">
+                  {[1, 2, 3, 4, 5].map((slot) => {
+                    const stock = stocks.find(s => s.stock_name === '5+1 кальян')
+                    const isActive = stock && stock.progress >= slot * 20
+                    return (
+                      <div
+                        key={slot}
+                        className={`relative p-3 rounded-lg border-2 transition-all duration-300 ${
+                          isActive 
+                            ? 'bg-green-100 border-green-400 shadow-lg' 
+                            : 'bg-gray-100 border-gray-300'
+                        }`}
+                      >
+                        <div className="text-center">
+                          <div className={`text-2xl mb-1 ${isActive ? 'animate-pulse' : 'opacity-50'}`}>
+                            🚬
+                          </div>
+                          <div className={`text-xs font-medium ${isActive ? 'text-green-800' : 'text-gray-500'}`}>
+                            {isActive ? '✓' : slot}
+                          </div>
+                        </div>
+                        {isActive && (
+                          <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
+                            <span className="text-white text-xs">✓</span>
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+                
+                {/* Прогресс бар */}
+                {(() => {
+                  const stock = stocks.find(s => s.stock_name === '5+1 кальян')
+                  const progress = stock ? stock.progress : 0
+                  return (
+                    <div className="w-full bg-gray-200 rounded-full h-3">
+                      <div 
+                        className="bg-gradient-to-r from-red-500 to-green-500 h-3 rounded-full transition-all duration-500" 
+                        style={{ width: `${progress}%` }}
+                      ></div>
+                    </div>
+                  )
+                })()}
+                
+                <p className="text-red-700 text-xs mt-2 text-center">
+                  Покажите QR код администратору для активации слотов
                 </p>
-                <button
-                  onClick={() => createStock('Нарисовый кальян')}
-                  disabled={isLoading}
-                  className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 text-white py-2 px-4 rounded-md text-sm font-medium"
-                >
-                  {isLoading ? '⏳ Создание...' : '🎨 Забронировать слот'}
-                </button>
               </div>
 
               {/* Ваши акции */}
