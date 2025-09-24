@@ -1,5 +1,5 @@
 "use client"
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
 
 type TgUser = {
@@ -71,7 +71,7 @@ export default function HomePage() {
   }, [])
 
   // Функция проверки регистрации пользователя
-  const checkUserRegistration = async (tgId: number) => {
+  const checkUserRegistration = useCallback(async (tgId: number) => {
     if (isChecking) return // Предотвращаем множественные запросы
     
     setIsChecking(true)
@@ -104,14 +104,14 @@ export default function HomePage() {
     } finally {
       setIsChecking(false)
     }
-  }
+  }, [isChecking])
 
   // Проверяем регистрацию когда получаем данные пользователя
   useEffect(() => {
     if (user?.id && isInTelegram) {
       checkUserRegistration(user.id)
     }
-  }, [user, isInTelegram])
+  }, [user, isInTelegram, checkUserRegistration])
 
   const openWebApp = () => {
     console.log('openWebApp called') // Debug log

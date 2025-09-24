@@ -10,12 +10,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Проверяем, зарегистрирован ли пользователь
-    const result = await db.query(
-      'SELECT id, first_name, last_name, phone, username FROM users WHERE tg_id = $1',
-      [tg_id]
-    )
+    const user = await db.getUserByTgId(tg_id)
 
-    if (result.rows.length === 0) {
+    if (!user) {
       return NextResponse.json({ 
         success: true, 
         registered: false,
@@ -23,7 +20,6 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    const user = result.rows[0]
     return NextResponse.json({ 
       success: true, 
       registered: true,

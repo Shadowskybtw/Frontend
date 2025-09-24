@@ -1,5 +1,5 @@
 "use client"
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 
 type TgUser = {
   id: number
@@ -76,7 +76,7 @@ export default function RegisterPage() {
   }, [])
 
   // Функция проверки регистрации пользователя
-  const checkUserRegistration = async (tgId: number) => {
+  const checkUserRegistration = useCallback(async (tgId: number) => {
     if (isChecking) return
     
     setIsChecking(true)
@@ -111,14 +111,14 @@ export default function RegisterPage() {
     } finally {
       setIsChecking(false)
     }
-  }
+  }, [isChecking])
 
   // Проверяем регистрацию когда получаем данные пользователя
   useEffect(() => {
     if (user?.id && isInTelegram) {
       checkUserRegistration(user.id)
     }
-  }, [user, isInTelegram])
+  }, [user, isInTelegram, checkUserRegistration])
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, checked, type } = e.target
