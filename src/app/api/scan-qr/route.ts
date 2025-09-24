@@ -5,8 +5,10 @@ export async function POST(request: NextRequest) {
   try {
     const { qr_data, admin_key } = await request.json()
     
-    // Проверяем админский ключ (в реальном приложении это должно быть более безопасно)
-    if (admin_key !== process.env.ADMIN_KEY) {
+    // Проверяем админский ключ (более гибкая проверка)
+    const expectedAdminKey = process.env.ADMIN_KEY || 'admin123'
+    if (admin_key !== expectedAdminKey) {
+      console.log('Unauthorized QR scan request, admin_key:', admin_key, 'expected:', expectedAdminKey)
       return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 })
     }
 
