@@ -56,11 +56,12 @@ export default function RegisterPage() {
           
           if (tgUser) {
             setUser(tgUser)
-            setForm((prev) => ({
-              ...prev,
-              name: prev.name || tgUser.first_name || '',
-              surname: prev.surname || tgUser.last_name || '',
-            }))
+            // Не автозаполняем поля имени и фамилии
+            // setForm((prev) => ({
+            //   ...prev,
+            //   name: prev.name || tgUser.first_name || '',
+            //   surname: prev.surname || tgUser.last_name || '',
+            // }))
           }
         }
       } catch (error) {
@@ -115,12 +116,32 @@ export default function RegisterPage() {
     if (!resp.ok) {
       const txt = await resp.text()
       console.error('Registration error:', txt)
+      
+      // Обработка ошибки 409 - пользователь уже зарегистрирован
+      if (resp.status === 409) {
+        try {
+          const errorData = JSON.parse(txt)
+          if (errorData.message === 'User already registered') {
+            alert('Вы уже зарегистрированы! Переходим к главной странице...')
+            // Редирект на главную страницу
+            window.location.href = '/'
+            return
+          }
+        } catch (e) {
+          // Если не удалось распарсить JSON, показываем обычную ошибку
+        }
+      }
+      
       return alert(`Ошибка: ${resp.status} ${txt}`)
     }
     const data = await resp.json()
     console.log('Registration response:', data)
     if (!data?.success) return alert(data?.message || 'Ошибка регистрации')
-    alert('Успешно!')
+    
+    // Успешная регистрация
+    alert('Регистрация успешна! Переходим к главной странице...')
+    // Редирект на главную страницу
+    window.location.href = '/'
   }
 
   return (

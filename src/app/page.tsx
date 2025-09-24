@@ -151,12 +151,28 @@ export default function HomePage() {
                 </div>
               )}
               
-              <Link 
-                href="/register"
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center"
-              >
-                📝 Зарегистрироваться
-              </Link>
+              <div className="grid grid-cols-1 gap-3">
+                <Link 
+                  href="/register"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center"
+                >
+                  📝 Зарегистрироваться
+                </Link>
+                
+                <Link 
+                  href="/stocks"
+                  className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center"
+                >
+                  📈 Мои акции
+                </Link>
+                
+                <Link 
+                  href="/profile"
+                  className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center"
+                >
+                  👤 Профиль
+                </Link>
+              </div>
             </div>
           ) : (
             <div className="space-y-4">
