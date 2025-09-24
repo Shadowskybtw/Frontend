@@ -4,7 +4,7 @@ import { db } from '@/lib/db'
 export async function POST(request: NextRequest) {
   try {
     console.log('Admin API called')
-    const { tg_id, action, target_tg_id, admin_key } = await request.json()
+    const { tg_id, action, admin_key } = await request.json()
     console.log('Request data:', { tg_id, action, admin_key })
     
     // Проверяем админский ключ (более гибкая проверка)
