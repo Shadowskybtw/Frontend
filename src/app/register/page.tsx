@@ -1,5 +1,5 @@
 "use client"
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 type TgUser = {
   id: number
@@ -127,7 +127,7 @@ export default function RegisterPage() {
             window.location.href = '/'
             return
           }
-        } catch (e) {
+        } catch {
           // Если не удалось распарсить JSON, показываем обычную ошибку
         }
       }

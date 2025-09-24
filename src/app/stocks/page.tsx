@@ -1,5 +1,6 @@
 "use client"
 import React, { useEffect, useState } from 'react'
+import Link from 'next/link'
 
 type TgUser = {
   id: number
@@ -99,12 +100,12 @@ export default function StocksPage() {
           )}
 
           <div className="mt-8 pt-6 border-t border-gray-200">
-            <a 
+            <Link 
               href="/"
               className="text-blue-600 hover:text-blue-800 text-sm"
             >
               ← Вернуться на главную
-            </a>
+            </Link>
           </div>
         </div>
       </div>
