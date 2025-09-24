@@ -16,7 +16,7 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
   useEffect(() => {
     if (!videoRef.current) return
 
-    let stopScanner = () => {
+    const stopScanner = () => {
       if (qrScannerRef.current) {
         qrScannerRef.current.stop()
         qrScannerRef.current.destroy()
@@ -154,7 +154,7 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
                 // Перезапускаем сканер
                 setTimeout(() => {
                   if (videoRef.current) {
-                    let stopScannerLocal = () => {
+                    const stopScannerLocal = () => {
                       if (qrScannerRef.current) {
                         qrScannerRef.current.stop()
                         qrScannerRef.current.destroy()
