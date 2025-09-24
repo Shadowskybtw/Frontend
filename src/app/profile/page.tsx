@@ -609,12 +609,12 @@ export default function ProfilePage() {
                         {/* Режим QR кода */}
                         {inputMode === 'qr' && (
                           <div className="space-y-2">
-                            <textarea
-                              value={qrData}
-                              onChange={(e) => setQrData(e.target.value)}
-                              placeholder="Вставьте данные QR кода сюда..."
-                              className="w-full px-3 py-2 border border-red-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 h-20 resize-none text-sm"
-                            />
+                    <textarea
+                      value={qrData}
+                      onChange={(e) => setQrData(e.target.value)}
+                      placeholder="Вставьте данные QR кода сюда..."
+                      className="w-full px-3 py-2 border-2 border-red-400 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 h-20 resize-none text-sm text-black bg-white shadow-inner font-mono"
+                    />
                             <button
                               onClick={scanQrCode}
                               className="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-md text-sm font-medium"

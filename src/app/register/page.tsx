@@ -193,16 +193,6 @@ export default function RegisterPage() {
     <main className="mx-auto max-w-md p-6">
       <h1 className="text-2xl font-semibold mb-4">Регистрация</h1>
       
-      {/* Debug info */}
-      <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 text-xs text-gray-600 mb-4">
-        <p>Debug: IsInTelegram = {isInTelegram ? '✅ да' : '❌ нет'}</p>
-        <p>Debug: User ID = {user?.id || 'не загружен'}</p>
-        <p>Debug: InitData = {initData ? 'есть' : 'нет'}</p>
-        <p>Debug: Window.Telegram = {typeof window !== 'undefined' && window.Telegram ? 'доступен' : 'не доступен'}</p>
-        {isChecking && <p>Debug: Проверяем регистрацию...</p>}
-        {isRegistered === true && <p>Debug: Пользователь зарегистрирован</p>}
-        {isRegistered === false && <p>Debug: Пользователь не зарегистрирован</p>}
-      </div>
       
       <form onSubmit={onSubmit} className="space-y-4">
         <div className="grid grid-cols-2 gap-4">

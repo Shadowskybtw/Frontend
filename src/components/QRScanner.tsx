@@ -35,10 +35,26 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
             },
             highlightScanRegion: true,
             highlightCodeOutline: true,
+            preferredCamera: 'environment', // Используем заднюю камеру
+            maxScansPerSecond: 5, // Ограничиваем частоту сканирования
           }
         )
 
         await qrScannerRef.current.start()
+        
+        // Добавляем обработчик для предотвращения автоматической остановки
+        const video = videoRef.current
+        if (video) {
+          video.addEventListener('loadedmetadata', () => {
+            console.log('Camera loaded successfully')
+            setError(null)
+          })
+          
+          video.addEventListener('error', (e) => {
+            console.error('Video error:', e)
+            setError('Ошибка камеры. Попробуйте перезапустить сканер.')
+          })
+        }
       } catch (err) {
         console.error('Error starting QR scanner:', err)
         setError('Не удалось запустить камеру. Проверьте разрешения.')
@@ -115,7 +131,57 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
           </p>
         </div>
 
-        <div className="mt-4 flex justify-center">
+        <div className="mt-4 flex justify-center space-x-2">
+          {error && (
+            <button
+              onClick={() => {
+                setError(null)
+                setIsScanning(false)
+                if (qrScannerRef.current) {
+                  qrScannerRef.current.stop()
+                  qrScannerRef.current.destroy()
+                  qrScannerRef.current = null
+                }
+                // Перезапускаем сканер
+                setTimeout(() => {
+                  if (videoRef.current) {
+                    const startScanner = async () => {
+                      try {
+                        setError(null)
+                        setIsScanning(true)
+                        qrScannerRef.current = new QrScanner(
+                          videoRef.current!,
+                          (result) => {
+                            console.log('QR Code detected:', result.data)
+                            onScan(result.data)
+                            stopScanner()
+                          },
+                          {
+                            onDecodeError: (err) => {
+                              console.log('QR decode error (normal):', err)
+                            },
+                            highlightScanRegion: true,
+                            highlightCodeOutline: true,
+                            preferredCamera: 'environment',
+                            maxScansPerSecond: 5,
+                          }
+                        )
+                        await qrScannerRef.current.start()
+                      } catch (err) {
+                        console.error('Error restarting QR scanner:', err)
+                        setError('Не удалось перезапустить камеру.')
+                        setIsScanning(false)
+                      }
+                    }
+                    startScanner()
+                  }
+                }, 100)
+              }}
+              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg"
+            >
+              🔄 Перезапустить
+            </button>
+          )}
           <button
             onClick={handleClose}
             className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg"
