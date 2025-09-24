@@ -1,21 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import crypto from 'crypto'
 import { db } from '@/lib/db'
-
-function verifyTelegramInitData(initData: string, botToken: string): boolean {
-  try {
-    const urlParams = new URLSearchParams(initData)
-    const hash = urlParams.get('hash') || ''
-    urlParams.delete('hash')
-    const dataCheckArr = Array.from(urlParams.entries()).map(([k, v]) => `${k}=${v}`).sort()
-    const dataCheckString = dataCheckArr.join('\n')
-    const secret = crypto.createHmac('sha256', 'WebAppData').update(botToken).digest()
-    const calcHash = crypto.createHmac('sha256', secret).update(dataCheckString).digest('hex')
-    return calcHash === hash
-  } catch {
-    return false
-  }
-}
 
 export async function GET(
   req: NextRequest,

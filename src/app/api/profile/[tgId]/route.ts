@@ -28,7 +28,6 @@ export async function GET(
     // Получаем бесплатные кальяны
     const freeHookahs = await db.getFreeHookahs(user.id)
     const usedHookahs = freeHookahs.filter(h => h.used)
-    const unusedHookahs = freeHookahs.filter(h => !h.used)
 
     // Считаем слоты как выкуренные кальяны (один слот = один кальян)
     const slotsFilled = hookahStock ? Math.floor(hookahStock.progress / 20) : 0

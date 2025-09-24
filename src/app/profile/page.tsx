@@ -33,6 +33,7 @@ export default function ProfilePage() {
     last_name: string
     phone: string
     username?: string
+    created_at: string
   } | null>(null)
   const [profileStats, setProfileStats] = useState<{
     totalSmokedHookahs: number

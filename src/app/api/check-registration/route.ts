@@ -28,7 +28,8 @@ export async function POST(request: NextRequest) {
         first_name: user.first_name,
         last_name: user.last_name,
         phone: user.phone,
-        username: user.username
+        username: user.username,
+        created_at: user.created_at
       }
     })
 
