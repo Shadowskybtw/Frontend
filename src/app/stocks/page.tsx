@@ -1,7 +1,6 @@
 "use client"
 import React, { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
 
 type TgUser = {
   id: number
@@ -86,13 +85,17 @@ export default function StocksPage() {
     try {
       console.log('Loading QR code for TG ID:', tgId)
       const response = await fetch(`/api/qr-code?tg_id=${tgId}`)
-      const data = await response.json()
-      console.log('QR code response:', data)
-      if (data.success) {
-        setQrCode(data.qr_url)
-        console.log('QR code URL set:', data.qr_url)
+      
+      if (response.ok) {
+        // API возвращает изображение, создаем blob URL
+        const blob = await response.blob()
+        const qrUrl = URL.createObjectURL(blob)
+        setQrCode(qrUrl)
+        console.log('QR code image loaded successfully:', qrUrl)
       } else {
-        console.error('QR code API error:', data.message)
+        console.error('QR code API error:', response.status, response.statusText)
+        const errorText = await response.text()
+        console.error('Error response:', errorText)
       }
     } catch (error) {
       console.error('Error loading QR code:', error)
@@ -215,7 +218,7 @@ export default function StocksPage() {
           <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
             <h3 className="font-semibold text-gray-900 mb-2">📱 Ваш QR код</h3>
             <div className="flex justify-center">
-              <Image
+              <img
                 src={qrCode} 
                 alt="QR Code" 
                 width={128}

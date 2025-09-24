@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import QRCode from 'qrcode'
 
 export async function GET(request: NextRequest) {
   try {
@@ -38,12 +39,27 @@ export async function GET(request: NextRequest) {
         timestamp: new Date().toISOString()
       }
 
-      const qrUrl = `https://chart.googleapis.com/chart?chs=200x200&chld=M|0&cht=qr&chl=${encodeURIComponent(JSON.stringify(qrData))}`
+      // Генерируем QR код как PNG изображение для временного пользователя
+      console.log('Generating QR code for temp user data:', qrData)
+      const qrCodeBuffer = await QRCode.toBuffer(JSON.stringify(qrData), {
+        type: 'png',
+        width: 200,
+        margin: 2,
+        color: {
+          dark: '#000000',
+          light: '#FFFFFF'
+        }
+      })
       
-      return NextResponse.json({ 
-        success: true, 
-        qr_url: qrUrl,
-        qr_data: qrData
+      console.log('QR code generated for temp user, buffer size:', qrCodeBuffer.length)
+
+      // Возвращаем изображение с правильным Content-Type
+      return new NextResponse(qrCodeBuffer, {
+        status: 200,
+        headers: {
+          'Content-Type': 'image/png',
+          'Cache-Control': 'public, max-age=3600',
+        },
       })
     }
 
@@ -56,15 +72,27 @@ export async function GET(request: NextRequest) {
       timestamp: new Date().toISOString()
     }
 
-    // Создаем URL для QR кода (используем более надежный сервис)
-    const qrUrl = `https://chart.googleapis.com/chart?chs=200x200&chld=M|0&cht=qr&chl=${encodeURIComponent(JSON.stringify(qrData))}`
-    console.log('Generated QR URL:', qrUrl)
-    console.log('QR Data:', qrData)
+    // Генерируем QR код как PNG изображение
+    console.log('Generating QR code for data:', qrData)
+    const qrCodeBuffer = await QRCode.toBuffer(JSON.stringify(qrData), {
+      type: 'png',
+      width: 200,
+      margin: 2,
+      color: {
+        dark: '#000000',
+        light: '#FFFFFF'
+      }
+    })
+    
+    console.log('QR code generated, buffer size:', qrCodeBuffer.length)
 
-    return NextResponse.json({ 
-      success: true, 
-      qr_url: qrUrl,
-      qr_data: qrData
+    // Возвращаем изображение с правильным Content-Type
+    return new NextResponse(qrCodeBuffer, {
+      status: 200,
+      headers: {
+        'Content-Type': 'image/png',
+        'Cache-Control': 'public, max-age=3600',
+      },
     })
 
   } catch (error) {
