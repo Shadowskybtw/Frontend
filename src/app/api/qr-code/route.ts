@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
       
       const qrData = {
         user_id: tempUser.id,
-        tg_id: tempUser.tg_id,
+        tg_id: Number(tempUser.tg_id),
         name: tempUser.first_name,
         phone: tempUser.phone,
         timestamp: new Date().toISOString()
@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
     // Генерируем QR код с данными пользователя
     const qrData = {
       user_id: user.id,
-      tg_id: user.tg_id,
+      tg_id: Number(user.tg_id),
       name: user.first_name,
       phone: user.phone,
       timestamp: new Date().toISOString()
