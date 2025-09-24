@@ -46,7 +46,24 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Увеличиваем прогресс на 1 слот (20%)
+    // Проверяем, сколько слотов уже заполнено
+    const currentSlots = Math.floor(stock.progress / 20)
+    const maxSlots = 5
+    
+    if (currentSlots >= maxSlots) {
+      return NextResponse.json({ 
+        success: false, 
+        message: 'Все слоты уже заполнены!',
+        user: {
+          id: user.id,
+          first_name: user.first_name,
+          last_name: user.last_name
+        },
+        stock: stock
+      })
+    }
+    
+    // Заполняем следующий слот (увеличиваем прогресс на 20%)
     const newProgress = Math.min(stock.progress + 20, 100)
     
     const updatedStock = await db.updateStockProgress(stock.id, newProgress)

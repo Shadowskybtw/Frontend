@@ -34,6 +34,24 @@ export default function ProfilePage() {
     phone: string
     username?: string
   } | null>(null)
+  const [profileStats, setProfileStats] = useState<{
+    hookahStock: {
+      id: number
+      progress: number
+      slots_filled: number
+      is_completed: boolean
+    } | null
+    freeHookahs: {
+      total: number
+      used: number
+      unused: number
+      used_list: Array<{
+        id: number
+        used_at: string
+        created_at: string
+      }>
+    }
+  } | null>(null)
   const [isAdmin, setIsAdmin] = useState(false)
   const [qrScannerOpen, setQrScannerOpen] = useState(false)
   const [showQRScanner, setShowQRScanner] = useState(false)
@@ -110,6 +128,22 @@ export default function ProfilePage() {
     }
   }
 
+  // Загружаем статистику профиля
+  const loadProfileStats = async (tgId: number) => {
+    try {
+      const response = await fetch(`/api/profile/${tgId}`)
+      const data = await response.json()
+      if (data.success) {
+        setProfileStats({
+          hookahStock: data.hookahStock,
+          freeHookahs: data.freeHookahs
+        })
+      }
+    } catch (error) {
+      console.error('Error loading profile stats:', error)
+    }
+  }
+
   // Обновляем профиль
   const updateProfile = async () => {
     if (!user?.id || isSaving) return
@@ -148,6 +182,7 @@ export default function ProfilePage() {
   useEffect(() => {
     if (user?.id && isInTelegram) {
       loadProfileData(user.id)
+      loadProfileStats(user.id)
       checkAdminRights(user.id)
     }
   }, [user, isInTelegram])
@@ -318,9 +353,26 @@ export default function ProfilePage() {
                 <h3 className="font-semibold text-blue-900 mb-2">Статистика</h3>
                 <div className="text-left space-y-2 text-blue-800 text-sm">
                   <p>Зарегистрирован: Сегодня</p>
-                  <p>Акций выполнено: 0</p>
-                  <p>Кальянов получено: 0</p>
+                  <p>Акций выполнено: {profileStats?.hookahStock?.is_completed ? '1' : '0'}</p>
+                  <p>Слотов заполнено: {profileStats?.hookahStock?.slots_filled || 0}/5</p>
+                  <p>Кальянов получено: {profileStats?.freeHookahs?.total || 0}</p>
+                  <p>Кальянов использовано: {profileStats?.freeHookahs?.used || 0}</p>
+                  <p>Кальянов доступно: {profileStats?.freeHookahs?.unused || 0}</p>
                 </div>
+                
+                {/* История выкуренных кальянов */}
+                {profileStats?.freeHookahs?.used_list && profileStats.freeHookahs.used_list.length > 0 && (
+                  <div className="mt-3 pt-3 border-t border-blue-200">
+                    <h4 className="font-medium text-blue-900 mb-2">История выкуренных кальянов:</h4>
+                    <div className="space-y-1">
+                      {profileStats.freeHookahs.used_list.map((hookah, index) => (
+                        <div key={hookah.id} className="text-xs text-blue-700 bg-blue-100 rounded px-2 py-1">
+                          #{index + 1} - {new Date(hookah.used_at).toLocaleDateString('ru-RU')} в {new Date(hookah.used_at).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
               
               {/* Админские функции */}

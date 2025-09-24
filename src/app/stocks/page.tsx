@@ -194,9 +194,23 @@ export default function StocksPage() {
     const interval = setInterval(() => {
       loadStocks(user.id)
       loadFreeHookahs(user.id)
-    }, 5000) // Обновляем каждые 5 секунд
+    }, 3000) // Обновляем каждые 3 секунды для более быстрого отклика
 
     return () => clearInterval(interval)
+  }, [user, isInTelegram])
+
+  // Добавляем обработчик для обновления данных при возвращении на страницу
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && user?.id && isInTelegram) {
+        console.log('Page became visible, refreshing data...')
+        loadStocks(user.id)
+        loadFreeHookahs(user.id)
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
   }, [user, isInTelegram])
 
   return (
