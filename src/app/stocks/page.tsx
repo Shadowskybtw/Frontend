@@ -1,6 +1,7 @@
 "use client"
 import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 
 type TgUser = {
   id: number
@@ -23,7 +24,14 @@ declare const window: TelegramWindow & Window
 export default function StocksPage() {
   const [user, setUser] = useState<TgUser | null>(null)
   const [isInTelegram, setIsInTelegram] = useState(false)
-  const [stocks, setStocks] = useState<any[]>([])
+  const [stocks, setStocks] = useState<{
+    id: number
+    user_id: number
+    stock_name: string
+    progress: number
+    created_at: string
+    updated_at: string
+  }[]>([])
   const [qrCode, setQrCode] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 
@@ -152,7 +160,7 @@ export default function StocksPage() {
               
               {/* Акция 5+1 кальян */}
               <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                <h3 className="font-semibold text-red-900 mb-2">🔥 Акция "5+1 кальян"</h3>
+                <h3 className="font-semibold text-red-900 mb-2">🔥 Акция &quot;5+1 кальян&quot;</h3>
                 <p className="text-red-800 text-sm mb-3">
                   Купите 5 кальянов и получите 1 бесплатно!
                 </p>
@@ -214,10 +222,12 @@ export default function StocksPage() {
                 <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
                   <h3 className="font-semibold text-gray-900 mb-2">📱 Ваш QR код</h3>
                   <div className="flex justify-center">
-                    <img 
+                    <Image 
                       src={qrCode} 
                       alt="QR Code" 
-                      className="w-32 h-32 border border-gray-300 rounded-lg"
+                      width={128}
+                      height={128}
+                      className="border border-gray-300 rounded-lg"
                     />
                   </div>
                   <p className="text-gray-600 text-xs mt-2 text-center">
