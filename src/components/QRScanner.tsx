@@ -16,6 +16,15 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
   useEffect(() => {
     if (!videoRef.current) return
 
+    const stopScanner = () => {
+      if (qrScannerRef.current) {
+        qrScannerRef.current.stop()
+        qrScannerRef.current.destroy()
+        qrScannerRef.current = null
+      }
+      setIsScanning(false)
+    }
+
     const startScanner = async () => {
       try {
         setError(null)
@@ -60,15 +69,6 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
         setError('Не удалось запустить камеру. Проверьте разрешения.')
         setIsScanning(false)
       }
-    }
-
-    const stopScanner = () => {
-      if (qrScannerRef.current) {
-        qrScannerRef.current.stop()
-        qrScannerRef.current.destroy()
-        qrScannerRef.current = null
-      }
-      setIsScanning(false)
     }
 
     startScanner()
