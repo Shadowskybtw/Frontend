@@ -78,13 +78,10 @@ export default function StocksPage() {
   // Загружаем акции пользователя
   const loadStocks = async (tgId: number) => {
     try {
-      console.log('Loading stocks for TG ID:', tgId)
       const response = await fetch(`/api/stocks?tg_id=${tgId}`)
       const data = await response.json()
-      console.log('Stocks API response:', data)
       if (data.success) {
         setStocks(data.stocks)
-        console.log('Stocks loaded:', data.stocks)
       }
     } catch (error) {
       console.error('Error loading stocks:', error)
@@ -94,7 +91,6 @@ export default function StocksPage() {
   // Загружаем QR код
   const loadQrCode = async (tgId: number) => {
     try {
-      console.log('Loading QR code for TG ID:', tgId)
       const response = await fetch(`/api/qr-code?tg_id=${tgId}`)
       
       if (response.ok) {
@@ -102,11 +98,8 @@ export default function StocksPage() {
         const blob = await response.blob()
         const qrUrl = URL.createObjectURL(blob)
         setQrCode(qrUrl)
-        console.log('QR code image loaded successfully:', qrUrl)
       } else {
         console.error('QR code API error:', response.status, response.statusText)
-        const errorText = await response.text()
-        console.error('Error response:', errorText)
       }
     } catch (error) {
       console.error('Error loading QR code:', error)
@@ -116,12 +109,10 @@ export default function StocksPage() {
   // Загружаем бесплатные кальяны
   const loadFreeHookahs = async (tgId: number) => {
     try {
-      console.log('Loading free hookahs for TG ID:', tgId)
       const response = await fetch(`/api/free-hookahs/${tgId}`)
       const data = await response.json()
       if (data.success) {
         setFreeHookahs(data.hookahs)
-        console.log('Free hookahs loaded:', data.hookahs)
       }
     } catch (error) {
       console.error('Error loading free hookahs:', error)
@@ -169,7 +160,6 @@ export default function StocksPage() {
         
         if (!existingStock) {
           // Создаем акцию только если её нет
-          console.log('Creating new 5+1 кальян stock for user:', tgId)
           const createResponse = await fetch('/api/stocks', {
             method: 'POST',
             headers: {
@@ -187,7 +177,6 @@ export default function StocksPage() {
             await loadStocks(tgId) // Перезагружаем акции
           }
         } else {
-          console.log('5+1 кальян stock already exists for user:', tgId)
           // Просто загружаем акции
           await loadStocks(tgId)
         }
@@ -223,7 +212,6 @@ export default function StocksPage() {
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible' && user?.id && isInTelegram) {
-        console.log('Page became visible, refreshing data...')
         loadStocks(user.id)
         loadFreeHookahs(user.id)
       }

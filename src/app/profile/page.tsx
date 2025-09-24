@@ -202,7 +202,6 @@ export default function ProfilePage() {
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible' && user?.id && isInTelegram) {
-        console.log('Profile page became visible, refreshing data...')
         loadProfileStats(user.id)
       }
     }
@@ -219,7 +218,6 @@ export default function ProfilePage() {
   // Проверяем админские права
   const checkAdminRights = async (tgId: number) => {
     try {
-      console.log('Checking admin rights for TG ID:', tgId)
       const response = await fetch('/api/admin', {
         method: 'POST',
         headers: {
@@ -233,10 +231,8 @@ export default function ProfilePage() {
       })
 
       const data = await response.json()
-      console.log('Admin check response:', data)
       if (data.success) {
         setIsAdmin(data.is_admin)
-        console.log('Admin status set to:', data.is_admin)
       }
     } catch (error) {
       console.error('Error checking admin rights:', error)
@@ -291,7 +287,6 @@ export default function ProfilePage() {
 
   // Обработка сканирования QR кода с камеры
   const handleQRScan = (result: string) => {
-    console.log('QR Code scanned:', result)
     setQrData(result)
     setShowQRScanner(false)
     

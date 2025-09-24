@@ -7,10 +7,8 @@ export async function POST(request: NextRequest) {
     
     // Проверяем админский ключ (более гибкая проверка)
     const expectedAdminKey = process.env.ADMIN_KEY || process.env.NEXT_PUBLIC_ADMIN_KEY || 'admin123'
-    console.log('QR scan admin key check:', { received: admin_key, expected: expectedAdminKey })
     
     if (admin_key !== expectedAdminKey) {
-      console.log('Unauthorized QR scan request, admin_key:', admin_key, 'expected:', expectedAdminKey)
       return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 })
     }
 
@@ -76,25 +74,13 @@ export async function POST(request: NextRequest) {
     const newProgress = Math.min(stock.progress + 20, 100)
     const newSlotNumber = Math.floor(newProgress / 20)
     
-    console.log('Updating stock progress:', {
-      stockId: stock.id,
-      currentProgress: stock.progress,
-      newProgress: newProgress,
-      currentSlots: currentSlots,
-      newSlots: newSlotNumber
-    })
-    
     const updatedStock = await db.updateStockProgress(stock.id, newProgress)
-    
-    console.log('Stock updated successfully:', updatedStock)
 
     // Добавляем запись в историю кальянов
     await db.addHookahToHistory(user.id, 'regular', newSlotNumber)
-    console.log('Added regular hookah to history for slot:', newSlotNumber)
 
     // Если акция завершена, создаем бесплатный кальян
     if (newProgress >= 100) {
-      console.log('Creating free hookah for completed promotion')
       await db.createFreeHookah(user.id)
     }
 
