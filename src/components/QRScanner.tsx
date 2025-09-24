@@ -53,19 +53,13 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
             highlightScanRegion: true,
             highlightCodeOutline: true,
             preferredCamera: 'environment', // Используем заднюю камеру
-            maxScansPerSecond: 3, // Уменьшаем частоту сканирования
-            calculateScanRegion: (video) => ({
-              x: 0,
-              y: 0,
-              width: video.videoWidth,
-              height: video.videoHeight,
-            }),
+            maxScansPerSecond: 2, // Еще меньше частоты для стабильности
           }
         )
 
         await qrScannerRef.current.start()
         
-        // Добавляем обработчики для предотвращения автоматической остановки
+        // Добавляем только базовые обработчики без автоматических перезапусков
         const video = videoRef.current
         if (video) {
           video.addEventListener('loadedmetadata', () => {
@@ -75,36 +69,8 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
           
           video.addEventListener('error', (e) => {
             console.error('Video error:', e)
-            setError('Ошибка камеры. Попробуйте перезапустить сканер.')
+            setError('Ошибка камеры. Нажмите "Перезапустить" для восстановления.')
           })
-
-          // Убираем агрессивные обработчики pause/suspend
-          // Они могут вызывать постоянные перезапуски камеры
-        }
-
-        // Периодически проверяем состояние камеры (реже и умнее)
-        let lastHealthCheck = Date.now()
-        const healthCheck = setInterval(() => {
-          if (qrScannerRef.current && isScanning) {
-            const video = videoRef.current
-            const now = Date.now()
-            
-            // Проверяем только если прошло достаточно времени с последней проверки
-            if (now - lastHealthCheck > 3000) {
-              if (video && (video.paused || video.ended || video.readyState < 2)) {
-                console.log('Camera health check failed, restarting...')
-                lastHealthCheck = now
-                qrScannerRef.current.start()
-              }
-            }
-          }
-        }, 5000) // Увеличиваем интервал до 5 секунд
-
-        // Очищаем интервал при остановке
-        const originalStopScanner = stopScanner
-        stopScanner = () => {
-          clearInterval(healthCheck)
-          originalStopScanner()
         }
 
       } catch (err) {
@@ -224,43 +190,23 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
                             highlightScanRegion: true,
                             highlightCodeOutline: true,
                             preferredCamera: 'environment',
-                            maxScansPerSecond: 3,
-                            calculateScanRegion: (video) => ({
-                              x: 0,
-                              y: 0,
-                              width: video.videoWidth,
-                              height: video.videoHeight,
-                            }),
+                            maxScansPerSecond: 2, // Еще меньше частоты для стабильности
                           }
                         )
                         await qrScannerRef.current.start()
 
-                        // Убираем агрессивные обработчики pause/suspend
-                        // Они могут вызывать постоянные перезапуски камеры
-
-                        // Периодически проверяем состояние камеры (реже и умнее)
-                        let lastHealthCheckLocal = Date.now()
-                        const healthCheck = setInterval(() => {
-                          if (qrScannerRef.current && isScanning) {
-                            const video = videoRef.current
-                            const now = Date.now()
-                            
-                            // Проверяем только если прошло достаточно времени с последней проверки
-                            if (now - lastHealthCheckLocal > 3000) {
-                              if (video && (video.paused || video.ended || video.readyState < 2)) {
-                                console.log('Camera health check failed, restarting...')
-                                lastHealthCheckLocal = now
-                                qrScannerRef.current.start()
-                              }
-                            }
-                          }
-                        }, 5000) // Увеличиваем интервал до 5 секунд
-
-                        // Очищаем интервал при остановке
-                        const originalStopScannerLocal = stopScannerLocal
-                        stopScannerLocal = () => {
-                          clearInterval(healthCheck)
-                          originalStopScannerLocal()
+                        // Добавляем только базовые обработчики без автоматических перезапусков
+                        const video = videoRef.current
+                        if (video) {
+                          video.addEventListener('loadedmetadata', () => {
+                            console.log('Camera loaded successfully')
+                            setError(null)
+                          })
+                          
+                          video.addEventListener('error', (e) => {
+                            console.error('Video error:', e)
+                            setError('Ошибка камеры. Нажмите "Перезапустить" для восстановления.')
+                          })
                         }
 
                       } catch (err) {
