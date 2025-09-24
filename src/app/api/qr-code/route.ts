@@ -58,6 +58,8 @@ export async function GET(request: NextRequest) {
 
     // Создаем URL для QR кода (используем более надежный сервис)
     const qrUrl = `https://chart.googleapis.com/chart?chs=200x200&chld=M|0&cht=qr&chl=${encodeURIComponent(JSON.stringify(qrData))}`
+    console.log('Generated QR URL:', qrUrl)
+    console.log('QR Data:', qrData)
 
     return NextResponse.json({ 
       success: true, 

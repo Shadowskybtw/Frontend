@@ -210,24 +210,44 @@ export default function StocksPage() {
               </div>
 
               
-              {/* QR код */}
-              {qrCode && (
-                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                  <h3 className="font-semibold text-gray-900 mb-2">📱 Ваш QR код</h3>
-                  <div className="flex justify-center">
-                    <Image 
-                      src={qrCode} 
-                      alt="QR Code" 
-                      width={128}
-                      height={128}
-                      className="border border-gray-300 rounded-lg"
-                    />
-                  </div>
-                  <p className="text-gray-600 text-xs mt-2 text-center">
-                    Покажите этот код для получения скидок
-                  </p>
-                </div>
-              )}
+        {/* QR код */}
+        {qrCode ? (
+          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+            <h3 className="font-semibold text-gray-900 mb-2">📱 Ваш QR код</h3>
+            <div className="flex justify-center">
+              <Image
+                src={qrCode} 
+                alt="QR Code" 
+                width={128}
+                height={128}
+                className="border border-gray-300 rounded-lg"
+                onError={(e) => {
+                  console.error('QR Code image failed to load:', e)
+                  console.log('QR Code URL:', qrCode)
+                }}
+                onLoad={() => {
+                  console.log('QR Code image loaded successfully:', qrCode)
+                }}
+              />
+            </div>
+            <p className="text-gray-600 text-xs mt-2 text-center">
+              Покажите этот код для получения скидок
+            </p>
+          </div>
+        ) : (
+          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+            <h3 className="font-semibold text-gray-900 mb-2">📱 Ваш QR код</h3>
+            <div className="flex justify-center items-center h-32 bg-gray-200 rounded-lg">
+              <div className="text-center">
+                <div className="text-4xl mb-2">❓</div>
+                <p className="text-gray-500 text-sm">QR код загружается...</p>
+              </div>
+            </div>
+            <p className="text-gray-600 text-xs mt-2 text-center">
+              Покажите этот код для получения скидок
+            </p>
+          </div>
+        )}
               
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
                 <h3 className="font-semibold text-yellow-900 mb-2">🎁 Бесплатные кальяны</h3>
