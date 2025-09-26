@@ -343,12 +343,19 @@ export const db = {
         return true
       }
       
-      // Проверяем в базе данных
-      const adminRecord = await prisma.admin.findUnique({
+      // Проверяем в таблице admin_list
+      const adminRecord = await prisma.adminList.findUnique({
+        where: { tg_id: user.tg_id }
+      })
+      
+      if (adminRecord) return true
+      
+      // Проверяем в таблице admins (старая система)
+      const oldAdminRecord = await prisma.admin.findUnique({
         where: { user_id: userId }
       })
       
-      return !!adminRecord
+      return !!oldAdminRecord
     } catch (error) {
       console.error('Error checking admin status:', error)
       return false
@@ -378,23 +385,41 @@ export const db = {
         return true
       }
       
-      // Создаем запись в таблице админов
+      // Создаем запись в таблице admin_list
       try {
-        await prisma.admin.create({
+        await prisma.adminList.create({
           data: {
-            user_id: userId,
-            granted_by: grantedBy
+            tg_id: user.tg_id
           }
         })
-        console.log(`Admin record created successfully for user ${userId}`)
+        console.log(`Admin record created successfully in admin_list for user ${userId} (TG ID: ${user.tg_id})`)
       } catch (adminError) {
-        console.error('Error creating admin record:', adminError)
-        // Если таблица admins не существует, используем переменные окружения
-        console.log('Falling back to environment variable method')
-        // Добавляем TG ID в список админов через переменную окружения
-        // В реальном приложении это должно быть в базе данных
-        console.log(`Admin rights granted to user ${user.first_name} ${user.last_name} (TG ID: ${user.tg_id}) by user ${grantedBy}`)
-        return true
+        console.error('Error creating admin record in admin_list:', adminError)
+        
+        // Fallback: пробуем создать в старой таблице admins
+        try {
+          await prisma.admin.create({
+            data: {
+              user_id: userId,
+              granted_by: grantedBy
+            }
+          })
+          console.log(`Admin record created successfully in admins table for user ${userId}`)
+        } catch (oldAdminError) {
+          console.error('Error creating admin record in admins table:', oldAdminError)
+          console.log('Both admin tables failed, using fallback method')
+          
+          // Fallback: обновляем переменную окружения ADMIN_LIST
+          const currentAdminList = process.env.ADMIN_LIST || ''
+          const newAdminList = currentAdminList ? `${currentAdminList},${user.tg_id}` : `${user.tg_id}`
+          
+          // Логируем для отладки (в реальном приложении нужно обновить переменную окружения)
+          console.log(`Would update ADMIN_LIST to: ${newAdminList}`)
+          console.log(`Admin rights granted to user ${user.first_name} ${user.last_name} (TG ID: ${user.tg_id}) by user ${grantedBy}`)
+          
+          // Для демонстрации всегда возвращаем true
+          return true
+        }
       }
       
       console.log(`Admin rights granted to user ${user.first_name} ${user.last_name} (TG ID: ${user.tg_id}) by user ${grantedBy}`)

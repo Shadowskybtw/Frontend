@@ -89,3 +89,11 @@ model Admin {
 
   @@map("admins")
 }
+
+model AdminList {
+  id         Int      @id @default(autoincrement())
+  tg_id      BigInt   @unique
+  created_at DateTime @default(now()) @map("created_at")
+
+  @@map("admin_list")
+}
