@@ -17,7 +17,6 @@ model User {
   last_name  String
   phone      String
   username   String?
-  is_admin   Boolean  @default(false) @map("is_admin")
   created_at DateTime @default(now()) @map("created_at")
   updated_at DateTime @default(now()) @updatedAt @map("updated_at")
 

@@ -330,11 +330,6 @@ export const db = {
       
       if (!user) return false
       
-      // Проверяем поле is_admin в таблице users
-      if (user.is_admin) {
-        return true
-      }
-      
       // Проверяем по TG ID (основной админ)
       const adminTgId = parseInt(process.env.ADMIN_TG_ID || '937011437')
       if (Number(user.tg_id) === adminTgId) {
@@ -346,6 +341,26 @@ export const db = {
       const adminTgIds = adminList.split(',').map(id => parseInt(id.trim())).filter(id => !isNaN(id))
       if (adminTgIds.includes(Number(user.tg_id))) {
         return true
+      }
+      
+      // Проверяем в таблице admin_list
+      try {
+        const adminRecord = await prisma.adminList.findUnique({
+          where: { tg_id: user.tg_id }
+        })
+        if (adminRecord) return true
+      } catch (error) {
+        console.log('AdminList table might not exist, skipping')
+      }
+      
+      // Проверяем в таблице admins (старая система)
+      try {
+        const oldAdminRecord = await prisma.admin.findUnique({
+          where: { user_id: userId }
+        })
+        if (oldAdminRecord) return true
+      } catch (error) {
+        console.log('Admin table might not exist, skipping')
       }
       
       return false
@@ -378,26 +393,28 @@ export const db = {
         return true
       }
       
-      // Обновляем поле is_admin в таблице users
+      // Создаем запись в таблице admin_list
       try {
-        await prisma.user.update({
-          where: { id: userId },
-          data: { is_admin: true }
+        await prisma.adminList.create({
+          data: {
+            tg_id: user.tg_id
+          }
         })
-        console.log(`Admin rights granted successfully to user ${userId} (TG ID: ${user.tg_id})`)
-      } catch (updateError) {
-        console.error('Error updating user admin status:', updateError)
+        console.log(`Admin record created successfully in admin_list for user ${userId} (TG ID: ${user.tg_id})`)
+      } catch (adminError) {
+        console.error('Error creating admin record in admin_list:', adminError)
         
-        // Fallback: создаем запись в таблице admin_list
+        // Fallback: создаем запись в таблице admins
         try {
-          await prisma.adminList.create({
+          await prisma.admin.create({
             data: {
-              tg_id: user.tg_id
+              user_id: userId,
+              granted_by: grantedBy
             }
           })
-          console.log(`Admin record created successfully in admin_list for user ${userId} (TG ID: ${user.tg_id})`)
-        } catch (adminError) {
-          console.error('Error creating admin record in admin_list:', adminError)
+          console.log(`Admin record created successfully in admins table for user ${userId}`)
+        } catch (oldAdminError) {
+          console.error('Error creating admin record in admins table:', oldAdminError)
           console.log('Using fallback method')
           
           // Fallback: обновляем переменную окружения ADMIN_LIST
