@@ -73,6 +73,8 @@ export default function ProfilePage() {
   const [adminPanelOpen, setAdminPanelOpen] = useState(false)
   const [newAdminTgId, setNewAdminTgId] = useState('')
   const [isGrantingAdmin, setIsGrantingAdmin] = useState(false)
+  const [isAdmin, setIsAdmin] = useState(false)
+  const [adminStatusChecked, setAdminStatusChecked] = useState(false)
   const [inputMode, setInputMode] = useState<'qr' | 'phone'>('qr')
   const [phoneDigits, setPhoneDigits] = useState('')
 
@@ -189,6 +191,7 @@ export default function ProfilePage() {
       loadProfileData(user.id)
       loadProfileStats(user.id)
       checkAdminRights(user.id)
+      checkAdminStatus()
     }
   }, [user, isInTelegram])
 
@@ -343,6 +346,33 @@ export default function ProfilePage() {
     }
   }
 
+  // Проверка админских прав
+  const checkAdminStatus = async () => {
+    if (!user?.id) return
+    
+    try {
+      const response = await fetch('/api/admin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          tg_id: user.id,
+          action: 'check_admin',
+          admin_key: 'admin123'
+        }),
+      })
+
+      const data = await response.json()
+      if (data.success) {
+        setIsAdmin(data.is_admin)
+        setAdminStatusChecked(true)
+      }
+    } catch (error) {
+      console.error('Error checking admin status:', error)
+    }
+  }
+
   // Назначение админских прав
   const grantAdminRights = async () => {
     if (!newAdminTgId.trim()) {
@@ -364,7 +394,8 @@ export default function ProfilePage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          tg_id: tgId,
+          tg_id: user?.id, // ID текущего пользователя (админа)
+          target_tg_id: tgId, // ID пользователя, которому выдаем права
           action: 'grant_admin',
           admin_key: 'admin123'
         }),
@@ -452,14 +483,25 @@ export default function ProfilePage() {
               <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-4">
                 <div className="flex justify-between items-center mb-2">
                   <h3 className="font-semibold text-purple-900">Информация о пользователе</h3>
-                  {!isEditing && (
-                    <button
-                      onClick={() => setIsEditing(true)}
-                      className="text-purple-600 hover:text-purple-800 text-sm font-medium"
-                    >
-                      ✏️ Редактировать
-                    </button>
-                  )}
+                  <div className="flex items-center gap-2">
+                    {adminStatusChecked && (
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        isAdmin 
+                          ? 'bg-red-100 text-red-800' 
+                          : 'bg-gray-100 text-gray-600'
+                      }`}>
+                        {isAdmin ? '👑 Админ' : '👤 Пользователь'}
+                      </span>
+                    )}
+                    {!isEditing && (
+                      <button
+                        onClick={() => setIsEditing(true)}
+                        className="text-purple-600 hover:text-purple-800 text-sm font-medium"
+                      >
+                        ✏️ Редактировать
+                      </button>
+                    )}
+                  </div>
                 </div>
                 
                 {isEditing ? (

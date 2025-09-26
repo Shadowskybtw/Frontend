@@ -57,10 +57,17 @@ export async function POST(request: NextRequest) {
 
     if (action === 'grant_admin') {
       // Выдаем админские права пользователю
-      const targetTgId = tg_id // Используем tg_id как target_tg_id
+      const { target_tg_id } = await request.json()
+      
+      if (!target_tg_id) {
+        return NextResponse.json({ 
+          success: false, 
+          message: 'Target TG ID is required' 
+        }, { status: 400 })
+      }
       
       // Получаем пользователя, которому назначаем права
-      const targetUser = await db.getUserByTgId(targetTgId)
+      const targetUser = await db.getUserByTgId(target_tg_id)
       if (!targetUser) {
         return NextResponse.json({ 
           success: false, 
@@ -77,7 +84,7 @@ export async function POST(request: NextRequest) {
         }, { status: 400 })
       }
       
-      // Выдаем админские права
+      // Выдаем админские права (используем ID текущего пользователя как того, кто выдает права)
       const granted = await db.grantAdminRights(targetUser.id, user.id)
       if (!granted) {
         return NextResponse.json({ 
