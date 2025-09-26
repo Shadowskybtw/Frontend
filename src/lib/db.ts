@@ -40,7 +40,7 @@ export interface FreeHookah {
 export interface HookahHistory {
   id: number
   user_id: number
-  hookah_type: 'regular' | 'free'
+  hookah_type: string
   slot_number?: number | null
   stock_id?: number | null
   admin_id?: number | null
