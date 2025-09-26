@@ -17,8 +17,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 })
     }
 
-    if (!tg_id) {
-      console.log('No TG ID provided')
+    if (!tg_id || tg_id === 'undefined' || tg_id === 'null') {
+      console.log('No TG ID provided or invalid:', tg_id)
       return NextResponse.json({ success: false, message: 'TG ID is required' }, { status: 400 })
     }
 
