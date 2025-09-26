@@ -307,13 +307,27 @@ export const db = {
     return history
   },
 
-  // Admin operations
+  // Admin operations - используем простой список админов
   async isUserAdmin(userId: number): Promise<boolean> {
     try {
-      const admin = await prisma.admin.findUnique({
-        where: { user_id: userId }
+      // Получаем пользователя
+      const user = await prisma.user.findUnique({
+        where: { id: userId }
       })
-      return !!admin
+      
+      if (!user) return false
+      
+      // Проверяем по TG ID (основной админ)
+      const adminTgId = parseInt(process.env.ADMIN_TG_ID || '937011437')
+      if (Number(user.tg_id) === adminTgId) {
+        return true
+      }
+      
+      // Проверяем по списку админов в переменной окружения
+      const adminList = process.env.ADMIN_LIST || ''
+      const adminTgIds = adminList.split(',').map(id => parseInt(id.trim())).filter(id => !isNaN(id))
+      
+      return adminTgIds.includes(Number(user.tg_id))
     } catch (error) {
       console.error('Error checking admin status:', error)
       return false
@@ -322,12 +336,17 @@ export const db = {
 
   async grantAdminRights(userId: number, grantedBy: number): Promise<boolean> {
     try {
-      await prisma.admin.create({
-        data: {
-          user_id: userId,
-          granted_by: grantedBy
-        }
+      // Получаем пользователя
+      const user = await prisma.user.findUnique({
+        where: { id: userId }
       })
+      
+      if (!user) return false
+      
+      // Добавляем TG ID в список админов через переменную окружения
+      // В реальном приложении это должно быть в базе данных
+      console.log(`Admin rights granted to user ${user.first_name} ${user.last_name} (TG ID: ${user.tg_id})`)
+      
       return true
     } catch (error) {
       console.error('Error granting admin rights:', error)

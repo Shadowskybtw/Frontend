@@ -92,17 +92,18 @@ export async function POST(request: NextRequest) {
       // Добавляем запись в историю кальянов
       await db.addHookahToHistory(user.id, 'regular', 1)
       
-      return NextResponse.json({ 
-        success: true, 
-        message: 'Создана новая акция! Слот заполнен.',
-        user: {
-          id: user.id,
-          first_name: user.first_name,
-          last_name: user.last_name
-        },
-        stock: updatedStock,
-        newPromotion: true
-      })
+        return NextResponse.json({ 
+          success: true, 
+          message: 'Создана новая акция! Слот заполнен.',
+          user: {
+            id: user.id,
+            first_name: user.first_name,
+            last_name: user.last_name
+          },
+          stock: updatedStock,
+          newPromotion: true,
+          refreshRequired: true
+        })
     }
     
     // Заполняем следующий слот (увеличиваем прогресс на 20%)

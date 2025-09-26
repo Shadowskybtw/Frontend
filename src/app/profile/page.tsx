@@ -271,15 +271,14 @@ export default function ProfilePage() {
         setQrData('')
         setQrScannerOpen(false)
         
-        // Обновляем статистику профиля после успешного сканирования
+        // Принудительно обновляем статистику профиля
         if (user?.id) {
-          setTimeout(() => {
-            loadProfileStats(user.id)
-          }, 500)
-          // Дополнительное обновление через 2 секунды для надежности
-          setTimeout(() => {
-            loadProfileStats(user.id)
-          }, 2000)
+          // Множественные обновления для надежности
+          loadProfileStats(user.id)
+          setTimeout(() => loadProfileStats(user.id), 500)
+          setTimeout(() => loadProfileStats(user.id), 1000)
+          setTimeout(() => loadProfileStats(user.id), 2000)
+          setTimeout(() => loadProfileStats(user.id), 5000)
         }
       } else {
         alert('Ошибка: ' + data.message)
@@ -326,15 +325,14 @@ export default function ProfilePage() {
         setQrData('')
         setQrScannerOpen(false)
         
-        // Обновляем статистику профиля после успешного сканирования
+        // Принудительно обновляем статистику профиля
         if (user?.id) {
-          setTimeout(() => {
-            loadProfileStats(user.id)
-          }, 500)
-          // Дополнительное обновление через 2 секунды для надежности
-          setTimeout(() => {
-            loadProfileStats(user.id)
-          }, 2000)
+          // Множественные обновления для надежности
+          loadProfileStats(user.id)
+          setTimeout(() => loadProfileStats(user.id), 500)
+          setTimeout(() => loadProfileStats(user.id), 1000)
+          setTimeout(() => loadProfileStats(user.id), 2000)
+          setTimeout(() => loadProfileStats(user.id), 5000)
         }
       } else {
         alert('Ошибка: ' + data.message)
@@ -420,14 +418,14 @@ export default function ProfilePage() {
         setPhoneDigits('')
         setQrScannerOpen(false)
         
-        // Обновляем статистику профиля после успешного подтверждения
+        // Принудительно обновляем статистику профиля
         if (user?.id) {
-          setTimeout(() => {
-            loadProfileStats(user.id)
-          }, 500)
-          setTimeout(() => {
-            loadProfileStats(user.id)
-          }, 2000)
+          // Множественные обновления для надежности
+          loadProfileStats(user.id)
+          setTimeout(() => loadProfileStats(user.id), 500)
+          setTimeout(() => loadProfileStats(user.id), 1000)
+          setTimeout(() => loadProfileStats(user.id), 2000)
+          setTimeout(() => loadProfileStats(user.id), 5000)
         }
       } else {
         alert('❌ Ошибка: ' + data.message)

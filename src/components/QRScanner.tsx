@@ -24,14 +24,14 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
   }
 
   const startScanner = async () => {
-    if (isInitialized) return // Предотвращаем множественные инициализации
+    if (isInitialized) return
     
     try {
       setError(null)
       setIsScanning(true)
       setIsInitialized(true)
 
-      // Проверяем доступность камеры
+      // Простая проверка камеры
       const hasCamera = await QrScanner.hasCamera()
       if (!hasCamera) {
         setError('Камера не найдена на устройстве')
@@ -39,46 +39,22 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
         return
       }
 
+      // Создаем сканер с минимальными настройками
       qrScannerRef.current = new QrScanner(
         videoRef.current!,
         (result) => {
-          console.log('QR Code detected:', result.data)
           onScan(result.data)
           stopScanner()
         },
         {
-          onDecodeError: (err) => {
-            // Игнорируем ошибки декодирования, они нормальны
-          },
-          highlightScanRegion: true,
-          highlightCodeOutline: true,
           preferredCamera: 'environment',
-          maxScansPerSecond: 1, // Минимальная частота
+          maxScansPerSecond: 1,
         }
       )
 
+      // Запускаем сканер
       await qrScannerRef.current.start()
-      console.log('QR Scanner started successfully')
-      
-      // Убеждаемся, что видео отображается
-      const video = videoRef.current
-      if (video) {
-        video.style.display = 'block'
-        video.style.visibility = 'visible'
-        
-        // Добавляем обработчик для отображения видео
-        video.addEventListener('loadeddata', () => {
-          console.log('Video data loaded')
-          video.style.display = 'block'
-          video.style.visibility = 'visible'
-        })
-        
-        video.addEventListener('canplay', () => {
-          console.log('Video can play')
-          video.style.display = 'block'
-          video.style.visibility = 'visible'
-        })
-      }
+      console.log('QR Scanner started')
 
     } catch (err) {
       console.error('Error starting QR scanner:', err)
