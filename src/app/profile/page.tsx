@@ -185,6 +185,33 @@ export default function ProfilePage() {
     }
   }
 
+  // Проверка админских прав
+  const checkAdminStatus = useCallback(async () => {
+    if (!user?.id) return
+    
+    try {
+      const response = await fetch('/api/admin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          tg_id: user.tg_id,
+          action: 'check_admin',
+          admin_key: 'admin123'
+        }),
+      })
+
+      const data = await response.json()
+      if (data.success) {
+        setIsAdmin(data.is_admin)
+        setAdminStatusChecked(true)
+      }
+    } catch (error) {
+      console.error('Error checking admin status:', error)
+    }
+  }, [user?.id, user?.tg_id])
+
   // Загружаем данные профиля когда получаем пользователя
   useEffect(() => {
     if (user?.id && isInTelegram) {
@@ -345,33 +372,6 @@ export default function ProfilePage() {
       alert('Ошибка сканирования QR кода')
     }
   }
-
-  // Проверка админских прав
-  const checkAdminStatus = useCallback(async () => {
-    if (!user?.id) return
-    
-    try {
-      const response = await fetch('/api/admin', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          tg_id: user.tg_id,
-          action: 'check_admin',
-          admin_key: 'admin123'
-        }),
-      })
-
-      const data = await response.json()
-      if (data.success) {
-        setIsAdmin(data.is_admin)
-        setAdminStatusChecked(true)
-      }
-    } catch (error) {
-      console.error('Error checking admin status:', error)
-    }
-  }, [user?.id, user?.tg_id])
 
   // Назначение админских прав
   const grantAdminRights = async () => {
