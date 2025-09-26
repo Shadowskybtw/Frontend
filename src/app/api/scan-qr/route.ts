@@ -113,11 +113,6 @@ export async function POST(request: NextRequest) {
     // Добавляем запись в историю кальянов
     await db.addHookahToHistory(user.id, 'regular', newSlotNumber)
 
-    // Если акция завершена, создаем бесплатный кальян
-    if (newProgress >= 100) {
-      await db.createFreeHookah(user.id)
-    }
-
     return NextResponse.json({ 
       success: true, 
       message: 'QR code scanned successfully',

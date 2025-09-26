@@ -279,14 +279,6 @@ export default function ProfilePage() {
           setTimeout(() => loadProfileStats(user.id), 1000)
           setTimeout(() => loadProfileStats(user.id), 2000)
           setTimeout(() => loadProfileStats(user.id), 5000)
-          
-          // Если создана новая акция, обновляем страницу акций
-          if (data.newPromotion || data.freeHookahCreated) {
-            setTimeout(() => {
-              // Открываем страницу акций в новой вкладке для обновления
-              window.open('/stocks', '_blank')
-            }, 1000)
-          }
         }
       } else {
         alert('Ошибка: ' + data.message)
@@ -341,14 +333,6 @@ export default function ProfilePage() {
           setTimeout(() => loadProfileStats(user.id), 1000)
           setTimeout(() => loadProfileStats(user.id), 2000)
           setTimeout(() => loadProfileStats(user.id), 5000)
-          
-          // Если создана новая акция, обновляем страницу акций
-          if (data.newPromotion || data.freeHookahCreated) {
-            setTimeout(() => {
-              // Открываем страницу акций в новой вкладке для обновления
-              window.open('/stocks', '_blank')
-            }, 1000)
-          }
         }
       } else {
         alert('Ошибка: ' + data.message)
@@ -442,14 +426,6 @@ export default function ProfilePage() {
           setTimeout(() => loadProfileStats(user.id), 1000)
           setTimeout(() => loadProfileStats(user.id), 2000)
           setTimeout(() => loadProfileStats(user.id), 5000)
-          
-          // Если создана новая акция, обновляем страницу акций
-          if (data.newPromotion || data.freeHookahCreated) {
-            setTimeout(() => {
-              // Открываем страницу акций в новой вкладке для обновления
-              window.open('/stocks', '_blank')
-            }, 1000)
-          }
         }
       } else {
         alert('❌ Ошибка: ' + data.message)

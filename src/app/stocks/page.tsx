@@ -137,7 +137,8 @@ export default function StocksPage() {
       const data = await response.json()
       if (data.success) {
         alert('🎉 Бесплатный кальян успешно получен!')
-        await loadFreeHookahs(user.id) // Перезагружаем данные
+        await loadFreeHookahs(user.id) // Перезагружаем бесплатные кальяны
+        await loadStocks(user.id) // Перезагружаем акции
       } else {
         alert('❌ Ошибка: ' + data.message)
       }
