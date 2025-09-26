@@ -79,31 +79,25 @@ export async function POST(request: NextRequest) {
     const maxSlots = 5
     
     if (currentSlots >= maxSlots) {
-      // Если все слоты заполнены, создаем новую акцию
+      // Если все слоты заполнены, создаем новую акцию с 0 прогрессом
       const newStock = await db.createStock({
         user_id: user.id,
         stock_name: '5+1 кальян',
         progress: 0
       })
       
-      // Заполняем первый слот новой акции
-      const updatedStock = await db.updateStockProgress(newStock.id, 20)
-      
-      // Добавляем запись в историю кальянов
-      await db.addHookahToHistory(user.id, 'regular', 1)
-      
       // Создаем бесплатный кальян для завершенной акции
       await db.createFreeHookah(user.id)
       
       return NextResponse.json({ 
         success: true, 
-        message: 'Создана новая акция! Слот заполнен. Получен бесплатный кальян!',
+        message: 'Акция завершена! Получен бесплатный кальян! Начата новая акция.',
         user: {
           id: user.id,
           first_name: user.first_name,
           last_name: user.last_name
         },
-        stock: updatedStock,
+        stock: newStock,
         newPromotion: true,
         refreshRequired: true,
         freeHookahCreated: true

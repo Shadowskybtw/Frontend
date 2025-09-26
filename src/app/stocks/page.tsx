@@ -107,6 +107,7 @@ export default function StocksPage() {
     }
   }
 
+
   // Загружаем бесплатные кальяны
   const loadFreeHookahs = async (tgId: number) => {
     try {
