@@ -204,6 +204,11 @@ export default function StocksPage() {
     const interval = setInterval(() => {
       loadStocks(user.id)
       loadFreeHookahs(user.id)
+      
+      // Принудительное обновление страницы каждые 30 секунд
+      if (Math.random() < 0.1) { // 10% вероятность обновления
+        window.location.reload()
+      }
     }, 3000) // Обновляем каждые 3 секунды для более быстрого отклика
 
     return () => clearInterval(interval)

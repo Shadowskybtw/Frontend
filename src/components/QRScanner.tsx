@@ -10,67 +10,58 @@ interface QRScannerProps {
 export default function QRScanner({ onScan, onClose }: QRScannerProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const qrScannerRef = useRef<QrScanner | null>(null)
-  const [isScanning, setIsScanning] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [isInitialized, setIsInitialized] = useState(false)
-
-  const stopScanner = () => {
-    if (qrScannerRef.current) {
-      qrScannerRef.current.stop()
-      qrScannerRef.current.destroy()
-      qrScannerRef.current = null
-    }
-    setIsScanning(false)
-  }
-
-  const startScanner = async () => {
-    if (isInitialized) return
-    
-    try {
-      setError(null)
-      setIsScanning(true)
-      setIsInitialized(true)
-
-      // Простая проверка камеры
-      const hasCamera = await QrScanner.hasCamera()
-      if (!hasCamera) {
-        setError('Камера не найдена на устройстве')
-        setIsScanning(false)
-        return
-      }
-
-      // Создаем сканер с минимальными настройками
-      qrScannerRef.current = new QrScanner(
-        videoRef.current!,
-        (result) => {
-          onScan(result.data)
-          stopScanner()
-        },
-        {
-          preferredCamera: 'environment',
-          maxScansPerSecond: 1,
-        }
-      )
-
-      // Запускаем сканер
-      await qrScannerRef.current.start()
-      console.log('QR Scanner started')
-
-    } catch (err) {
-      console.error('Error starting QR scanner:', err)
-      setError('Не удалось запустить камеру. Проверьте разрешения.')
-      setIsScanning(false)
-      setIsInitialized(false)
-    }
-  }
 
   useEffect(() => {
-    if (!videoRef.current || isInitialized) return
+    let mounted = true
 
-    startScanner()
+    const initScanner = async () => {
+      if (!videoRef.current || !mounted) return
+
+      try {
+        setError(null)
+
+        // Проверяем камеру
+        const hasCamera = await QrScanner.hasCamera()
+        if (!hasCamera) {
+          setError('Камера не найдена')
+          return
+        }
+
+        // Создаем сканер
+        qrScannerRef.current = new QrScanner(
+          videoRef.current,
+          (result) => {
+            if (mounted) {
+              onScan(result.data)
+            }
+          },
+          {
+            preferredCamera: 'environment',
+            maxScansPerSecond: 1,
+          }
+        )
+
+        // Запускаем сканер
+        await qrScannerRef.current.start()
+
+      } catch (err) {
+        console.error('Scanner error:', err)
+        if (mounted) {
+          setError('Ошибка камеры')
+        }
+      }
+    }
+
+    initScanner()
 
     return () => {
-      stopScanner()
+      mounted = false
+      if (qrScannerRef.current) {
+        qrScannerRef.current.stop()
+        qrScannerRef.current.destroy()
+        qrScannerRef.current = null
+      }
     }
   }, [onScan])
 
@@ -80,7 +71,6 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
       qrScannerRef.current.destroy()
       qrScannerRef.current = null
     }
-    setIsScanning(false)
     onClose()
   }
 
@@ -100,21 +90,11 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
         <div className="relative">
           <video
             ref={videoRef}
-            className="w-full h-64 bg-gray-200 rounded-lg object-cover"
+            className="w-full h-64 bg-gray-200 rounded-lg"
             playsInline
             autoPlay
             muted
           />
-          {isScanning && (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="bg-white bg-opacity-90 px-4 py-2 rounded-lg">
-                <div className="flex items-center space-x-2">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-                  <span className="text-sm">Сканирование...</span>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
 
         {error && (
@@ -129,22 +109,7 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
           </p>
         </div>
 
-        <div className="mt-4 flex justify-center space-x-2">
-          {error && (
-            <button
-              onClick={() => {
-                setError(null)
-                setIsInitialized(false)
-                stopScanner()
-                setTimeout(() => {
-                  startScanner()
-                }, 500)
-              }}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg"
-            >
-              🔄 Перезапустить
-            </button>
-          )}
+        <div className="mt-4 flex justify-center">
           <button
             onClick={handleClose}
             className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg"

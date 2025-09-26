@@ -279,6 +279,11 @@ export default function ProfilePage() {
           setTimeout(() => loadProfileStats(user.id), 1000)
           setTimeout(() => loadProfileStats(user.id), 2000)
           setTimeout(() => loadProfileStats(user.id), 5000)
+          
+          // Принудительное обновление страницы через 3 секунды
+          setTimeout(() => {
+            window.location.reload()
+          }, 3000)
         }
       } else {
         alert('Ошибка: ' + data.message)
@@ -333,6 +338,11 @@ export default function ProfilePage() {
           setTimeout(() => loadProfileStats(user.id), 1000)
           setTimeout(() => loadProfileStats(user.id), 2000)
           setTimeout(() => loadProfileStats(user.id), 5000)
+          
+          // Принудительное обновление страницы через 3 секунды
+          setTimeout(() => {
+            window.location.reload()
+          }, 3000)
         }
       } else {
         alert('Ошибка: ' + data.message)
@@ -426,6 +436,11 @@ export default function ProfilePage() {
           setTimeout(() => loadProfileStats(user.id), 1000)
           setTimeout(() => loadProfileStats(user.id), 2000)
           setTimeout(() => loadProfileStats(user.id), 5000)
+          
+          // Принудительное обновление страницы через 3 секунды
+          setTimeout(() => {
+            window.location.reload()
+          }, 3000)
         }
       } else {
         alert('❌ Ошибка: ' + data.message)
