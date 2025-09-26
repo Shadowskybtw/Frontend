@@ -84,8 +84,12 @@ export async function POST(request: NextRequest) {
       }
       
       // Выдаем админские права (используем ID текущего пользователя как того, кто выдает права)
+      console.log(`Granting admin rights: targetUser.id=${targetUser.id}, user.id=${user.id}`)
       const granted = await db.grantAdminRights(targetUser.id, user.id)
+      console.log(`Admin rights grant result: ${granted}`)
+      
       if (!granted) {
+        console.error('Failed to grant admin rights')
         return NextResponse.json({ 
           success: false, 
           message: 'Ошибка при выдаче админских прав' 
