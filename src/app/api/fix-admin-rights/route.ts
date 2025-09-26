@@ -12,9 +12,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 })
     }
 
-    // Получаем всех пользователей
-    const allUsers = await db.getAllUsers()
-    
     // Список TG ID пользователей, которым нужно выдать админские права
     const adminTgIds = [
       1159515006, // Пользователь из скриншота

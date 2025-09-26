@@ -1,10 +1,11 @@
 "use client"
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
 import QRScanner from '@/components/QRScanner'
 
 type TgUser = {
   id: number
+  tg_id: number
   username?: string
   first_name?: string
   last_name?: string
@@ -192,7 +193,7 @@ export default function ProfilePage() {
       checkAdminRights(user.id)
       checkAdminStatus()
     }
-  }, [user, isInTelegram])
+  }, [user, isInTelegram, checkAdminStatus])
 
   // Добавляем периодическое обновление данных для отслеживания изменений
   useEffect(() => {
@@ -346,7 +347,7 @@ export default function ProfilePage() {
   }
 
   // Проверка админских прав
-  const checkAdminStatus = async () => {
+  const checkAdminStatus = useCallback(async () => {
     if (!user?.id) return
     
     try {
@@ -370,7 +371,7 @@ export default function ProfilePage() {
     } catch (error) {
       console.error('Error checking admin status:', error)
     }
-  }
+  }, [user?.id, user?.tg_id])
 
   // Назначение админских прав
   const grantAdminRights = async () => {
