@@ -204,12 +204,7 @@ export default function StocksPage() {
     const interval = setInterval(() => {
       loadStocks(user.id)
       loadFreeHookahs(user.id)
-      
-      // Принудительное обновление страницы каждые 30 секунд
-      if (Math.random() < 0.1) { // 10% вероятность обновления
-        window.location.reload()
-      }
-    }, 3000) // Обновляем каждые 3 секунды для более быстрого отклика
+    }, 2000) // Обновляем каждые 2 секунды
 
     return () => clearInterval(interval)
   }, [user, isInTelegram])
@@ -231,9 +226,23 @@ export default function StocksPage() {
     <main className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center p-4">
       <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            📈 Мои акции
-          </h1>
+          <div className="flex items-center justify-between mb-2">
+            <h1 className="text-3xl font-bold text-gray-900">
+              📈 Мои акции
+            </h1>
+            <button
+              onClick={() => {
+                if (user?.id) {
+                  loadStocks(user.id)
+                  loadFreeHookahs(user.id)
+                  loadQrCode(user.id)
+                }
+              }}
+              className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg text-sm font-medium"
+            >
+              🔄 Обновить
+            </button>
+          </div>
           <p className="text-gray-600 mb-8">
             Отслеживайте прогресс ваших акций
           </p>

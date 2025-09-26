@@ -279,11 +279,6 @@ export default function ProfilePage() {
           setTimeout(() => loadProfileStats(user.id), 1000)
           setTimeout(() => loadProfileStats(user.id), 2000)
           setTimeout(() => loadProfileStats(user.id), 5000)
-          
-          // Принудительное обновление страницы через 3 секунды
-          setTimeout(() => {
-            window.location.reload()
-          }, 3000)
         }
       } else {
         alert('Ошибка: ' + data.message)
@@ -338,11 +333,6 @@ export default function ProfilePage() {
           setTimeout(() => loadProfileStats(user.id), 1000)
           setTimeout(() => loadProfileStats(user.id), 2000)
           setTimeout(() => loadProfileStats(user.id), 5000)
-          
-          // Принудительное обновление страницы через 3 секунды
-          setTimeout(() => {
-            window.location.reload()
-          }, 3000)
         }
       } else {
         alert('Ошибка: ' + data.message)
@@ -436,11 +426,6 @@ export default function ProfilePage() {
           setTimeout(() => loadProfileStats(user.id), 1000)
           setTimeout(() => loadProfileStats(user.id), 2000)
           setTimeout(() => loadProfileStats(user.id), 5000)
-          
-          // Принудительное обновление страницы через 3 секунды
-          setTimeout(() => {
-            window.location.reload()
-          }, 3000)
         }
       } else {
         alert('❌ Ошибка: ' + data.message)
@@ -455,9 +440,21 @@ export default function ProfilePage() {
     <main className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-100 flex items-center justify-center p-4">
       <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            👤 Профиль
-          </h1>
+          <div className="flex items-center justify-between mb-2">
+            <h1 className="text-3xl font-bold text-gray-900">
+              👤 Профиль
+            </h1>
+            <button
+              onClick={() => {
+                if (user?.id) {
+                  loadProfileStats(user.id)
+                }
+              }}
+              className="bg-purple-500 hover:bg-purple-600 text-white px-3 py-2 rounded-lg text-sm font-medium"
+            >
+              🔄 Обновить
+            </button>
+          </div>
           <p className="text-gray-600 mb-8">
             Управляйте своим профилем
           </p>
