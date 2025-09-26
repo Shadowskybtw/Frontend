@@ -40,8 +40,11 @@ export interface FreeHookah {
 export interface HookahHistory {
   id: number
   user_id: number
-  hookah_type: string
+  hookah_type: 'regular' | 'free'
   slot_number?: number | null
+  stock_id?: number | null
+  admin_id?: number | null
+  scan_method?: string | null
   created_at: Date
 }
 
@@ -294,13 +297,23 @@ export const db = {
     }
   },
 
-  async addHookahToHistory(userId: number, hookahType: string, slotNumber?: number): Promise<HookahHistory> {
-    console.log('Adding hookah to history:', { userId, hookahType, slotNumber })
+  async addHookahToHistory(
+    userId: number, 
+    hookahType: 'regular' | 'free', 
+    slotNumber?: number,
+    stockId?: number,
+    adminId?: number,
+    scanMethod?: string
+  ): Promise<HookahHistory> {
+    console.log('Adding hookah to history:', { userId, hookahType, slotNumber, stockId, adminId, scanMethod })
     const history = await prisma.hookahHistory.create({
       data: {
         user_id: userId,
         hookah_type: hookahType,
-        slot_number: slotNumber
+        slot_number: slotNumber || null,
+        stock_id: stockId || null,
+        admin_id: adminId || null,
+        scan_method: scanMethod || null,
       }
     })
     console.log('Hookah added to history:', history)
@@ -326,8 +339,16 @@ export const db = {
       // Проверяем по списку админов в переменной окружения
       const adminList = process.env.ADMIN_LIST || ''
       const adminTgIds = adminList.split(',').map(id => parseInt(id.trim())).filter(id => !isNaN(id))
+      if (adminTgIds.includes(Number(user.tg_id))) {
+        return true
+      }
       
-      return adminTgIds.includes(Number(user.tg_id))
+      // Проверяем в базе данных
+      const adminRecord = await prisma.admin.findUnique({
+        where: { user_id: userId }
+      })
+      
+      return !!adminRecord
     } catch (error) {
       console.error('Error checking admin status:', error)
       return false
@@ -343,9 +364,22 @@ export const db = {
       
       if (!user) return false
       
-      // Добавляем TG ID в список админов через переменную окружения
-      // В реальном приложении это должно быть в базе данных
-      console.log(`Admin rights granted to user ${user.first_name} ${user.last_name} (TG ID: ${user.tg_id})`)
+      // Проверяем, не является ли пользователь уже админом
+      const isAlreadyAdmin = await this.isUserAdmin(userId)
+      if (isAlreadyAdmin) {
+        console.log(`User ${user.first_name} ${user.last_name} is already an admin`)
+        return true
+      }
+      
+      // Создаем запись в таблице админов
+      await prisma.admin.create({
+        data: {
+          user_id: userId,
+          granted_by: grantedBy
+        }
+      })
+      
+      console.log(`Admin rights granted to user ${user.first_name} ${user.last_name} (TG ID: ${user.tg_id}) by user ${grantedBy}`)
       
       return true
     } catch (error) {

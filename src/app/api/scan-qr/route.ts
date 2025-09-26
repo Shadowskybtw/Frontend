@@ -111,7 +111,14 @@ export async function POST(request: NextRequest) {
     const updatedStock = await db.updateStockProgress(stock.id, newProgress)
 
     // Добавляем запись в историю кальянов
-    await db.addHookahToHistory(user.id, 'regular', newSlotNumber)
+    await db.addHookahToHistory(
+      user.id, 
+      'regular', 
+      newSlotNumber,
+      stock.id,
+      undefined, // admin_id будет добавлен позже
+      qr_data ? 'qr_code' : 'phone_digits'
+    )
 
     return NextResponse.json({ 
       success: true, 
