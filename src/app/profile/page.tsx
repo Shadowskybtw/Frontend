@@ -101,7 +101,28 @@ export default function ProfilePage() {
           setIsInTelegram(true)
           const tgUser = window.Telegram.WebApp.initDataUnsafe?.user as TgUser | undefined
           if (tgUser) {
-            setUser(tgUser)
+            // Получаем tg_id из initData, так как он не всегда доступен в initDataUnsafe
+            const initData = window.Telegram.WebApp.initData
+            let tgId = tgUser.tg_id
+            
+            if (!tgId && initData) {
+              // Парсим tg_id из initData
+              const urlParams = new URLSearchParams(initData)
+              const userParam = urlParams.get('user')
+              if (userParam) {
+                try {
+                  const userData = JSON.parse(decodeURIComponent(userParam))
+                  tgId = userData.id
+                } catch (e) {
+                  console.error('Error parsing user data from initData:', e)
+                }
+              }
+            }
+            
+            setUser({
+              ...tgUser,
+              tg_id: tgId || 0 // Используем 0 как fallback
+            })
           }
         }
       } catch (error) {
@@ -185,9 +206,38 @@ export default function ProfilePage() {
     }
   }
 
+  // Получение TG ID из базы данных
+  const getTgIdFromDb = useCallback(async (userId: number) => {
+    try {
+      const response = await fetch(`/api/check-registration?tg_id=${userId}`)
+      const data = await response.json()
+      if (data.success && data.user?.tg_id) {
+        return data.user.tg_id
+      }
+    } catch (error) {
+      console.error('Error getting TG ID from DB:', error)
+    }
+    return null
+  }, [])
+
   // Проверка админских прав
   const checkAdminStatus = useCallback(async () => {
-    if (!user?.id || !user?.tg_id) return
+    if (!user?.id) return
+    
+    let tgId = user.tg_id
+    
+    // Если tg_id не получен из Telegram, получаем из базы данных
+    if (!tgId || tgId === 0) {
+      tgId = await getTgIdFromDb(user.id)
+      if (tgId) {
+        setUser(prev => prev ? { ...prev, tg_id: tgId } : null)
+      }
+    }
+    
+    if (!tgId) {
+      console.error('Could not get TG ID for admin check')
+      return
+    }
     
     try {
       const response = await fetch('/api/admin', {
@@ -196,7 +246,7 @@ export default function ProfilePage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          tg_id: user.tg_id,
+          tg_id: tgId,
           action: 'check_admin',
           admin_key: 'admin123'
         }),
@@ -210,7 +260,7 @@ export default function ProfilePage() {
     } catch (error) {
       console.error('Error checking admin status:', error)
     }
-  }, [user?.id, user?.tg_id])
+  }, [user?.id, user?.tg_id, getTgIdFromDb])
 
   // Загружаем данные профиля когда получаем пользователя
   useEffect(() => {
@@ -380,14 +430,28 @@ export default function ProfilePage() {
       return
     }
 
-    if (!user?.tg_id) {
-      alert('Ошибка: не удалось получить ваш Telegram ID')
+    if (!user?.id) {
+      alert('Ошибка: пользователь не найден')
       return
     }
 
     const tgId = parseInt(newAdminTgId)
     if (isNaN(tgId)) {
       alert('Неверный формат Telegram ID')
+      return
+    }
+
+    // Получаем TG ID текущего пользователя
+    let currentTgId = user.tg_id
+    if (!currentTgId || currentTgId === 0) {
+      currentTgId = await getTgIdFromDb(user.id)
+      if (currentTgId) {
+        setUser(prev => prev ? { ...prev, tg_id: currentTgId } : null)
+      }
+    }
+
+    if (!currentTgId) {
+      alert('Ошибка: не удалось получить ваш Telegram ID')
       return
     }
 
@@ -399,7 +463,7 @@ export default function ProfilePage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          tg_id: user.tg_id, // TG ID текущего пользователя (админа)
+          tg_id: currentTgId, // TG ID текущего пользователя (админа)
           target_tg_id: tgId, // TG ID пользователя, которому выдаем права
           action: 'grant_admin',
           admin_key: 'admin123'
