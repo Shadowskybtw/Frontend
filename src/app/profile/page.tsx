@@ -73,7 +73,6 @@ export default function ProfilePage() {
   const [adminPanelOpen, setAdminPanelOpen] = useState(false)
   const [newAdminTgId, setNewAdminTgId] = useState('')
   const [isGrantingAdmin, setIsGrantingAdmin] = useState(false)
-  const [isAdmin, setIsAdmin] = useState(false)
   const [adminStatusChecked, setAdminStatusChecked] = useState(false)
   const [inputMode, setInputMode] = useState<'qr' | 'phone'>('qr')
   const [phoneDigits, setPhoneDigits] = useState('')
