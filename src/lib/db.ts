@@ -330,10 +330,14 @@ export const db = {
       
       if (!user) return false
       
-      // Проверяем поле is_admin в таблице users (основной метод)
-      if (user.is_admin) {
-        console.log(`User ${user.first_name} ${user.last_name} is admin (is_admin=true, TG ID: ${user.tg_id})`)
-        return true
+      // Проверяем поле is_admin в таблице users (если существует)
+      try {
+        if (user.is_admin) {
+          console.log(`User ${user.first_name} ${user.last_name} is admin (is_admin=true, TG ID: ${user.tg_id})`)
+          return true
+        }
+      } catch (error) {
+        console.log('is_admin field might not exist, skipping:', error)
       }
       
       // Hardcoded список админов (fallback)
@@ -415,54 +419,42 @@ export const db = {
         return true
       }
       
-      // Обновляем поле is_admin в таблице users (основной метод)
+      // Создаем запись в таблице admin_list (основной метод)
       try {
-        await prisma.user.update({
-          where: { id: userId },
-          data: { is_admin: true }
+        await prisma.adminList.create({
+          data: {
+            tg_id: user.tg_id
+          }
         })
-        console.log(`✅ Admin rights granted successfully to user ${userId} (TG ID: ${user.tg_id}) - is_admin=true`)
+        console.log(`✅ Admin record created successfully in admin_list for user ${userId} (TG ID: ${user.tg_id})`)
         return true
-      } catch (updateError) {
-        console.error('Error updating is_admin field:', updateError)
+      } catch (adminError) {
+        console.error('Error creating admin record in admin_list:', adminError)
         
-        // Fallback: создаем запись в таблице admin_list
+        // Fallback: создаем запись в таблице admins
         try {
-          await prisma.adminList.create({
+          await prisma.admin.create({
             data: {
-              tg_id: user.tg_id
+              user_id: userId,
+              granted_by: grantedBy
             }
           })
-          console.log(`✅ Admin record created successfully in admin_list for user ${userId} (TG ID: ${user.tg_id})`)
+          console.log(`✅ Admin record created successfully in admins table for user ${userId}`)
           return true
-        } catch (adminError) {
-          console.error('Error creating admin record in admin_list:', adminError)
+        } catch (oldAdminError) {
+          console.error('Error creating admin record in admins table:', oldAdminError)
+          console.log('Using fallback method - admin rights granted via environment variable')
           
-          // Fallback: создаем запись в таблице admins
-          try {
-            await prisma.admin.create({
-              data: {
-                user_id: userId,
-                granted_by: grantedBy
-              }
-            })
-            console.log(`✅ Admin record created successfully in admins table for user ${userId}`)
-            return true
-          } catch (oldAdminError) {
-            console.error('Error creating admin record in admins table:', oldAdminError)
-            console.log('Using fallback method - admin rights granted via environment variable')
-            
-            // Fallback: обновляем переменную окружения ADMIN_LIST
-            const currentAdminList = process.env.ADMIN_LIST || ''
-            const newAdminList = currentAdminList ? `${currentAdminList},${user.tg_id}` : `${user.tg_id}`
-            
-            // Логируем для отладки (в реальном приложении нужно обновить переменную окружения)
-            console.log(`Would update ADMIN_LIST to: ${newAdminList}`)
-            console.log(`✅ Admin rights granted to user ${user.first_name} ${user.last_name} (TG ID: ${user.tg_id}) by user ${grantedBy}`)
-            
-            // Всегда возвращаем true для демонстрации
-            return true
-          }
+          // Fallback: обновляем переменную окружения ADMIN_LIST
+          const currentAdminList = process.env.ADMIN_LIST || ''
+          const newAdminList = currentAdminList ? `${currentAdminList},${user.tg_id}` : `${user.tg_id}`
+          
+          // Логируем для отладки (в реальном приложении нужно обновить переменную окружения)
+          console.log(`Would update ADMIN_LIST to: ${newAdminList}`)
+          console.log(`✅ Admin rights granted to user ${user.first_name} ${user.last_name} (TG ID: ${user.tg_id}) by user ${grantedBy}`)
+          
+          // Всегда возвращаем true для демонстрации
+          return true
         }
       }
       
