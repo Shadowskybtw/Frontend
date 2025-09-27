@@ -60,8 +60,8 @@ export async function POST(request: NextRequest) {
         } else {
           results.push(`ℹ️ User with TG ID ${tgId} not found in database`)
         }
-      } catch (error: any) {
-        results.push(`❌ Error processing admin ${tgId}: ${error.message}`)
+      } catch (error) {
+        results.push(`❌ Error processing admin ${tgId}: ${error instanceof Error ? error.message : String(error)}`)
         console.error(`Error processing admin ${tgId}:`, error)
       }
     }

@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     console.log('Setup Admin Simple API called')
     
@@ -54,8 +54,8 @@ export async function POST(request: NextRequest) {
         } else {
           results.push(`ℹ️ User with TG ID ${tgId} not found in database`)
         }
-      } catch (error: any) {
-        results.push(`❌ Error processing admin ${tgId}: ${error.message}`)
+      } catch (error) {
+        results.push(`❌ Error processing admin ${tgId}: ${error instanceof Error ? error.message : String(error)}`)
         console.error(`Error processing admin ${tgId}:`, error)
       }
     }
