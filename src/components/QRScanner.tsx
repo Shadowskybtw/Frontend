@@ -1,6 +1,7 @@
 "use client"
 import React, { useEffect, useRef, useState, useCallback } from 'react'
 import QrScanner from 'qr-scanner'
+import '../types/telegram'
 
 interface QRScannerProps {
   onScan: (result: string) => void
