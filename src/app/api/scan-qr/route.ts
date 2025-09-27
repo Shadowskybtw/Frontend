@@ -110,18 +110,16 @@ export async function POST(request: NextRequest) {
     
     const updatedStock = await db.updateStockProgress(stock.id, newProgress)
 
-    // Добавляем запись в историю кальянов (без полей, которых может не быть в БД)
+    // Добавляем запись в историю кальянов
     try {
       await db.addHookahToHistory(
         user.id, 
         'regular', 
-        newSlotNumber,
-        stock.id,
-        undefined, // admin_id будет добавлен позже
-        qr_data ? 'qr_code' : 'phone_digits'
+        newSlotNumber
       )
+      console.log('✅ Hookah added to history successfully')
     } catch (historyError) {
-      console.log('Could not add to hookah history (fields might not exist):', historyError)
+      console.error('❌ Error adding to hookah history:', historyError)
       // Продолжаем выполнение, даже если не удалось добавить в историю
     }
 
