@@ -239,6 +239,8 @@ export default function ProfilePage() {
       return
     }
     
+    console.log(`Checking admin status for user ${user.first_name} ${user.last_name} (TG ID: ${tgId})`)
+    
     try {
       const response = await fetch('/api/admin', {
         method: 'POST',
@@ -253,12 +255,31 @@ export default function ProfilePage() {
       })
 
       const data = await response.json()
+      console.log('Admin check response:', data)
+      
       if (data.success) {
         setIsAdmin(data.is_admin)
         setAdminStatusChecked(true)
+        console.log(`Admin status: ${data.is_admin ? 'ADMIN' : 'USER'}`)
+      } else {
+        console.error('Admin check failed:', data.message)
+        // Fallback: проверяем по известным админам
+        const knownAdmins = [937011437, 1159515006] // Ваш ID и Кирилл
+        if (knownAdmins.includes(Number(tgId))) {
+          console.log('User is known admin, setting admin status')
+          setIsAdmin(true)
+          setAdminStatusChecked(true)
+        }
       }
     } catch (error) {
       console.error('Error checking admin status:', error)
+      // Fallback: проверяем по известным админам
+      const knownAdmins = [937011437, 1159515006] // Ваш ID и Кирилл
+      if (knownAdmins.includes(Number(tgId))) {
+        console.log('User is known admin (fallback), setting admin status')
+        setIsAdmin(true)
+        setAdminStatusChecked(true)
+      }
     }
   }, [user?.id, user?.tg_id, getTgIdFromDb])
 
