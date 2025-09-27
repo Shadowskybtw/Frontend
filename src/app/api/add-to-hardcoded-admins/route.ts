@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 // Hardcoded список админов (можно расширять)
-let HARDCODED_ADMINS = [
+const HARDCODED_ADMINS = [
   937011437, // Основной админ
   1159515006, // Кирилл
 ]
@@ -28,19 +28,27 @@ export async function POST(request: NextRequest) {
 
     console.log(`Adding to hardcoded admins: ${targetTgId}`)
 
-    // Добавляем в hardcoded список
-    if (!HARDCODED_ADMINS.includes(targetTgId)) {
-      HARDCODED_ADMINS.push(targetTgId)
-      console.log(`✅ Added ${targetTgId} to hardcoded admin list. New list:`, HARDCODED_ADMINS)
-    } else {
+    // Проверяем, есть ли уже в списке
+    if (HARDCODED_ADMINS.includes(targetTgId)) {
       console.log(`ℹ️ User ${targetTgId} is already in hardcoded admin list`)
+      return NextResponse.json({ 
+        success: true, 
+        message: `Admin ${targetTgId} is already in hardcoded list`,
+        hardcoded_admins: HARDCODED_ADMINS,
+        note: 'Admin rights are already active'
+      })
     }
+
+    // Для демонстрации показываем, что добавили бы
+    const newAdminList = [...HARDCODED_ADMINS, targetTgId]
+    console.log(`✅ Would add ${targetTgId} to hardcoded admin list. New list would be:`, newAdminList)
 
     return NextResponse.json({ 
       success: true, 
-      message: `Admin ${targetTgId} added to hardcoded list`,
-      hardcoded_admins: HARDCODED_ADMINS,
-      note: 'Admin rights are now active immediately'
+      message: `Admin ${targetTgId} would be added to hardcoded list`,
+      current_admins: HARDCODED_ADMINS,
+      new_admin_list: newAdminList,
+      note: 'Note: This is a demonstration. In production, you would need to update the hardcoded list in the code.'
     })
 
   } catch (error) {
