@@ -136,11 +136,10 @@ export default function RegisterPage() {
       console.error('Invalid TG ID or not in Telegram')
       return alert('Откройте приложение в Telegram')
     }
-    const resp = await fetch('/api/register', {
+    const resp = await fetch('/api/simple-register', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-telegram-init-data': initData,
       },
       body: JSON.stringify({
         tg_id: tgIdNum,
