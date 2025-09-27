@@ -5,9 +5,10 @@ import QrScanner from 'qr-scanner'
 interface QRScannerProps {
   onScan: (result: string) => void
   onClose: () => void
+  onManualInput?: () => void
 }
 
-export default function QRScanner({ onScan, onClose }: QRScannerProps) {
+export default function QRScanner({ onScan, onClose, onManualInput }: QRScannerProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const qrScannerRef = useRef<QrScanner | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -29,10 +30,16 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
       setError(null)
       setIsInitialized(false)
 
+      // Проверяем, находимся ли мы в Telegram WebApp
+      const isTelegramWebApp = typeof window !== 'undefined' && window.Telegram?.WebApp
+      if (isTelegramWebApp) {
+        console.log('Running in Telegram WebApp - camera access may be limited')
+      }
+
       // Проверяем камеру
       const hasCamera = await QrScanner.hasCamera()
       if (!hasCamera) {
-        setError('Камера не найдена')
+        setError('Камера не найдена. Убедитесь, что у вас есть камера и разрешения предоставлены.')
         return
       }
 
@@ -43,29 +50,41 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
         qrScannerRef.current = null
       }
 
-      // Создаем новый сканер
+      // Создаем новый сканер с более простыми настройками для Telegram
       qrScannerRef.current = new QrScanner(
         videoRef.current,
         handleScan,
         {
           preferredCamera: 'environment',
-          maxScansPerSecond: 2,
-          highlightScanRegion: true,
-          highlightCodeOutline: true,
+          maxScansPerSecond: 1,
+          // Убираем подсветку для лучшей совместимости
+          highlightScanRegion: false,
+          highlightCodeOutline: false,
         }
       )
-
-      // Устанавливаем состояние после успешного создания сканера
-      setIsScanning(true)
-      setIsInitialized(true)
 
       // Запускаем сканер
       await qrScannerRef.current.start()
 
+      // Устанавливаем состояние после успешного запуска
+      setIsScanning(true)
+      setIsInitialized(true)
+
     } catch (err) {
       console.error('Scanner initialization error:', err)
       if (mountedRef.current) {
-        setError(`Ошибка инициализации камеры: ${err instanceof Error ? err.message : 'Неизвестная ошибка'}`)
+        const errorMessage = err instanceof Error ? err.message : 'Неизвестная ошибка'
+        
+        // Специальные сообщения для разных типов ошибок
+        if (errorMessage.includes('aborted') || errorMessage.includes('NotAllowedError')) {
+          setError('Доступ к камере заблокирован. Разрешите доступ к камере в настройках браузера или попробуйте ввести QR код вручную.')
+        } else if (errorMessage.includes('NotFoundError')) {
+          setError('Камера не найдена. Убедитесь, что у вас есть камера.')
+        } else if (errorMessage.includes('NotReadableError')) {
+          setError('Камера занята другим приложением. Закройте другие приложения, использующие камеру.')
+        } else {
+          setError(`Ошибка инициализации камеры: ${errorMessage}`)
+        }
       }
     }
   }, [handleScan])
@@ -179,6 +198,14 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
           >
             🔄 Перезапустить
           </button>
+          {onManualInput && (
+            <button
+              onClick={onManualInput}
+              className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm"
+            >
+              ✏️ Ввести вручную
+            </button>
+          )}
           <button
             onClick={handleClose}
             className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg"
