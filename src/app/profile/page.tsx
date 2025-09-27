@@ -656,27 +656,32 @@ export default function ProfilePage() {
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                 <h3 className="font-semibold text-blue-900 mb-2">Статистика</h3>
                 <div className="text-left space-y-2 text-blue-800 text-sm">
-                  <p>Зарегистрирован: {profileData?.created_at ? new Date(profileData.created_at).toLocaleDateString('ru-RU') : 'Сегодня'}</p>
-                  <p>Всего выкурено кальянов: {profileStats?.totalSmokedHookahs || 0}</p>
-                  <p>Обычных кальянов: {profileStats?.regularHookahs || 0}</p>
-                  <p>Бесплатных кальянов: {profileStats?.totalFreeHookahs || 0}</p>
+                  <p>Дата регистрации: {profileData?.created_at ? new Date(profileData.created_at).toLocaleDateString('ru-RU') : 'Сегодня'}</p>
+                  <p>Выкурено всего кальянов: {profileStats?.totalSmokedHookahs || 0}</p>
                   <p>Получено бесплатных: {profileStats?.freeHookahsReceived || 0}</p>
                 </div>
                 
                 {/* История всех выкуренных кальянов */}
                 {hookahHistory.length > 0 && (
                   <div className="mt-3 pt-3 border-t border-blue-200">
-                    <h4 className="font-medium text-blue-900 mb-2">История кальянов:</h4>
-                    <div className="space-y-1 max-h-32 overflow-y-auto">
+                    <h4 className="font-medium text-blue-900 mb-2">История получения кальянов:</h4>
+                    <div className="space-y-2 max-h-40 overflow-y-auto">
                       {hookahHistory.map((hookah) => (
-                        <div key={hookah.id} className="text-xs text-blue-700 bg-blue-100 rounded px-2 py-1 flex justify-between items-center">
-                          <span>
-                            {hookah.hookah_type === 'regular' 
-                              ? '🚬 Кальян' 
-                              : '🎁 Бесплатный'
-                            }
-                          </span>
-                          <span className="text-blue-600">
+                        <div key={hookah.id} className="text-xs text-blue-700 bg-blue-100 rounded px-3 py-2 flex justify-between items-center">
+                          <div className="flex items-center space-x-2">
+                            <span>
+                              {hookah.hookah_type === 'regular' 
+                                ? '🚬 Обычный кальян' 
+                                : '🎁 Бесплатный кальян'
+                              }
+                            </span>
+                            {hookah.slot_number && (
+                              <span className="text-blue-500 text-xs">
+                                (Слот {hookah.slot_number})
+                              </span>
+                            )}
+                          </div>
+                          <span className="text-blue-600 text-xs">
                             {new Date(hookah.created_at).toLocaleDateString('ru-RU')} в {new Date(hookah.created_at).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}
                           </span>
                         </div>
