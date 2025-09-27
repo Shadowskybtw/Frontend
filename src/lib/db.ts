@@ -355,7 +355,7 @@ export const db = {
           return true
         }
       } catch (error) {
-        console.log('AdminList table might not exist, skipping')
+        console.log('AdminList table might not exist, skipping:', error)
       }
       
       // Проверяем в таблице admins (старая система)
@@ -368,7 +368,7 @@ export const db = {
           return true
         }
       } catch (error) {
-        console.log('Admin table might not exist, skipping')
+        console.log('Admin table might not exist, skipping:', error)
       }
       
       console.log(`User ${user.first_name} ${user.last_name} is not an admin (TG ID: ${user.tg_id})`)

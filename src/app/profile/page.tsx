@@ -281,7 +281,7 @@ export default function ProfilePage() {
         setAdminStatusChecked(true)
       }
     }
-  }, [user?.id, user?.tg_id, getTgIdFromDb])
+  }, [user?.id, user?.tg_id, user?.first_name, user?.last_name, getTgIdFromDb])
 
   // Загружаем данные профиля когда получаем пользователя
   useEffect(() => {

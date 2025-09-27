@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 2. Получаем всех пользователей
-    let users = []
+    let users: any[] = []
     try {
       users = await prisma.user.findMany()
       results.push(`✅ Found ${users.length} users`)
