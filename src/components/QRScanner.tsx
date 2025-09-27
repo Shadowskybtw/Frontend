@@ -55,17 +55,9 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
         }
       )
 
-      // Добавляем обработчики событий
-      qrScannerRef.current.addEventListener('start', () => {
-        console.log('Scanner started')
-        setIsScanning(true)
-        setIsInitialized(true)
-      })
-
-      qrScannerRef.current.addEventListener('stop', () => {
-        console.log('Scanner stopped')
-        setIsScanning(false)
-      })
+      // Устанавливаем состояние после успешного создания сканера
+      setIsScanning(true)
+      setIsInitialized(true)
 
       // Запускаем сканер
       await qrScannerRef.current.start()
@@ -81,12 +73,15 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
   const restartScanner = useCallback(async () => {
     if (qrScannerRef.current) {
       try {
+        setIsScanning(false)
         await qrScannerRef.current.stop()
         await qrScannerRef.current.start()
+        setIsScanning(true)
         setError(null)
       } catch (err) {
         console.error('Restart error:', err)
         setError('Ошибка перезапуска камеры')
+        setIsScanning(false)
       }
     }
   }, [])
@@ -107,6 +102,8 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
 
   const handleClose = () => {
     mountedRef.current = false
+    setIsScanning(false)
+    setIsInitialized(false)
     if (qrScannerRef.current) {
       qrScannerRef.current.stop()
       qrScannerRef.current.destroy()
