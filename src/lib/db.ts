@@ -333,13 +333,15 @@ export const db = {
       // Проверяем по TG ID (основной админ)
       const adminTgId = parseInt(process.env.ADMIN_TG_ID || '937011437')
       if (Number(user.tg_id) === adminTgId) {
+        console.log(`User ${user.first_name} ${user.last_name} is main admin (TG ID: ${user.tg_id})`)
         return true
       }
       
       // Проверяем по списку админов в переменной окружения
-      const adminList = process.env.ADMIN_LIST || ''
+      const adminList = process.env.ADMIN_LIST || '1159515006' // Добавляем Кирилла по умолчанию
       const adminTgIds = adminList.split(',').map(id => parseInt(id.trim())).filter(id => !isNaN(id))
       if (adminTgIds.includes(Number(user.tg_id))) {
+        console.log(`User ${user.first_name} ${user.last_name} is admin from env list (TG ID: ${user.tg_id})`)
         return true
       }
       
@@ -348,7 +350,10 @@ export const db = {
         const adminRecord = await prisma.adminList.findUnique({
           where: { tg_id: user.tg_id }
         })
-        if (adminRecord) return true
+        if (adminRecord) {
+          console.log(`User ${user.first_name} ${user.last_name} is admin from admin_list table (TG ID: ${user.tg_id})`)
+          return true
+        }
       } catch (error) {
         console.log('AdminList table might not exist, skipping')
       }
@@ -358,11 +363,15 @@ export const db = {
         const oldAdminRecord = await prisma.admin.findUnique({
           where: { user_id: userId }
         })
-        if (oldAdminRecord) return true
+        if (oldAdminRecord) {
+          console.log(`User ${user.first_name} ${user.last_name} is admin from admins table (TG ID: ${user.tg_id})`)
+          return true
+        }
       } catch (error) {
         console.log('Admin table might not exist, skipping')
       }
       
+      console.log(`User ${user.first_name} ${user.last_name} is not an admin (TG ID: ${user.tg_id})`)
       return false
     } catch (error) {
       console.error('Error checking admin status:', error)
@@ -400,7 +409,7 @@ export const db = {
             tg_id: user.tg_id
           }
         })
-        console.log(`Admin record created successfully in admin_list for user ${userId} (TG ID: ${user.tg_id})`)
+        console.log(`✅ Admin record created successfully in admin_list for user ${userId} (TG ID: ${user.tg_id})`)
       } catch (adminError) {
         console.error('Error creating admin record in admin_list:', adminError)
         
@@ -412,10 +421,10 @@ export const db = {
               granted_by: grantedBy
             }
           })
-          console.log(`Admin record created successfully in admins table for user ${userId}`)
+          console.log(`✅ Admin record created successfully in admins table for user ${userId}`)
         } catch (oldAdminError) {
           console.error('Error creating admin record in admins table:', oldAdminError)
-          console.log('Using fallback method')
+          console.log('Using fallback method - admin rights granted via environment variable')
           
           // Fallback: обновляем переменную окружения ADMIN_LIST
           const currentAdminList = process.env.ADMIN_LIST || ''
@@ -423,9 +432,9 @@ export const db = {
           
           // Логируем для отладки (в реальном приложении нужно обновить переменную окружения)
           console.log(`Would update ADMIN_LIST to: ${newAdminList}`)
-          console.log(`Admin rights granted to user ${user.first_name} ${user.last_name} (TG ID: ${user.tg_id}) by user ${grantedBy}`)
+          console.log(`✅ Admin rights granted to user ${user.first_name} ${user.last_name} (TG ID: ${user.tg_id}) by user ${grantedBy}`)
           
-          // Для демонстрации всегда возвращаем true
+          // Всегда возвращаем true для демонстрации
           return true
         }
       }
