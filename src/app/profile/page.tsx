@@ -248,7 +248,7 @@ export default function ProfilePage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          tg_id: tgId,
+          tg_id: String(tgId),
           action: 'check_admin',
           admin_key: 'admin123'
         }),
@@ -484,8 +484,8 @@ export default function ProfilePage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          tg_id: currentTgId, // TG ID текущего пользователя (админа)
-          target_tg_id: tgId, // TG ID пользователя, которому выдаем права
+          tg_id: String(currentTgId), // TG ID текущего пользователя (админа)
+          target_tg_id: String(tgId), // TG ID пользователя, которому выдаем права
           action: 'grant_admin',
           admin_key: 'admin123'
         }),

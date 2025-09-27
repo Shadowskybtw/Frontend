@@ -122,20 +122,25 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ 
       success: true, 
-      message: 'QR code scanned successfully',
+      message: `✅ Кальян добавлен! Слот ${newSlotNumber}/5 заполнен`,
       user: {
         id: user.id,
         first_name: user.first_name,
         last_name: user.last_name
       },
       stock: updatedStock,
-      completed: newProgress >= 100
+      completed: newProgress >= 100,
+      slotNumber: newSlotNumber,
+      progress: newProgress
     })
 
   } catch (error) {
     console.error('Error scanning QR code:', error)
     return NextResponse.json(
-      { success: false, message: 'Internal server error' },
+      { 
+        success: false, 
+        message: 'Ошибка при сканировании QR кода: ' + String(error)
+      },
       { status: 500 }
     )
   }
