@@ -31,7 +31,7 @@ export default function QRScanner({ onScan, onClose, onManualInput }: QRScannerP
       setIsInitialized(false)
 
       // Проверяем, находимся ли мы в Telegram WebApp
-      const isTelegramWebApp = typeof window !== 'undefined' && window.Telegram?.WebApp
+      const isTelegramWebApp = typeof window !== 'undefined' && (window as any).Telegram?.WebApp
       if (isTelegramWebApp) {
         console.log('Running in Telegram WebApp - camera access may be limited')
       }
