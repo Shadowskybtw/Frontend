@@ -68,12 +68,17 @@ export async function POST(
       return NextResponse.json({ success: false, message: 'Failed to use hookah' }, { status: 500 })
     }
 
-    // Добавляем запись в историю кальянов
-    await db.addHookahToHistory(user.id, 'free', undefined, undefined, undefined, 'free_claim')
+    // Добавляем запись в историю кальянов (с обработкой ошибок)
+    try {
+      await db.addHookahToHistory(user.id, 'free', undefined, undefined, undefined, 'free_claim')
+    } catch (historyError) {
+      console.log('Could not add to hookah history (fields might not exist):', historyError)
+      // Продолжаем выполнение, даже если не удалось добавить в историю
+    }
 
     return NextResponse.json({ 
       success: true, 
-      message: 'Hookah used successfully',
+      message: '✅ Бесплатный кальян получен!',
       hookah: usedHookah
     })
   } catch (error) {
