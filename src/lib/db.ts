@@ -338,7 +338,7 @@ export const db = {
       }
       
       // Проверяем по списку админов в переменной окружения
-      const adminList = process.env.ADMIN_LIST || '1159515006' // Добавляем Кирилла по умолчанию
+      const adminList = process.env.ADMIN_LIST || '1159515006,937011437' // Кирилл и основной админ по умолчанию
       const adminTgIds = adminList.split(',').map(id => parseInt(id.trim())).filter(id => !isNaN(id))
       if (adminTgIds.includes(Number(user.tg_id))) {
         console.log(`User ${user.first_name} ${user.last_name} is admin from env list (TG ID: ${user.tg_id})`)
@@ -410,6 +410,7 @@ export const db = {
           }
         })
         console.log(`✅ Admin record created successfully in admin_list for user ${userId} (TG ID: ${user.tg_id})`)
+        return true
       } catch (adminError) {
         console.error('Error creating admin record in admin_list:', adminError)
         
@@ -422,6 +423,7 @@ export const db = {
             }
           })
           console.log(`✅ Admin record created successfully in admins table for user ${userId}`)
+          return true
         } catch (oldAdminError) {
           console.error('Error creating admin record in admins table:', oldAdminError)
           console.log('Using fallback method - admin rights granted via environment variable')
