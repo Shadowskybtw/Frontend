@@ -75,12 +75,17 @@ export async function POST(request: NextRequest) {
         })
 
         if (user) {
-          // Обновляем is_admin = true
-          await prisma.user.update({
-            where: { id: user.id },
-            data: { is_admin: true }
-          })
-          results.push(`✅ Set is_admin=true for user ${user.first_name} ${user.last_name} (TG ID: ${tgId})`)
+          // Обновляем is_admin = true через raw SQL
+          try {
+            await prisma.$executeRawUnsafe(`
+              UPDATE users 
+              SET is_admin = true 
+              WHERE id = ${user.id}
+            `)
+            results.push(`✅ Set is_admin=true for user ${user.first_name} ${user.last_name} (TG ID: ${tgId})`)
+          } catch (error) {
+            results.push(`ℹ️ is_admin field might not exist, skipping: ${error}`)
+          }
 
           // Добавляем в admin_list
           try {
