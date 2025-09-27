@@ -671,15 +671,10 @@ export default function ProfilePage() {
                           <div className="flex items-center space-x-2">
                             <span>
                               {hookah.hookah_type === 'regular' 
-                                ? '🚬 Обычный кальян' 
+                                ? '🚬 Кальян' 
                                 : '🎁 Бесплатный кальян'
                               }
                             </span>
-                            {hookah.slot_number && (
-                              <span className="text-blue-500 text-xs">
-                                (Слот {hookah.slot_number})
-                              </span>
-                            )}
                           </div>
                           <span className="text-blue-600 text-xs">
                             {new Date(hookah.created_at).toLocaleDateString('ru-RU')} в {new Date(hookah.created_at).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}
