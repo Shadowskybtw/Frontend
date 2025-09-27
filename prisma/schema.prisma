@@ -26,7 +26,6 @@ model User {
   hookah_history HookahHistory[]
   admin_rights Admin? @relation("AdminUser")
   granted_admins Admin[] @relation("AdminGranter")
-  confirmed_hookahs HookahHistory[] @relation("AdminConfirmed")
 
   @@map("users")
 }
@@ -41,7 +40,6 @@ model Stock {
 
   // Relations
   user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  hookah_history HookahHistory[]
 
   @@map("stocks")
 }
@@ -64,15 +62,10 @@ model HookahHistory {
   user_id    Int
   hookah_type String  // 'regular' or 'free'
   slot_number Int?    // Номер слота для обычных кальянов (1-5)
-  stock_id   Int?     // ID акции для обычных кальянов
-  admin_id   Int?     // ID админа, который подтвердил кальян
-  scan_method String? // 'qr_code' or 'phone_digits'
   created_at DateTime @default(now()) @map("created_at")
 
   // Relations
   user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  stock Stock? @relation(fields: [stock_id], references: [id], onDelete: SetNull)
-  admin User? @relation("AdminConfirmed", fields: [admin_id], references: [id], onDelete: SetNull)
 
   @@map("hookah_history")
 }
