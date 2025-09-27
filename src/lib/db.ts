@@ -431,6 +431,19 @@ export const db = {
           }
         })
         console.log(`✅ Admin record created successfully in admin_list for user ${userId} (TG ID: ${user.tg_id})`)
+        
+        // Также обновляем поле is_admin в таблице users
+        try {
+          await prisma.$executeRawUnsafe(`
+            UPDATE users 
+            SET is_admin = true 
+            WHERE id = ${userId}
+          `)
+          console.log(`✅ Updated is_admin=true for user ${userId}`)
+        } catch (isAdminError) {
+          console.log('Could not update is_admin field:', isAdminError)
+        }
+        
         return true
       } catch (adminError) {
         console.error('Error creating admin record in admin_list:', adminError)
@@ -444,6 +457,19 @@ export const db = {
             }
           })
           console.log(`✅ Admin record created successfully in admins table for user ${userId}`)
+          
+          // Также обновляем поле is_admin в таблице users
+          try {
+            await prisma.$executeRawUnsafe(`
+              UPDATE users 
+              SET is_admin = true 
+              WHERE id = ${userId}
+            `)
+            console.log(`✅ Updated is_admin=true for user ${userId}`)
+          } catch (isAdminError) {
+            console.log('Could not update is_admin field:', isAdminError)
+          }
+          
           return true
         } catch (oldAdminError) {
           console.error('Error creating admin record in admins table:', oldAdminError)
@@ -457,12 +483,10 @@ export const db = {
           console.log(`Would update ADMIN_LIST to: ${newAdminList}`)
           console.log(`✅ Admin rights granted to user ${user.first_name} ${user.last_name} (TG ID: ${user.tg_id}) by user ${grantedBy}`)
           
-          // Всегда возвращаем true для демонстрации
+          // Возвращаем true только если это fallback метод
           return true
         }
       }
-      
-      return true
     } catch (error) {
       console.error('Error granting admin rights:', error)
       return false

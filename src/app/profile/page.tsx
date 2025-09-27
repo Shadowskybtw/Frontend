@@ -645,6 +645,7 @@ export default function ProfilePage() {
                     <p><strong>ID:</strong> {user.id}</p>
                     <p><strong>Имя:</strong> {profileData?.first_name || user.first_name || 'Не указано'}</p>
                     <p><strong>Фамилия:</strong> {profileData?.last_name || user.last_name || 'Не указано'}</p>
+                    <p><strong>Телефон:</strong> {profileData?.phone || 'Не указано'}</p>
                     <p><strong>Username:</strong> @{user.username || 'Не указано'}</p>
                   </div>
                 )}
