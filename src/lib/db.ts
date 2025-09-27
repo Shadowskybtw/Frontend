@@ -332,7 +332,11 @@ export const db = {
       
       // Проверяем поле is_admin в таблице users (если существует)
       try {
-        if (user.is_admin) {
+        const isAdminResult = await prisma.$queryRawUnsafe(`
+          SELECT is_admin FROM users WHERE id = ${user.id}
+        `) as any[]
+        
+        if (isAdminResult.length > 0 && isAdminResult[0].is_admin) {
           console.log(`User ${user.first_name} ${user.last_name} is admin (is_admin=true, TG ID: ${user.tg_id})`)
           return true
         }

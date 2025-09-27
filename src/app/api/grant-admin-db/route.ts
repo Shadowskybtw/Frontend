@@ -84,11 +84,6 @@ export async function POST(request: NextRequest) {
       results.push(`ℹ️ Admins table error (might already exist): ${error}`)
     }
 
-    // 5. Проверяем результат
-    const updatedUser = await prisma.user.findUnique({
-      where: { id: user.id }
-    })
-
     return NextResponse.json({ 
       success: true, 
       message: `Admin rights granted to ${user.first_name} ${user.last_name}`,
