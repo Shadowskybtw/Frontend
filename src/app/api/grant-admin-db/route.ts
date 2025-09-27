@@ -97,7 +97,7 @@ export async function POST(request: NextRequest) {
         first_name: user.first_name,
         last_name: user.last_name,
         tg_id: user.tg_id,
-        is_admin: updatedUser?.is_admin || false
+        is_admin: false // Поле is_admin не существует в схеме
       },
       results: results,
       note: 'Admin rights should now be active immediately'

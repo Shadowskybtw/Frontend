@@ -52,6 +52,7 @@ export async function POST(req: NextRequest) {
   }
 
   const initData = req.headers.get('x-telegram-init-data') || ''
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   if (!initData || !verifyTelegramInitData(initData, tgBotToken)) {
     return NextResponse.json({ success: false, message: 'Invalid Telegram initData' }, { status: 401 })
   }
