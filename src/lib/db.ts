@@ -306,18 +306,35 @@ export const db = {
     scanMethod?: string
   ): Promise<HookahHistory> {
     console.log('Adding hookah to history:', { userId, hookahType, slotNumber, stockId, adminId, scanMethod })
-    const history = await prisma.hookahHistory.create({
-      data: {
-        user_id: userId,
-        hookah_type: hookahType,
-        slot_number: slotNumber || null,
-        stock_id: stockId || null,
-        admin_id: adminId || null,
-        scan_method: scanMethod || null,
-      }
-    })
-    console.log('Hookah added to history:', history)
-    return history
+    
+    try {
+      // Пытаемся создать запись с полными данными
+      const history = await prisma.hookahHistory.create({
+        data: {
+          user_id: userId,
+          hookah_type: hookahType,
+          slot_number: slotNumber || null,
+          stock_id: stockId || null,
+          admin_id: adminId || null,
+          scan_method: scanMethod || null,
+        }
+      })
+      console.log('Hookah added to history with full data:', history)
+      return history
+    } catch (error) {
+      console.log('Full data creation failed, trying with basic fields only:', error)
+      
+      // Fallback: создаем запись только с основными полями
+      const history = await prisma.hookahHistory.create({
+        data: {
+          user_id: userId,
+          hookah_type: hookahType,
+          slot_number: slotNumber || null,
+        }
+      })
+      console.log('Hookah added to history with basic data:', history)
+      return history
+    }
   },
 
   // Admin operations - используем поле is_admin в таблице users как основной метод
