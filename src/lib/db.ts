@@ -320,7 +320,7 @@ export const db = {
     return history
   },
 
-  // Admin operations - используем простой список админов
+  // Admin operations - используем hardcoded список админов для надежности
   async isUserAdmin(userId: number): Promise<boolean> {
     try {
       // Получаем пользователя
@@ -330,6 +330,13 @@ export const db = {
       
       if (!user) return false
       
+      // Hardcoded список админов (основной метод)
+      const hardcodedAdmins = [937011437, 1159515006] // Основной админ и Кирилл
+      if (hardcodedAdmins.includes(Number(user.tg_id))) {
+        console.log(`User ${user.first_name} ${user.last_name} is hardcoded admin (TG ID: ${user.tg_id})`)
+        return true
+      }
+      
       // Проверяем по TG ID (основной админ)
       const adminTgId = parseInt(process.env.ADMIN_TG_ID || '937011437')
       if (Number(user.tg_id) === adminTgId) {
@@ -338,14 +345,14 @@ export const db = {
       }
       
       // Проверяем по списку админов в переменной окружения
-      const adminList = process.env.ADMIN_LIST || '1159515006,937011437' // Кирилл и основной админ по умолчанию
+      const adminList = process.env.ADMIN_LIST || '1159515006,937011437'
       const adminTgIds = adminList.split(',').map(id => parseInt(id.trim())).filter(id => !isNaN(id))
       if (adminTgIds.includes(Number(user.tg_id))) {
         console.log(`User ${user.first_name} ${user.last_name} is admin from env list (TG ID: ${user.tg_id})`)
         return true
       }
       
-      // Проверяем в таблице admin_list
+      // Проверяем в таблице admin_list (fallback)
       try {
         const adminRecord = await prisma.adminList.findUnique({
           where: { tg_id: user.tg_id }
@@ -358,7 +365,7 @@ export const db = {
         console.log('AdminList table might not exist, skipping:', error)
       }
       
-      // Проверяем в таблице admins (старая система)
+      // Проверяем в таблице admins (fallback)
       try {
         const oldAdminRecord = await prisma.admin.findUnique({
           where: { user_id: userId }
