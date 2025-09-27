@@ -334,7 +334,7 @@ export const db = {
       try {
         const isAdminResult = await prisma.$queryRawUnsafe(`
           SELECT is_admin FROM users WHERE id = ${user.id}
-        `) as any[]
+        `) as { is_admin: boolean }[]
         
         if (isAdminResult.length > 0 && isAdminResult[0].is_admin) {
           console.log(`User ${user.first_name} ${user.last_name} is admin (is_admin=true, TG ID: ${user.tg_id})`)
