@@ -38,6 +38,8 @@ export default function ProfilePage() {
   } | null>(null)
   const [profileStats, setProfileStats] = useState<{
     totalSmokedHookahs: number
+    totalFreeHookahs: number
+    regularHookahs: number
     freeHookahsReceived: number
     freeHookahsUsed: number
     slotsFilled: number
