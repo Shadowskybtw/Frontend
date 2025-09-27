@@ -656,6 +656,8 @@ export default function ProfilePage() {
                 <div className="text-left space-y-2 text-blue-800 text-sm">
                   <p>Зарегистрирован: {profileData?.created_at ? new Date(profileData.created_at).toLocaleDateString('ru-RU') : 'Сегодня'}</p>
                   <p>Всего выкурено кальянов: {profileStats?.totalSmokedHookahs || 0}</p>
+                  <p>Обычных кальянов: {profileStats?.regularHookahs || 0}</p>
+                  <p>Бесплатных кальянов: {profileStats?.totalFreeHookahs || 0}</p>
                   <p>Получено бесплатных: {profileStats?.freeHookahsReceived || 0}</p>
                 </div>
                 

@@ -337,7 +337,7 @@ export const db = {
     }
   },
 
-  // Admin operations - используем переменные окружения как основной метод
+  // Admin operations - используем поле is_admin в таблице users как основной метод
   async isUserAdmin(userId: number): Promise<boolean> {
     try {
       // Получаем пользователя
@@ -347,21 +347,35 @@ export const db = {
       
       if (!user) return false
       
-      // Hardcoded список админов (основной метод)
+      // Проверяем поле is_admin в таблице users (основной метод)
+      try {
+        const isAdminResult = await prisma.$queryRawUnsafe(`
+          SELECT is_admin FROM users WHERE id = ${user.id}
+        `) as { is_admin: boolean }[]
+        
+        if (isAdminResult.length > 0 && isAdminResult[0].is_admin) {
+          console.log(`User ${user.first_name} ${user.last_name} is admin (is_admin=true, TG ID: ${user.tg_id})`)
+          return true
+        }
+      } catch (error) {
+        console.log('is_admin field might not exist, trying fallback methods:', error)
+      }
+      
+      // Fallback: Hardcoded список админов
       const hardcodedAdmins = [937011437, 1159515006] // Основной админ и Кирилл
       if (hardcodedAdmins.includes(Number(user.tg_id))) {
         console.log(`User ${user.first_name} ${user.last_name} is hardcoded admin (TG ID: ${user.tg_id})`)
         return true
       }
       
-      // Проверяем по TG ID (основной админ)
+      // Fallback: Проверяем по TG ID (основной админ)
       const adminTgId = parseInt(process.env.ADMIN_TG_ID || '937011437')
       if (Number(user.tg_id) === adminTgId) {
         console.log(`User ${user.first_name} ${user.last_name} is main admin (TG ID: ${user.tg_id})`)
         return true
       }
       
-      // Проверяем по списку админов в переменной окружения
+      // Fallback: Проверяем по списку админов в переменной окружения
       const adminList = process.env.ADMIN_LIST || '1159515006,937011437'
       const adminTgIds = adminList.split(',').map(id => parseInt(id.trim())).filter(id => !isNaN(id))
       if (adminTgIds.includes(Number(user.tg_id))) {
@@ -400,12 +414,26 @@ export const db = {
         return true
       }
       
-      // Упрощенный подход: просто логируем и возвращаем true
-      // В реальном приложении здесь должна быть логика обновления базы данных
-      console.log(`✅ Admin rights granted to user ${user.first_name} ${user.last_name} (TG ID: ${user.tg_id}) by user ${grantedBy}`)
-      console.log(`Note: Admin rights are managed via environment variables in this setup`)
-      
-      return true
+      // Обновляем поле is_admin в таблице users
+      try {
+        await prisma.$executeRawUnsafe(`
+          UPDATE users 
+          SET is_admin = true 
+          WHERE id = ${userId}
+        `)
+        console.log(`✅ Updated is_admin=true for user ${userId}`)
+        
+        // Также добавляем в переменную окружения ADMIN_LIST (логируем для отладки)
+        const currentAdminList = process.env.ADMIN_LIST || '1159515006,937011437'
+        const newAdminList = currentAdminList ? `${currentAdminList},${user.tg_id}` : `${user.tg_id}`
+        console.log(`Would update ADMIN_LIST to: ${newAdminList}`)
+        
+        console.log(`✅ Admin rights granted to user ${user.first_name} ${user.last_name} (TG ID: ${user.tg_id}) by user ${grantedBy}`)
+        return true
+      } catch (updateError) {
+        console.error('Error updating is_admin field:', updateError)
+        return false
+      }
     } catch (error) {
       console.error('Error granting admin rights:', error)
       return false

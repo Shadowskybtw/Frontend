@@ -35,11 +35,14 @@ export async function GET(
     // Получаем историю кальянов
     const hookahHistory = await db.getHookahHistory(user.id)
 
-    // Считаем слоты как выкуренные кальяны (один слот = один кальян)
-    const slotsFilled = hookahStock ? Math.floor(hookahStock.progress / 20) : 0
-    // Считаем обычные кальяны из истории (не из прогресса акции)
+    // Считаем обычные кальяны из истории (выкуренные в акции)
     const regularHookahs = hookahHistory.filter(h => h.hookah_type === 'regular').length
-    const totalSmokedHookahs = regularHookahs + usedFreeHookahs.length // Обычные + использованные бесплатные
+    // Считаем бесплатные кальяны из истории
+    const freeHookahsFromHistory = hookahHistory.filter(h => h.hookah_type === 'free').length
+    // Общее количество всех кальянов (обычные + бесплатные)
+    const totalSmokedHookahs = regularHookahs + freeHookahsFromHistory
+    // Количество только бесплатных кальянов
+    const totalFreeHookahs = freeHookahsFromHistory
     
 
     return NextResponse.json({ 
@@ -55,10 +58,11 @@ export async function GET(
         updated_at: user.updated_at
       },
       stats: {
-        totalSmokedHookahs, // Общее количество выкуренных кальянов
+        totalSmokedHookahs, // Общее количество всех кальянов (обычные + бесплатные)
+        totalFreeHookahs, // Количество только бесплатных кальянов
+        regularHookahs, // Количество обычных кальянов (выкуренных в акции)
         freeHookahsReceived: freeHookahs.length, // Количество полученных бесплатных кальянов
         freeHookahsUsed: usedFreeHookahs.length, // Количество использованных бесплатных кальянов
-        slotsFilled, // Количество заполненных слотов (выкуренных кальянов в акции)
         isPromotionCompleted: hookahStock ? hookahStock.progress >= 100 : false
       },
       usedFreeHookahs: usedFreeHookahs.map(h => ({
