@@ -441,8 +441,6 @@ export const db = {
         }
       }
       
-      console.log(`Admin rights granted to user ${user.first_name} ${user.last_name} (TG ID: ${user.tg_id}) by user ${grantedBy}`)
-      
       return true
     } catch (error) {
       console.error('Error granting admin rights:', error)
