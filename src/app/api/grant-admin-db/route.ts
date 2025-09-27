@@ -47,15 +47,16 @@ export async function POST(request: NextRequest) {
       results.push(`❌ Error adding is_admin column: ${error}`)
     }
 
-    // 2. Обновляем поле is_admin для пользователя
+    // 2. Пытаемся обновить поле is_admin для пользователя (если существует)
     try {
-      await prisma.user.update({
-        where: { id: user.id },
-        data: { is_admin: true }
-      })
+      await prisma.$executeRawUnsafe(`
+        UPDATE users 
+        SET is_admin = true 
+        WHERE id = ${user.id}
+      `)
       results.push(`✅ Admin rights granted to ${user.first_name} ${user.last_name} (is_admin=true)`)
     } catch (error) {
-      results.push(`❌ Error updating is_admin field: ${error}`)
+      results.push(`ℹ️ is_admin field might not exist, skipping: ${error}`)
     }
 
     // 3. Добавляем в admin_list таблицу

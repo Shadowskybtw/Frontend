@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
             })
             results.push(`✅ Added to admin_list: ${tgId}`)
           } catch (error) {
-            results.push(`ℹ️ Already in admin_list: ${tgId}`)
+            results.push(`ℹ️ Already in admin_list: ${tgId} - ${error}`)
           }
 
           // Добавляем в admins
@@ -104,7 +104,7 @@ export async function POST(request: NextRequest) {
             })
             results.push(`✅ Added to admins table: ${user.id}`)
           } catch (error) {
-            results.push(`ℹ️ Already in admins table: ${user.id}`)
+            results.push(`ℹ️ Already in admins table: ${user.id} - ${error}`)
           }
         } else {
           results.push(`ℹ️ User with TG ID ${tgId} not found in database`)
