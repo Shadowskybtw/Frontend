@@ -848,11 +848,6 @@ export default function ProfilePage() {
         <QRScanner
           onScan={handleQRScan}
           onClose={() => setShowQRScanner(false)}
-          onManualInput={() => {
-            setShowQRScanner(false)
-            // Переключаемся на ручной ввод
-            setInputMode('phone')
-          }}
         />
       )}
     </main>

@@ -5,17 +5,15 @@ import QrScanner from 'qr-scanner'
 interface QRScannerProps {
   onScan: (result: string) => void
   onClose: () => void
-  onManualInput?: () => void
 }
 
-export default function QRScanner({ onScan, onClose, onManualInput }: QRScannerProps) {
+export default function QRScanner({ onScan, onClose }: QRScannerProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const qrScannerRef = useRef<QrScanner | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [isScanning, setIsScanning] = useState(false)
   const [isInitialized, setIsInitialized] = useState(false)
   const [userStarted, setUserStarted] = useState(false) // Новый флаг для user gesture
-  const [requestingPermission, setRequestingPermission] = useState(false) // Флаг запроса разрешения
   const mountedRef = useRef(true)
 
   const handleScan = useCallback((result: QrScanner.ScanResult) => {
@@ -40,155 +38,7 @@ export default function QRScanner({ onScan, onClose, onManualInput }: QRScannerP
     setIsInitialized(false)
   }, [])
 
-  const initScanner = useCallback(async () => {
-    if (!videoRef.current || !mountedRef.current) return
 
-    // Предотвращаем множественные запуски
-    if (isScanning || isInitialized) {
-      console.log('Scanner already running, skipping init')
-      return
-    }
-
-    try {
-      setError(null)
-      setIsInitialized(false)
-
-      // Проверяем, находимся ли мы в Telegram WebApp
-      const isTelegramWebApp = typeof window !== 'undefined' && (window as any).Telegram?.WebApp
-      if (isTelegramWebApp) {
-        console.log('Running in Telegram WebApp - camera access may be limited')
-      }
-
-      // Настраиваем video элемент для мобильных устройств
-      if (videoRef.current) {
-        videoRef.current.setAttribute('playsinline', 'true')
-        videoRef.current.setAttribute('webkit-playsinline', 'true')
-        videoRef.current.muted = true
-        videoRef.current.playsInline = true
-        
-        // Добавляем обработчики событий для принудительного отображения
-        const video = videoRef.current
-        
-        const handleLoadedData = () => {
-          console.log('Video loaded data')
-          video.style.display = 'block'
-          video.style.visibility = 'visible'
-          video.style.opacity = '1'
-        }
-        
-        const handleCanPlay = () => {
-          console.log('Video can play')
-          video.style.display = 'block'
-          video.style.visibility = 'visible'
-          video.style.opacity = '1'
-        }
-        
-        const handlePlay = () => {
-          console.log('Video playing')
-          video.style.display = 'block'
-          video.style.visibility = 'visible'
-          video.style.opacity = '1'
-        }
-        
-        video.addEventListener('loadeddata', handleLoadedData)
-        video.addEventListener('canplay', handleCanPlay)
-        video.addEventListener('play', handlePlay)
-        
-        // Очистка обработчиков при размонтировании
-        return () => {
-          video.removeEventListener('loadeddata', handleLoadedData)
-          video.removeEventListener('canplay', handleCanPlay)
-          video.removeEventListener('play', handlePlay)
-        }
-      }
-
-      // Проверяем камеру
-      const hasCamera = await QrScanner.hasCamera()
-      if (!hasCamera) {
-        setError('Камера не найдена. Введите код вручную.')
-        return
-      }
-
-      // Очищаем предыдущий сканер
-      await safeStop()
-
-      // Небольшая задержка для стабильности
-      await new Promise(resolve => setTimeout(resolve, 100))
-
-      // initScanner теперь только для перезапуска, когда видео уже есть
-      if (!videoRef.current || !(videoRef.current as HTMLVideoElement).srcObject) {
-        console.log('No video stream available in initScanner, skipping')
-        return
-      }
-
-      console.log('Creating QrScanner on existing video...')
-      qrScannerRef.current = new QrScanner(
-        videoRef.current,
-        handleScan,
-        {
-          maxScansPerSecond: 1,
-          highlightScanRegion: false,
-          highlightCodeOutline: false,
-        }
-      )
-
-      console.log('Starting QrScanner...')
-      await qrScannerRef.current.start()
-      console.log('QrScanner.start() completed')
-      
-      // Устанавливаем состояние только после успешного запуска
-      console.log('Setting states: isScanning=true, isInitialized=true')
-      setIsScanning(true)
-      setIsInitialized(true)
-      setError(null)
-      console.log('QrScanner started successfully')
-
-    } catch (err) {
-      console.error('Scanner initialization error:', err)
-      setError('Ошибка инициализации камеры.')
-      setIsScanning(false)
-      setIsInitialized(false)
-    }
-  }, [handleScan, safeStop, isScanning, isInitialized])
-
-  const restartScanner = useCallback(async () => {
-    await safeStop()
-    
-    // Получаем новый видео поток для перезапуска
-    try {
-      console.log('Getting new video stream for restart...')
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { 
-          facingMode: 'environment',
-          width: { ideal: 1280 },
-          height: { ideal: 720 }
-        }
-      })
-      
-      if (videoRef.current) {
-        const video = videoRef.current as HTMLVideoElement
-        video.srcObject = stream
-        await video.play()
-        
-        // Устанавливаем стили
-        video.style.display = 'block'
-        video.style.visibility = 'visible'
-        video.style.opacity = '1'
-        video.style.width = '100%'
-        video.style.height = '256px'
-        video.style.objectFit = 'cover'
-        video.style.backgroundColor = 'transparent'
-        
-        console.log('New video stream set for restart')
-      }
-      
-      await initScanner()
-      
-    } catch (error) {
-      console.error('Error restarting camera:', error)
-      setError('Ошибка перезапуска камеры')
-    }
-  }, [initScanner, safeStop])
 
   // Start/stop button for mobile - user gesture
   const handleUserStart = async () => {
@@ -200,7 +50,6 @@ export default function QRScanner({ onScan, onClose, onManualInput }: QRScannerP
     console.log('User started scanner')
     setUserStarted(true)
     setError(null)
-    setRequestingPermission(true)
     
     try {
       // Получаем видео поток и сразу используем его
@@ -250,14 +99,12 @@ export default function QRScanner({ onScan, onClose, onManualInput }: QRScannerP
       }
       
       // Устанавливаем состояние
-      setRequestingPermission(false)
       setIsScanning(true)
       setIsInitialized(true)
       setError(null)
       console.log('Scanner started successfully with manual stream')
       
     } catch (error) {
-      setRequestingPermission(false)
       console.error('Error starting camera:', error)
       const em = error instanceof Error ? error.message : String(error)
       
@@ -276,44 +123,14 @@ export default function QRScanner({ onScan, onClose, onManualInput }: QRScannerP
     }
   }
 
-  // ВАЖНО: обработка visibilitychange - стоп/старт при скрытии/появлении
-  useEffect(() => {
-    const onVis = async () => {
-      if (document.hidden) {
-        // когда минимизирован - останавливаем сканер, чтобы WebView не сбросил поток
-        await safeStop()
-      } else {
-        // когда появляется - если пользователь уже запустил, пытаемся восстановить
-        if (userStarted && isScanning) {
-          await initScanner()
-        }
-      }
-    }
-    
-    document.addEventListener('visibilitychange', onVis)
-    return () => document.removeEventListener('visibilitychange', onVis)
-  }, [initScanner, safeStop, userStarted, isScanning])
-
   useEffect(() => {
     mountedRef.current = true
-    // НЕ запускаем автоматически - только по кнопке пользователя
 
     return () => {
       mountedRef.current = false
       safeStop()
     }
   }, [safeStop])
-
-  // Принудительное обновление состояния видео при изменении isInitialized
-  useEffect(() => {
-    if (isInitialized && videoRef.current) {
-      const video = videoRef.current as HTMLVideoElement
-      video.style.display = 'block'
-      video.style.visibility = 'visible'
-      video.style.opacity = '1'
-      console.log('useEffect: Video styles forced after isInitialized change')
-    }
-  }, [isInitialized])
 
   const handleClose = async () => {
     mountedRef.current = false
@@ -364,17 +181,10 @@ export default function QRScanner({ onScan, onClose, onManualInput }: QRScannerP
                         <p className="text-gray-600 text-sm mb-4">Нажмите кнопку для запуска камеры</p>
                         <button
                           onClick={handleUserStart}
-                          disabled={requestingPermission}
-                          className="bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-medium"
+                          className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium"
                         >
-                          {requestingPermission ? '⏳ Запрос разрешения...' : '📷 Запустить камеру'}
+                          📷 Запустить камеру
                         </button>
-                      </>
-                    ) : requestingPermission ? (
-                      <>
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
-                        <p className="text-gray-600 text-sm">Запрос разрешения на камеру...</p>
-                        <p className="text-gray-500 text-xs mt-1">Разрешите доступ к камере в браузере</p>
                       </>
                     ) : (
                       <>
@@ -389,13 +199,7 @@ export default function QRScanner({ onScan, onClose, onManualInput }: QRScannerP
 
         {error && (
           <div className="mt-4 p-3 bg-red-100 border border-red-300 rounded-lg">
-            <p className="text-red-800 text-sm mb-2">{error}</p>
-            <button
-              onClick={restartScanner}
-              className="text-red-600 hover:text-red-800 text-sm underline"
-            >
-              Попробовать снова
-            </button>
+            <p className="text-red-800 text-sm">{error}</p>
           </div>
         )}
 
@@ -403,11 +207,9 @@ export default function QRScanner({ onScan, onClose, onManualInput }: QRScannerP
               <p className="text-gray-600 text-sm">
                 {isScanning 
                   ? 'Наведите камеру на QR код для сканирования' 
-                  : requestingPermission
-                    ? 'Запрос разрешения на камеру...'
-                    : userStarted 
-                      ? 'Запуск камеры...' 
-                      : 'Нажмите кнопку выше для запуска камеры'
+                  : userStarted 
+                    ? 'Запуск камеры...' 
+                    : 'Нажмите кнопку выше для запуска камеры'
                 }
               </p>
               {isScanning && (
@@ -417,48 +219,12 @@ export default function QRScanner({ onScan, onClose, onManualInput }: QRScannerP
                 </div>
               )}
               
-              {/* Отладочная информация */}
-              <div className="mt-2 text-xs text-gray-500">
-                <p>Состояние: {isInitialized ? 'Инициализирован' : 'Не инициализирован'}</p>
-                <p>Сканирование: {isScanning ? 'Активно' : 'Неактивно'}</p>
-                <p>Пользователь запустил: {userStarted ? 'Да' : 'Нет'}</p>
-                {videoRef.current && (
-                  <>
-                    <p>Видео стили: display={videoRef.current.style.display}, visibility={videoRef.current.style.visibility}</p>
-                    <p>Видео поток: {(videoRef.current as HTMLVideoElement).srcObject ? 'Есть' : 'НЕТ'}</p>
-                    <p>Видео размеры: {videoRef.current.style.width} x {videoRef.current.style.height}</p>
-                  </>
-                )}
-              </div>
             </div>
 
-            <div className="mt-4 flex justify-center space-x-2">
-              <button
-                onClick={restartScanner}
-                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm"
-              >
-                🔄 Перезапустить
-              </button>
-              <button
-                onClick={async () => {
-                  console.log('Force restart button clicked')
-                  await restartScanner()
-                }}
-                className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg text-sm"
-              >
-                🔧 Перезапустить
-              </button>
-              {onManualInput && (
-                <button
-                  onClick={onManualInput}
-                  className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm"
-                >
-                  ✏️ Ввести вручную
-                </button>
-              )}
+            <div className="mt-4 flex justify-center">
               <button
                 onClick={handleClose}
-                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg"
+                className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg"
               >
                 Закрыть
               </button>
