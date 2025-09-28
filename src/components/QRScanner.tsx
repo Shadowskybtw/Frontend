@@ -42,6 +42,12 @@ export default function QRScanner({ onScan, onClose, onManualInput }: QRScannerP
   const initScanner = useCallback(async () => {
     if (!videoRef.current || !mountedRef.current) return
 
+    // Предотвращаем множественные запуски
+    if (isScanning || isInitialized) {
+      console.log('Scanner already running, skipping init')
+      return
+    }
+
     try {
       setError(null)
       setIsInitialized(false)
@@ -52,13 +58,12 @@ export default function QRScanner({ onScan, onClose, onManualInput }: QRScannerP
         console.log('Running in Telegram WebApp - camera access may be limited')
       }
 
-      // Ставим playsinline ещё раз на случай iOS webview
-      try {
-        if (videoRef.current) {
-          videoRef.current.setAttribute('playsinline', 'true')
-        }
-      } catch (e) {
-        console.warn('Failed to set playsinline', e)
+      // Настраиваем video элемент для мобильных устройств
+      if (videoRef.current) {
+        videoRef.current.setAttribute('playsinline', 'true')
+        videoRef.current.setAttribute('webkit-playsinline', 'true')
+        videoRef.current.muted = true
+        videoRef.current.playsInline = true
       }
 
       // Проверяем камеру
@@ -71,6 +76,9 @@ export default function QRScanner({ onScan, onClose, onManualInput }: QRScannerP
       // Очищаем предыдущий сканер
       await safeStop()
 
+      // Небольшая задержка для стабильности
+      await new Promise(resolve => setTimeout(resolve, 100))
+
       // Попытка 1: QrScanner с минимальными настройками
       try {
         qrScannerRef.current = new QrScanner(
@@ -80,29 +88,38 @@ export default function QRScanner({ onScan, onClose, onManualInput }: QRScannerP
             maxScansPerSecond: 1,
             highlightScanRegion: false,
             highlightCodeOutline: false,
-            // убрал принудительный preferredCamera, чтобы не ломался на некоторых устройствах
+            // Убираем все принудительные настройки камеры
           }
         )
 
         await qrScannerRef.current.start()
+        
+        // Устанавливаем состояние только после успешного запуска
         setIsScanning(true)
         setIsInitialized(true)
         setError(null)
+        console.log('QrScanner started successfully')
         return
 
       } catch (err) {
         console.warn('QrScanner.start() failed, trying fallback getUserMedia', err)
         
-        // fallback: попробуем напрямую getUserMedia и назначить stream в video
+        // fallback: попробуем напрямую getUserMedia
         try {
           const stream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: 'environment' }
+            video: { 
+              facingMode: 'environment',
+              width: { ideal: 1280 },
+              height: { ideal: 720 }
+            }
           })
           
-          videoRef.current.srcObject = stream
-          await videoRef.current.play()
+          if (videoRef.current) {
+            videoRef.current.srcObject = stream
+            await videoRef.current.play()
+          }
           
-          // создаём QrScanner поверх уже запущенного видео (QrScanner может использовать существующий video элемент)
+          // Создаём QrScanner поверх уже запущенного видео
           qrScannerRef.current = new QrScanner(
             videoRef.current,
             handleScan,
@@ -116,12 +133,13 @@ export default function QRScanner({ onScan, onClose, onManualInput }: QRScannerP
           setIsScanning(true)
           setIsInitialized(true)
           setError(null)
+          console.log('Fallback getUserMedia started successfully')
           return
 
         } catch (err2) {
           console.error('Fallback getUserMedia failed', err2)
           
-          // в зависимости от ошибки даём дружелюбную подсказку
+          // Обработка ошибок
           const em = err2 instanceof Error ? err2.message : String(err2)
           if (em.includes('NotAllowedError') || em.includes('permission')) {
             setError('Доступ к камере заблокирован. Разрешите в настройках Telegram / браузера.')
@@ -141,7 +159,7 @@ export default function QRScanner({ onScan, onClose, onManualInput }: QRScannerP
       setIsScanning(false)
       setIsInitialized(false)
     }
-  }, [handleScan, safeStop])
+  }, [handleScan, safeStop, isScanning, isInitialized])
 
   const restartScanner = useCallback(async () => {
     await safeStop()
@@ -150,8 +168,17 @@ export default function QRScanner({ onScan, onClose, onManualInput }: QRScannerP
 
   // Start/stop button for mobile - user gesture
   const handleUserStart = async () => {
+    if (isScanning || isInitialized) {
+      console.log('Scanner already running, ignoring start request')
+      return
+    }
+    
     setUserStarted(true)
     setError(null)
+    
+    // Небольшая задержка для стабильности
+    await new Promise(resolve => setTimeout(resolve, 200))
+    
     await initScanner()
   }
 
@@ -163,7 +190,7 @@ export default function QRScanner({ onScan, onClose, onManualInput }: QRScannerP
         await safeStop()
       } else {
         // когда появляется - если пользователь уже запустил, пытаемся восстановить
-        if (userStarted) {
+        if (userStarted && isScanning) {
           await initScanner()
         }
       }
@@ -171,18 +198,17 @@ export default function QRScanner({ onScan, onClose, onManualInput }: QRScannerP
     
     document.addEventListener('visibilitychange', onVis)
     return () => document.removeEventListener('visibilitychange', onVis)
-  }, [initScanner, safeStop, userStarted])
+  }, [initScanner, safeStop, userStarted, isScanning])
 
   useEffect(() => {
     mountedRef.current = true
-    // не запускаем автоматически, будет запускаться только после userStarted (см. ниже)
-    if (userStarted) initScanner()
+    // НЕ запускаем автоматически - только по кнопке пользователя
 
     return () => {
       mountedRef.current = false
       safeStop()
     }
-  }, [initScanner, safeStop, userStarted])
+  }, [safeStop])
 
   const handleClose = async () => {
     mountedRef.current = false
@@ -215,14 +241,28 @@ export default function QRScanner({ onScan, onClose, onManualInput }: QRScannerP
               {!isInitialized && !error && (
                 <div className="w-full h-64 bg-gray-200 rounded-lg flex items-center justify-center">
                   <div className="text-center">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
-                    <p className="text-gray-600 text-sm">Камера не запущена</p>
-                    <button
-                      onClick={handleUserStart}
-                      className="mt-3 bg-blue-500 text-white px-4 py-2 rounded"
-                    >
-                      Запустить
-                    </button>
+                    {!userStarted ? (
+                      <>
+                        <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                          <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                          </svg>
+                        </div>
+                        <p className="text-gray-600 text-sm mb-4">Нажмите кнопку для запуска камеры</p>
+                        <button
+                          onClick={handleUserStart}
+                          className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium"
+                        >
+                          📷 Запустить камеру
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+                        <p className="text-gray-600 text-sm">Запуск камеры...</p>
+                      </>
+                    )}
                   </div>
                 </div>
               )}
@@ -240,20 +280,22 @@ export default function QRScanner({ onScan, onClose, onManualInput }: QRScannerP
           </div>
         )}
 
-        <div className="mt-4 text-center">
-          <p className="text-gray-600 text-sm">
-            {isScanning 
-              ? 'Наведите камеру на QR код для сканирования' 
-              : 'Подготовка камеры...'
-            }
-          </p>
-          {isScanning && (
-            <div className="mt-2 flex items-center justify-center space-x-2">
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-              <span className="text-green-600 text-xs">Камера активна</span>
+            <div className="mt-4 text-center">
+              <p className="text-gray-600 text-sm">
+                {isScanning 
+                  ? 'Наведите камеру на QR код для сканирования' 
+                  : userStarted 
+                    ? 'Запуск камеры...' 
+                    : 'Нажмите кнопку выше для запуска камеры'
+                }
+              </p>
+              {isScanning && (
+                <div className="mt-2 flex items-center justify-center space-x-2">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <span className="text-green-600 text-xs">Камера активна</span>
+                </div>
+              )}
             </div>
-          )}
-        </div>
 
             <div className="mt-4 flex justify-center space-x-2">
               <button
