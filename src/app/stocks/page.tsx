@@ -391,6 +391,7 @@ export default function StocksPage() {
             </Link>
           </div>
         </div>
+        </div>
       </main>
     </div>
   )
