@@ -115,73 +115,33 @@ export default function QRScanner({ onScan, onClose, onManualInput }: QRScannerP
       // Небольшая задержка для стабильности
       await new Promise(resolve => setTimeout(resolve, 100))
 
-      // Сначала получаем видео поток принудительно
-      console.log('Getting video stream manually first...')
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: { 
-            facingMode: 'environment',
-            width: { ideal: 1280 },
-            height: { ideal: 720 }
-          }
-        })
-        
-        if (videoRef.current) {
-          const video = videoRef.current as HTMLVideoElement
-          video.srcObject = stream
-          await video.play()
-          
-          // Устанавливаем стили
-          video.style.display = 'block'
-          video.style.visibility = 'visible'
-          video.style.opacity = '1'
-          video.style.width = '100%'
-          video.style.height = '256px'
-          video.style.objectFit = 'cover'
-          video.style.backgroundColor = 'transparent'
-          
-          console.log('Video stream set and playing')
-        }
-        
-        // Теперь создаем QrScanner поверх уже работающего видео
-        qrScannerRef.current = new QrScanner(
-          videoRef.current,
-          handleScan,
-          {
-            maxScansPerSecond: 1,
-            highlightScanRegion: false,
-            highlightCodeOutline: false,
-          }
-        )
-
-        console.log('Starting QrScanner on existing video...')
-        await qrScannerRef.current.start()
-        console.log('QrScanner.start() completed')
-        
-        // Устанавливаем состояние только после успешного запуска
-        console.log('Setting states: isScanning=true, isInitialized=true')
-        setIsScanning(true)
-        setIsInitialized(true)
-        setError(null)
-        console.log('QrScanner started successfully with manual stream')
-        
+      // initScanner теперь только для перезапуска, когда видео уже есть
+      if (!videoRef.current || !(videoRef.current as HTMLVideoElement).srcObject) {
+        console.log('No video stream available in initScanner, skipping')
         return
-
-      } catch (err) {
-        console.error('Failed to get video stream:', err)
-        
-        // Обработка ошибок
-        const em = err instanceof Error ? err.message : String(err)
-        if (em.includes('NotAllowedError') || em.includes('permission')) {
-          setError('Доступ к камере заблокирован. Разрешите в настройках Telegram / браузера.')
-        } else if (em.includes('NotReadableError')) {
-          setError('Камера занята другим приложением. Закройте другие приложения, использующие камеру.')
-        } else {
-          setError('Не удалось запустить камеру. Попробуйте ввести код вручную.')
-        }
-        setIsScanning(false)
-        setIsInitialized(false)
       }
+
+      console.log('Creating QrScanner on existing video...')
+      qrScannerRef.current = new QrScanner(
+        videoRef.current,
+        handleScan,
+        {
+          maxScansPerSecond: 1,
+          highlightScanRegion: false,
+          highlightCodeOutline: false,
+        }
+      )
+
+      console.log('Starting QrScanner...')
+      await qrScannerRef.current.start()
+      console.log('QrScanner.start() completed')
+      
+      // Устанавливаем состояние только после успешного запуска
+      console.log('Setting states: isScanning=true, isInitialized=true')
+      setIsScanning(true)
+      setIsInitialized(true)
+      setError(null)
+      console.log('QrScanner started successfully')
 
     } catch (err) {
       console.error('Scanner initialization error:', err)
@@ -193,7 +153,41 @@ export default function QRScanner({ onScan, onClose, onManualInput }: QRScannerP
 
   const restartScanner = useCallback(async () => {
     await safeStop()
-    await initScanner()
+    
+    // Получаем новый видео поток для перезапуска
+    try {
+      console.log('Getting new video stream for restart...')
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { 
+          facingMode: 'environment',
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        }
+      })
+      
+      if (videoRef.current) {
+        const video = videoRef.current as HTMLVideoElement
+        video.srcObject = stream
+        await video.play()
+        
+        // Устанавливаем стили
+        video.style.display = 'block'
+        video.style.visibility = 'visible'
+        video.style.opacity = '1'
+        video.style.width = '100%'
+        video.style.height = '256px'
+        video.style.objectFit = 'cover'
+        video.style.backgroundColor = 'transparent'
+        
+        console.log('New video stream set for restart')
+      }
+      
+      await initScanner()
+      
+    } catch (error) {
+      console.error('Error restarting camera:', error)
+      setError('Ошибка перезапуска камеры')
+    }
   }, [initScanner, safeStop])
 
   // Start/stop button for mobile - user gesture
@@ -206,11 +200,11 @@ export default function QRScanner({ onScan, onClose, onManualInput }: QRScannerP
     console.log('User started scanner')
     setUserStarted(true)
     setError(null)
-    
-    // Сначала запрашиваем разрешение на камеру
     setRequestingPermission(true)
+    
     try {
-      console.log('Requesting camera permission...')
+      // Получаем видео поток и сразу используем его
+      console.log('Getting video stream...')
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { 
           facingMode: 'environment',
@@ -219,19 +213,52 @@ export default function QRScanner({ onScan, onClose, onManualInput }: QRScannerP
         }
       })
       
-      // Если разрешение получено, останавливаем поток и запускаем сканер
-      stream.getTracks().forEach(track => track.stop())
-      console.log('Camera permission granted, starting scanner...')
+      if (videoRef.current) {
+        const video = videoRef.current as HTMLVideoElement
+        video.srcObject = stream
+        await video.play()
+        
+        // Устанавливаем стили
+        video.style.display = 'block'
+        video.style.visibility = 'visible'
+        video.style.opacity = '1'
+        video.style.width = '100%'
+        video.style.height = '256px'
+        video.style.objectFit = 'cover'
+        video.style.backgroundColor = 'transparent'
+        
+        console.log('Video stream set and playing')
+      }
+      
+      // Создаем QrScanner поверх уже работающего видео
+      if (videoRef.current) {
+        qrScannerRef.current = new QrScanner(
+          videoRef.current,
+          handleScan,
+          {
+            maxScansPerSecond: 1,
+            highlightScanRegion: false,
+            highlightCodeOutline: false,
+          }
+        )
+      }
+
+      console.log('Starting QrScanner on existing video...')
+      if (qrScannerRef.current) {
+        await qrScannerRef.current.start()
+        console.log('QrScanner.start() completed')
+      }
+      
+      // Устанавливаем состояние
       setRequestingPermission(false)
-      
-      // Небольшая задержка для стабильности
-      await new Promise(resolve => setTimeout(resolve, 200))
-      
-      await initScanner()
+      setIsScanning(true)
+      setIsInitialized(true)
+      setError(null)
+      console.log('Scanner started successfully with manual stream')
       
     } catch (error) {
       setRequestingPermission(false)
-      console.error('Error requesting camera permission:', error)
+      console.error('Error starting camera:', error)
       const em = error instanceof Error ? error.message : String(error)
       
       if (em.includes('NotAllowedError') || em.includes('permission')) {
@@ -241,7 +268,7 @@ export default function QRScanner({ onScan, onClose, onManualInput }: QRScannerP
       } else if (em.includes('NotFoundError')) {
         setError('Камера не найдена. Убедитесь, что у вас есть камера.')
       } else {
-        setError('Не удалось получить доступ к камере. Попробуйте ввести QR код вручную.')
+        setError('Не удалось запустить камеру. Попробуйте ввести QR код вручную.')
       }
       
       setIsScanning(false)
