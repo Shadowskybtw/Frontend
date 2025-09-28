@@ -225,28 +225,41 @@ export default function StocksPage() {
   }, [user, isInTelegram])
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center p-4">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            📈 Мои акции
-          </h1>
-          <p className="text-gray-600 mb-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black flex flex-col">
+      {/* Header */}
+      <header className="bg-black/50 backdrop-blur-sm border-b border-gray-700">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-center items-center h-20">
+            <h1 className="text-3xl font-bold text-white tracking-wider">
+              <span className="text-red-500">D</span>UNGEON
+            </h1>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="flex-1 flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-700 p-8">
+          <div className="text-center">
+            <h1 className="text-3xl font-bold text-white mb-2">
+              🎁 Мои акции
+            </h1>
+          <p className="text-gray-300 mb-8">
             Отслеживайте прогресс ваших акций
           </p>
 
           {isInTelegram && user ? (
             <div className="space-y-4">
-              <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
-                <p className="text-green-800 text-sm">
+              <div className="bg-green-900/30 border border-green-500/50 rounded-lg p-4 mb-4 backdrop-blur-sm">
+                <p className="text-green-300 text-sm">
                   👋 Привет, {user.first_name}!
                 </p>
               </div>
               
               {/* Акция 5+1 кальян - визуальные слоты */}
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                <h3 className="font-semibold text-red-900 mb-3">🔥 Акция &quot;5+1 кальян&quot;</h3>
-                <p className="text-red-800 text-sm mb-4">
+              <div className="bg-red-900/30 border border-red-500/50 rounded-lg p-4 backdrop-blur-sm">
+                <h3 className="font-semibold text-red-300 mb-3">🔥 Акция &quot;5+1 кальян&quot;</h3>
+                <p className="text-red-200 text-sm mb-4">
                   Купите 5 кальянов и получите 1 бесплатно!
                 </p>
                 
@@ -268,7 +281,7 @@ export default function StocksPage() {
                           <div className={`text-2xl mb-1 ${isActive ? 'animate-pulse' : 'opacity-50'}`}>
                             🚬
                           </div>
-                          <div className={`text-xs font-medium ${isActive ? 'text-green-800' : 'text-gray-500'}`}>
+                          <div className={`text-xs font-medium ${isActive ? 'text-green-300' : 'text-gray-400'}`}>
                             {isActive ? '✓' : slot}
                           </div>
                         </div>
@@ -296,7 +309,7 @@ export default function StocksPage() {
                   )
                 })()}
                 
-                <p className="text-red-700 text-xs mt-2 text-center">
+                <p className="text-red-300 text-xs mt-2 text-center">
                   Покажите QR код администратору для активации слотов
                 </p>
               </div>
@@ -304,8 +317,8 @@ export default function StocksPage() {
               
         {/* QR код */}
         {qrCode ? (
-          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-            <h3 className="font-semibold text-gray-900 mb-2">📱 Ваш QR код</h3>
+          <div className="bg-gray-700/50 border border-gray-500/50 rounded-lg p-4 backdrop-blur-sm">
+            <h3 className="font-semibold text-gray-300 mb-2">📱 Ваш QR код</h3>
             <div className="flex justify-center">
               <Image
                 src={qrCode} 
@@ -322,28 +335,28 @@ export default function StocksPage() {
                 }}
               />
             </div>
-            <p className="text-gray-600 text-xs mt-2 text-center">
+            <p className="text-gray-300 text-xs mt-2 text-center">
               Покажите этот код для получения скидок
             </p>
           </div>
         ) : (
-          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-            <h3 className="font-semibold text-gray-900 mb-2">📱 Ваш QR код</h3>
+          <div className="bg-gray-700/50 border border-gray-500/50 rounded-lg p-4 backdrop-blur-sm">
+            <h3 className="font-semibold text-gray-300 mb-2">📱 Ваш QR код</h3>
             <div className="flex justify-center items-center h-32 bg-gray-200 rounded-lg">
               <div className="text-center">
                 <div className="text-4xl mb-2">❓</div>
                 <p className="text-gray-500 text-sm">QR код загружается...</p>
               </div>
             </div>
-            <p className="text-gray-600 text-xs mt-2 text-center">
+            <p className="text-gray-300 text-xs mt-2 text-center">
               Покажите этот код для получения скидок
             </p>
           </div>
         )}
               
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                <h3 className="font-semibold text-yellow-900 mb-2">🎁 Бесплатные кальяны</h3>
-                <p className="text-yellow-800 text-sm mb-3">
+              <div className="bg-yellow-900/30 border border-yellow-500/50 rounded-lg p-4 backdrop-blur-sm">
+                <h3 className="font-semibold text-yellow-300 mb-2">🎁 Бесплатные кальяны</h3>
+                <p className="text-yellow-200 text-sm mb-3">
                   Доступно бесплатных кальянов: {freeHookahs.filter(h => !h.used).length}
                 </p>
                 {freeHookahs.filter(h => !h.used).length > 0 ? (
@@ -355,30 +368,30 @@ export default function StocksPage() {
                     {isUsingHookah ? '⏳ Получаем...' : '🎉 Получить бесплатный кальян'}
                   </button>
                 ) : (
-                  <p className="text-yellow-700 text-xs text-center">
+                  <p className="text-yellow-300 text-xs text-center">
                     Нет доступных бесплатных кальянов
                   </p>
                 )}
               </div>
             </div>
           ) : (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-              <p className="text-red-800 text-sm">
+            <div className="bg-red-900/30 border border-red-500/50 rounded-lg p-4 backdrop-blur-sm">
+              <p className="text-red-300 text-sm">
                 ❌ Откройте приложение в Telegram для просмотра акций
               </p>
             </div>
           )}
 
-          <div className="mt-8 pt-6 border-t border-gray-200">
+          <div className="mt-8 pt-6 border-t border-gray-600">
             <Link 
               href="/"
-              className="text-blue-600 hover:text-blue-800 text-sm"
+              className="text-blue-400 hover:text-blue-300 text-sm"
             >
               ← Вернуться на главную
             </Link>
           </div>
         </div>
-      </div>
-    </main>
+      </main>
+    </div>
   )
 }

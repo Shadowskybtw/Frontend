@@ -185,31 +185,49 @@ export default function RegisterPage() {
   }
 
   return (
-    <main className="mx-auto max-w-md p-6">
-      <h1 className="text-2xl font-semibold mb-4">Регистрация</h1>
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black flex flex-col">
+      {/* Header */}
+      <header className="bg-black/50 backdrop-blur-sm border-b border-gray-700">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-center items-center h-20">
+            <h1 className="text-3xl font-bold text-white tracking-wider">
+              <span className="text-red-500">D</span>UNGEON
+            </h1>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="flex-1 flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-700 p-8">
+          <h1 className="text-3xl font-bold text-white mb-4 text-center">Регистрация</h1>
       
       
       <form onSubmit={onSubmit} className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm mb-1">Имя</label>
-            <input name="name" value={form.name} onChange={onChange} required className="w-full border rounded px-3 py-2" />
+            <label className="block text-sm mb-1 text-gray-300">Имя</label>
+            <input name="name" value={form.name} onChange={onChange} required className="w-full border border-gray-600 rounded-lg px-3 py-2 bg-gray-700/50 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500" />
           </div>
           <div>
-            <label className="block text-sm mb-1">Фамилия</label>
-            <input name="surname" value={form.surname} onChange={onChange} required className="w-full border rounded px-3 py-2" />
+            <label className="block text-sm mb-1 text-gray-300">Фамилия</label>
+            <input name="surname" value={form.surname} onChange={onChange} required className="w-full border border-gray-600 rounded-lg px-3 py-2 bg-gray-700/50 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500" />
           </div>
         </div>
         <div>
-          <label className="block text-sm mb-1">Телефон</label>
-          <input name="phone" value={form.phone} onChange={onChange} required className="w-full border rounded px-3 py-2" />
+          <label className="block text-sm mb-1 text-gray-300">Телефон</label>
+          <input name="phone" value={form.phone} onChange={onChange} required className="w-full border border-gray-600 rounded-lg px-3 py-2 bg-gray-700/50 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500" />
         </div>
-        <label className="flex items-center gap-2 text-sm">
-          <input type="checkbox" name="agree" checked={form.agree} onChange={onChange} /> Я согласен с правилами и политикой
+        <label className="flex items-center gap-2 text-sm text-gray-300">
+          <input type="checkbox" name="agree" checked={form.agree} onChange={onChange} className="w-4 h-4 text-red-600 bg-gray-700 border-gray-600 rounded focus:ring-red-500" /> Я согласен с правилами и политикой
         </label>
-        <button type="submit" className="bg-black text-white px-4 py-2 rounded">Зарегистрироваться</button>
+        <button type="submit" className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-bold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-red-500/25">
+          🚀 Зарегистрироваться
+        </button>
       </form>
-    </main>
+        </div>
+      </main>
+    </div>
   )
 }
 

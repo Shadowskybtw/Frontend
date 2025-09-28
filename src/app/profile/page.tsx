@@ -512,21 +512,34 @@ export default function ProfilePage() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-100 flex items-center justify-center p-4">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
-        <div className="text-center">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black flex flex-col">
+      {/* Header */}
+      <header className="bg-black/50 backdrop-blur-sm border-b border-gray-700">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-center items-center h-20">
+            <h1 className="text-3xl font-bold text-white tracking-wider">
+              <span className="text-red-500">D</span>UNGEON
+            </h1>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="flex-1 flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-700 p-8">
+          <div className="text-center">
+            <h1 className="text-3xl font-bold text-white mb-2">
               👤 Профиль
             </h1>
-          <p className="text-gray-600 mb-8">
+          <p className="text-gray-300 mb-8">
             Управляйте своим профилем
           </p>
 
           {isInTelegram && user ? (
             <div className="space-y-4">
-              <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-4">
+              <div className="bg-purple-900/30 border border-purple-500/50 rounded-lg p-4 mb-4 backdrop-blur-sm">
                 <div className="flex justify-between items-center mb-2">
-                  <h3 className="font-semibold text-purple-900">Информация о пользователе</h3>
+                  <h3 className="font-semibold text-purple-300">Информация о пользователе</h3>
                   <div className="flex items-center gap-2">
                     {adminStatusChecked && (
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${
@@ -605,9 +618,9 @@ export default function ProfilePage() {
                 )}
               </div>
               
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <h3 className="font-semibold text-blue-900 mb-2">Статистика</h3>
-                <div className="text-left space-y-2 text-blue-800 text-sm">
+              <div className="bg-blue-900/30 border border-blue-500/50 rounded-lg p-4 backdrop-blur-sm">
+                <h3 className="font-semibold text-blue-300 mb-2">Статистика</h3>
+                <div className="text-left space-y-2 text-blue-200 text-sm">
                   <p>Дата регистрации: {profileData?.created_at ? new Date(profileData.created_at).toLocaleDateString('ru-RU') : 'Сегодня'}</p>
                   <p>Выкурено всего кальянов: {profileStats?.totalSmokedHookahs || 0}</p>
                   <p>Получено бесплатных: {profileStats?.freeHookahsReceived || 0}</p>
@@ -616,10 +629,10 @@ export default function ProfilePage() {
                 {/* История всех выкуренных кальянов */}
                 {hookahHistory.length > 0 && (
                   <div className="mt-3 pt-3 border-t border-blue-200">
-                    <h4 className="font-medium text-blue-900 mb-2">История получения кальянов:</h4>
+                    <h4 className="font-medium text-blue-300 mb-2">История получения кальянов:</h4>
                     <div className="space-y-2 max-h-40 overflow-y-auto">
                       {hookahHistory.map((hookah) => (
-                        <div key={hookah.id} className="text-xs text-blue-700 bg-blue-100 rounded px-3 py-2 flex justify-between items-center">
+                        <div key={hookah.id} className="text-xs text-blue-200 bg-blue-800/50 rounded px-3 py-2 flex justify-between items-center backdrop-blur-sm">
                           <div className="flex items-center space-x-2">
                             <span>
                               {hookah.hookah_type === 'regular' 
@@ -628,7 +641,7 @@ export default function ProfilePage() {
                               }
                             </span>
                           </div>
-                          <span className="text-blue-600 text-xs">
+                          <span className="text-blue-300 text-xs">
                             {new Date(hookah.created_at).toLocaleDateString('ru-RU')} в {new Date(hookah.created_at).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}
                           </span>
                         </div>
@@ -640,8 +653,8 @@ export default function ProfilePage() {
               
               {/* Админские функции */}
               {isAdmin && (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                  <h3 className="font-semibold text-red-900 mb-2">🔧 Админ панель</h3>
+                <div className="bg-red-900/30 border border-red-500/50 rounded-lg p-4 backdrop-blur-sm">
+                  <h3 className="font-semibold text-red-300 mb-2">🔧 Админ панель</h3>
                   <div className="space-y-3">
                     <div className="grid grid-cols-2 gap-2">
                       <button
@@ -687,7 +700,7 @@ export default function ProfilePage() {
 
                         {/* Ввод последних 4 цифр номера телефона */}
                         <div className="space-y-2">
-                          <label className="block text-sm font-medium text-red-900">
+                          <label className="block text-sm font-medium text-red-300">
                             Последние 4 цифры номера телефона:
                           </label>
                           <input
@@ -714,7 +727,7 @@ export default function ProfilePage() {
                     {adminPanelOpen && (
                       <div className="space-y-2 pt-2 border-t border-red-200">
                         <div>
-                          <label className="block text-sm font-medium text-red-900 mb-1">
+                          <label className="block text-sm font-medium text-red-300 mb-1">
                             Telegram ID пользователя:
                           </label>
                           <input
@@ -739,25 +752,25 @@ export default function ProfilePage() {
               )}
 
 
-              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                <h3 className="font-semibold text-green-900 mb-2">Настройки</h3>
-                <p className="text-green-800 text-sm">
+              <div className="bg-green-900/30 border border-green-500/50 rounded-lg p-4 backdrop-blur-sm">
+                <h3 className="font-semibold text-green-300 mb-2">Настройки</h3>
+                <p className="text-green-200 text-sm">
                   Здесь будут настройки профиля
                 </p>
               </div>
             </div>
           ) : (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-              <p className="text-red-800 text-sm">
+            <div className="bg-red-900/30 border border-red-500/50 rounded-lg p-4 backdrop-blur-sm">
+              <p className="text-red-300 text-sm">
                 ❌ Откройте приложение в Telegram для просмотра профиля
               </p>
             </div>
           )}
 
-          <div className="mt-8 pt-6 border-t border-gray-200">
+          <div className="mt-8 pt-6 border-t border-gray-600">
             <Link 
               href="/"
-              className="text-blue-600 hover:text-blue-800 text-sm"
+              className="text-blue-400 hover:text-blue-300 text-sm"
             >
               ← Вернуться на главную
             </Link>
@@ -773,5 +786,6 @@ export default function ProfilePage() {
         />
       )}
     </main>
+    </div>
   )
 }
