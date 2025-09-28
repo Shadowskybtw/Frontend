@@ -127,7 +127,9 @@ export default function QRScanner({ onScan, onClose, onManualInput }: QRScannerP
           }
         )
 
+        console.log('Starting QrScanner...')
         await qrScannerRef.current.start()
+        console.log('QrScanner.start() completed')
         
         // Принудительно показываем видео и устанавливаем стили
         if (videoRef.current) {
@@ -135,17 +137,27 @@ export default function QRScanner({ onScan, onClose, onManualInput }: QRScannerP
           video.style.display = 'block'
           video.style.visibility = 'visible'
           video.style.opacity = '1'
+          console.log('Video styles set:', {
+            display: video.style.display,
+            visibility: video.style.visibility,
+            opacity: video.style.opacity
+          })
         }
         
         // Устанавливаем состояние только после успешного запуска
+        console.log('Setting states: isScanning=true, isInitialized=true')
         setIsScanning(true)
         setIsInitialized(true)
         setError(null)
         console.log('QrScanner started successfully')
         
-        // Дополнительная проверка через небольшую задержку
+        // Принудительное обновление состояния через задержку
         setTimeout(() => {
-          if (videoRef.current && isScanning) {
+          console.log('Force updating states in initScanner timeout')
+          setIsScanning(true)
+          setIsInitialized(true)
+          
+          if (videoRef.current) {
             const video = videoRef.current as HTMLVideoElement
             video.style.display = 'block'
             video.style.visibility = 'visible'
@@ -246,13 +258,35 @@ export default function QRScanner({ onScan, onClose, onManualInput }: QRScannerP
       return
     }
     
+    console.log('User started scanner')
     setUserStarted(true)
     setError(null)
     
     // Небольшая задержка для стабильности
     await new Promise(resolve => setTimeout(resolve, 200))
     
-    await initScanner()
+    try {
+      await initScanner()
+      
+      // Принудительное обновление состояния через задержку
+      setTimeout(() => {
+        console.log('Force updating states after initScanner')
+        setIsScanning(true)
+        setIsInitialized(true)
+        
+        if (videoRef.current) {
+          const video = videoRef.current as HTMLVideoElement
+          video.style.display = 'block'
+          video.style.visibility = 'visible'
+          video.style.opacity = '1'
+          console.log('Video styles forced in handleUserStart timeout')
+        }
+      }, 1000)
+      
+    } catch (error) {
+      console.error('Error in handleUserStart:', error)
+      setError('Ошибка запуска камеры')
+    }
   }
 
   // ВАЖНО: обработка visibilitychange - стоп/старт при скрытии/появлении
@@ -282,6 +316,17 @@ export default function QRScanner({ onScan, onClose, onManualInput }: QRScannerP
       safeStop()
     }
   }, [safeStop])
+
+  // Принудительное обновление состояния видео при изменении isInitialized
+  useEffect(() => {
+    if (isInitialized && videoRef.current) {
+      const video = videoRef.current as HTMLVideoElement
+      video.style.display = 'block'
+      video.style.visibility = 'visible'
+      video.style.opacity = '1'
+      console.log('useEffect: Video styles forced after isInitialized change')
+    }
+  }, [isInitialized])
 
   const handleClose = async () => {
     mountedRef.current = false
@@ -393,6 +438,22 @@ export default function QRScanner({ onScan, onClose, onManualInput }: QRScannerP
                 className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm"
               >
                 🔄 Перезапустить
+              </button>
+              <button
+                onClick={() => {
+                  console.log('Force update button clicked')
+                  setIsScanning(true)
+                  setIsInitialized(true)
+                  if (videoRef.current) {
+                    const video = videoRef.current as HTMLVideoElement
+                    video.style.display = 'block'
+                    video.style.visibility = 'visible'
+                    video.style.opacity = '1'
+                  }
+                }}
+                className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg text-sm"
+              >
+                🔧 Принудительно
               </button>
               {onManualInput && (
                 <button
