@@ -15,6 +15,7 @@ export default function QRScanner({ onScan, onClose, onManualInput }: QRScannerP
   const [isScanning, setIsScanning] = useState(false)
   const [isInitialized, setIsInitialized] = useState(false)
   const [userStarted, setUserStarted] = useState(false) // Новый флаг для user gesture
+  const [requestingPermission, setRequestingPermission] = useState(false) // Флаг запроса разрешения
   const mountedRef = useRef(true)
 
   const handleScan = useCallback((result: QrScanner.ScanResult) => {
@@ -206,30 +207,45 @@ export default function QRScanner({ onScan, onClose, onManualInput }: QRScannerP
     setUserStarted(true)
     setError(null)
     
-    // Небольшая задержка для стабильности
-    await new Promise(resolve => setTimeout(resolve, 200))
-    
+    // Сначала запрашиваем разрешение на камеру
+    setRequestingPermission(true)
     try {
+      console.log('Requesting camera permission...')
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { 
+          facingMode: 'environment',
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        }
+      })
+      
+      // Если разрешение получено, останавливаем поток и запускаем сканер
+      stream.getTracks().forEach(track => track.stop())
+      console.log('Camera permission granted, starting scanner...')
+      setRequestingPermission(false)
+      
+      // Небольшая задержка для стабильности
+      await new Promise(resolve => setTimeout(resolve, 200))
+      
       await initScanner()
       
-      // Принудительное обновление состояния через задержку
-      setTimeout(() => {
-        console.log('Force updating states after initScanner')
-        setIsScanning(true)
-        setIsInitialized(true)
-        
-        if (videoRef.current) {
-          const video = videoRef.current as HTMLVideoElement
-          video.style.display = 'block'
-          video.style.visibility = 'visible'
-          video.style.opacity = '1'
-          console.log('Video styles forced in handleUserStart timeout')
-        }
-      }, 1000)
-      
     } catch (error) {
-      console.error('Error in handleUserStart:', error)
-      setError('Ошибка запуска камеры')
+      setRequestingPermission(false)
+      console.error('Error requesting camera permission:', error)
+      const em = error instanceof Error ? error.message : String(error)
+      
+      if (em.includes('NotAllowedError') || em.includes('permission')) {
+        setError('Доступ к камере заблокирован. Разрешите доступ к камере в настройках браузера или Telegram.')
+      } else if (em.includes('NotReadableError')) {
+        setError('Камера занята другим приложением. Закройте другие приложения, использующие камеру.')
+      } else if (em.includes('NotFoundError')) {
+        setError('Камера не найдена. Убедитесь, что у вас есть камера.')
+      } else {
+        setError('Не удалось получить доступ к камере. Попробуйте ввести QR код вручную.')
+      }
+      
+      setIsScanning(false)
+      setIsInitialized(false)
     }
   }
 
@@ -321,10 +337,17 @@ export default function QRScanner({ onScan, onClose, onManualInput }: QRScannerP
                         <p className="text-gray-600 text-sm mb-4">Нажмите кнопку для запуска камеры</p>
                         <button
                           onClick={handleUserStart}
-                          className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium"
+                          disabled={requestingPermission}
+                          className="bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-medium"
                         >
-                          📷 Запустить камеру
+                          {requestingPermission ? '⏳ Запрос разрешения...' : '📷 Запустить камеру'}
                         </button>
+                      </>
+                    ) : requestingPermission ? (
+                      <>
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+                        <p className="text-gray-600 text-sm">Запрос разрешения на камеру...</p>
+                        <p className="text-gray-500 text-xs mt-1">Разрешите доступ к камере в браузере</p>
                       </>
                     ) : (
                       <>
@@ -353,9 +376,11 @@ export default function QRScanner({ onScan, onClose, onManualInput }: QRScannerP
               <p className="text-gray-600 text-sm">
                 {isScanning 
                   ? 'Наведите камеру на QR код для сканирования' 
-                  : userStarted 
-                    ? 'Запуск камеры...' 
-                    : 'Нажмите кнопку выше для запуска камеры'
+                  : requestingPermission
+                    ? 'Запрос разрешения на камеру...'
+                    : userStarted 
+                      ? 'Запуск камеры...' 
+                      : 'Нажмите кнопку выше для запуска камеры'
                 }
               </p>
               {isScanning && (
