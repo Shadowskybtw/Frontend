@@ -114,26 +114,23 @@ export default function QRScanner({ onScan, onClose, onManualInput }: QRScannerP
       // Небольшая задержка для стабильности
       await new Promise(resolve => setTimeout(resolve, 100))
 
-      // Попытка 1: QrScanner с минимальными настройками
+      // Сначала получаем видео поток принудительно
+      console.log('Getting video stream manually first...')
       try {
-        qrScannerRef.current = new QrScanner(
-          videoRef.current,
-          handleScan,
-          {
-            maxScansPerSecond: 1,
-            highlightScanRegion: false,
-            highlightCodeOutline: false,
-            // Убираем все принудительные настройки камеры
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { 
+            facingMode: 'environment',
+            width: { ideal: 1280 },
+            height: { ideal: 720 }
           }
-        )
-
-        console.log('Starting QrScanner...')
-        await qrScannerRef.current.start()
-        console.log('QrScanner.start() completed')
+        })
         
-        // Принудительно показываем видео и устанавливаем стили
         if (videoRef.current) {
           const video = videoRef.current as HTMLVideoElement
+          video.srcObject = stream
+          await video.play()
+          
+          // Устанавливаем стили
           video.style.display = 'block'
           video.style.visibility = 'visible'
           video.style.opacity = '1'
@@ -142,136 +139,47 @@ export default function QRScanner({ onScan, onClose, onManualInput }: QRScannerP
           video.style.objectFit = 'cover'
           video.style.backgroundColor = 'transparent'
           
-          console.log('Video styles set:', {
-            display: video.style.display,
-            visibility: video.style.visibility,
-            opacity: video.style.opacity,
-            srcObject: video.srcObject ? 'has stream' : 'no stream'
-          })
-          
-          // Проверяем, есть ли видео поток
-          if (video.srcObject) {
-            console.log('Video has srcObject stream')
-          } else {
-            console.log('Video has NO srcObject stream - this is the problem!')
-          }
+          console.log('Video stream set and playing')
         }
+        
+        // Теперь создаем QrScanner поверх уже работающего видео
+        qrScannerRef.current = new QrScanner(
+          videoRef.current,
+          handleScan,
+          {
+            maxScansPerSecond: 1,
+            highlightScanRegion: false,
+            highlightCodeOutline: false,
+          }
+        )
+
+        console.log('Starting QrScanner on existing video...')
+        await qrScannerRef.current.start()
+        console.log('QrScanner.start() completed')
         
         // Устанавливаем состояние только после успешного запуска
         console.log('Setting states: isScanning=true, isInitialized=true')
         setIsScanning(true)
         setIsInitialized(true)
         setError(null)
-        console.log('QrScanner started successfully')
-        
-        // Принудительное обновление состояния через задержку
-        setTimeout(async () => {
-          console.log('Force updating states in initScanner timeout')
-          setIsScanning(true)
-          setIsInitialized(true)
-          
-          if (videoRef.current) {
-            const video = videoRef.current as HTMLVideoElement
-            video.style.display = 'block'
-            video.style.visibility = 'visible'
-            video.style.opacity = '1'
-            video.style.width = '100%'
-            video.style.height = '256px'
-            video.style.objectFit = 'cover'
-            
-            // Если нет видео потока, получаем его принудительно
-            if (!video.srcObject) {
-              console.log('No video stream detected, getting stream manually...')
-              try {
-                const stream = await navigator.mediaDevices.getUserMedia({
-                  video: { 
-                    facingMode: 'environment',
-                    width: { ideal: 1280 },
-                    height: { ideal: 720 }
-                  }
-                })
-                video.srcObject = stream
-                await video.play()
-                console.log('Manual video stream set and playing')
-              } catch (err) {
-                console.error('Failed to get manual video stream:', err)
-              }
-            }
-            
-            console.log('Video visibility forced after timeout')
-          }
-        }, 500)
+        console.log('QrScanner started successfully with manual stream')
         
         return
 
       } catch (err) {
-        console.warn('QrScanner.start() failed, trying fallback getUserMedia', err)
+        console.error('Failed to get video stream:', err)
         
-        // fallback: попробуем напрямую getUserMedia
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({
-            video: { 
-              facingMode: 'environment',
-              width: { ideal: 1280 },
-              height: { ideal: 720 }
-            }
-          })
-          
-          if (videoRef.current) {
-            const video = videoRef.current as HTMLVideoElement
-            video.srcObject = stream
-            await video.play()
-            
-            // Принудительно показываем видео
-            video.style.display = 'block'
-            video.style.visibility = 'visible'
-            video.style.opacity = '1'
-          }
-          
-          // Создаём QrScanner поверх уже запущенного видео
-          qrScannerRef.current = new QrScanner(
-            videoRef.current,
-            handleScan,
-            {
-              maxScansPerSecond: 1,
-              highlightScanRegion: false,
-            }
-          )
-          
-          await qrScannerRef.current.start()
-          setIsScanning(true)
-          setIsInitialized(true)
-          setError(null)
-          console.log('Fallback getUserMedia started successfully')
-          
-          // Дополнительная проверка через небольшую задержку
-          setTimeout(() => {
-            if (videoRef.current && isScanning) {
-              const video = videoRef.current as HTMLVideoElement
-              video.style.display = 'block'
-              video.style.visibility = 'visible'
-              video.style.opacity = '1'
-              console.log('Fallback video visibility forced after timeout')
-            }
-          }, 500)
-          
-          return
-
-        } catch (err2) {
-          console.error('Fallback getUserMedia failed', err2)
-          
-          // Обработка ошибок
-          const em = err2 instanceof Error ? err2.message : String(err2)
-          if (em.includes('NotAllowedError') || em.includes('permission')) {
-            setError('Доступ к камере заблокирован. Разрешите в настройках Telegram / браузера.')
-          } else if (em.includes('NotReadableError')) {
-            setError('Камера занята другим приложением. Закройте другие приложения, использующие камеру.')
-          } else {
-            setError('Не удалось запустить камеру. Попробуйте ввести код вручную.')
-          }
-          setIsScanning(false)
-          setIsInitialized(false)
+        // Обработка ошибок
+        const em = err instanceof Error ? err.message : String(err)
+        if (em.includes('NotAllowedError') || em.includes('permission')) {
+          setError('Доступ к камере заблокирован. Разрешите в настройках Telegram / браузера.')
+        } else if (em.includes('NotReadableError')) {
+          setError('Камера занята другим приложением. Закройте другие приложения, использующие камеру.')
+        } else {
+          setError('Не удалось запустить камеру. Попробуйте ввести код вручную.')
         }
+        setIsScanning(false)
+        setIsInitialized(false)
       }
 
     } catch (err) {
@@ -481,42 +389,12 @@ export default function QRScanner({ onScan, onClose, onManualInput }: QRScannerP
               </button>
               <button
                 onClick={async () => {
-                  console.log('Force update button clicked')
-                  setIsScanning(true)
-                  setIsInitialized(true)
-                  
-                  if (videoRef.current) {
-                    const video = videoRef.current as HTMLVideoElement
-                    video.style.display = 'block'
-                    video.style.visibility = 'visible'
-                    video.style.opacity = '1'
-                    video.style.width = '100%'
-                    video.style.height = '256px'
-                    video.style.objectFit = 'cover'
-                    
-                    // Принудительно получаем видео поток
-                    if (!video.srcObject) {
-                      console.log('Force getting video stream...')
-                      try {
-                        const stream = await navigator.mediaDevices.getUserMedia({
-                          video: { 
-                            facingMode: 'environment',
-                            width: { ideal: 1280 },
-                            height: { ideal: 720 }
-                          }
-                        })
-                        video.srcObject = stream
-                        await video.play()
-                        console.log('Force video stream set and playing')
-                      } catch (err) {
-                        console.error('Failed to get force video stream:', err)
-                      }
-                    }
-                  }
+                  console.log('Force restart button clicked')
+                  await restartScanner()
                 }}
                 className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg text-sm"
               >
-                🔧 Принудительно
+                🔧 Перезапустить
               </button>
               {onManualInput && (
                 <button
