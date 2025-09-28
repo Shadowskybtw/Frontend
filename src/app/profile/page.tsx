@@ -59,7 +59,6 @@ export default function ProfilePage() {
   const [isAdmin, setIsAdmin] = useState(false)
   const [qrScannerOpen, setQrScannerOpen] = useState(false)
   const [showQRScanner, setShowQRScanner] = useState(false)
-  const [qrData, setQrData] = useState('')
   const [, setScanResult] = useState<{
     success: boolean
     message: string
@@ -77,7 +76,6 @@ export default function ProfilePage() {
   const [newAdminTgId, setNewAdminTgId] = useState('')
   const [isGrantingAdmin, setIsGrantingAdmin] = useState(false)
   const [adminStatusChecked, setAdminStatusChecked] = useState(false)
-  const [inputMode, setInputMode] = useState<'qr' | 'phone'>('qr')
   const [phoneDigits, setPhoneDigits] = useState('')
 
   useEffect(() => {
@@ -347,54 +345,9 @@ export default function ProfilePage() {
     }
   }
 
-  // Сканируем QR код
-  const scanQrCode = async () => {
-    if (!qrData.trim()) {
-      alert('Введите данные QR кода')
-      return
-    }
-
-    try {
-      const response = await fetch('/api/scan-qr', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          qr_data: qrData,
-          admin_key: 'admin123'
-        }),
-      })
-
-      const data = await response.json()
-      setScanResult(data)
-      
-      if (data.success) {
-        alert(`QR код отсканирован! Пользователь: ${data.user.first_name} ${data.user.last_name}`)
-        setQrData('')
-        setQrScannerOpen(false)
-        
-        // Принудительно обновляем статистику профиля
-        if (user?.id) {
-          // Множественные обновления для надежности
-          loadProfileStats(user.id)
-          setTimeout(() => loadProfileStats(user.id), 500)
-          setTimeout(() => loadProfileStats(user.id), 1000)
-          setTimeout(() => loadProfileStats(user.id), 2000)
-          setTimeout(() => loadProfileStats(user.id), 5000)
-        }
-      } else {
-        alert('Ошибка: ' + data.message)
-      }
-    } catch (error) {
-      console.error('Error scanning QR:', error)
-      alert('Ошибка сканирования QR кода')
-    }
-  }
 
   // Обработка сканирования QR кода с камеры
   const handleQRScan = (result: string) => {
-    setQrData(result)
     setShowQRScanner(false)
     
     // Автоматически сканируем QR код без показа поля ввода
@@ -425,7 +378,6 @@ export default function ProfilePage() {
       
       if (data.success) {
         alert(`QR код отсканирован! Пользователь: ${data.user.first_name} ${data.user.last_name}`)
-        setQrData('')
         setQrScannerOpen(false)
         
         // Принудительно обновляем статистику профиля
@@ -716,76 +668,46 @@ export default function ProfilePage() {
                     </div>
                     
                     {qrScannerOpen && (
-                      <div className="space-y-2">
-                        {/* Переключатель режимов */}
-                        <div className="flex bg-gray-100 rounded-md p-1">
-                          <button
-                            onClick={() => setInputMode('qr')}
-                            className={`flex-1 py-1 px-2 rounded text-sm font-medium ${
-                              inputMode === 'qr' 
-                                ? 'bg-blue-600 text-white' 
-                                : 'text-gray-600 hover:text-gray-800'
-                            }`}
-                          >
-                            📱 QR код
-                          </button>
-                          <button
-                            onClick={() => setInputMode('phone')}
-                            className={`flex-1 py-1 px-2 rounded text-sm font-medium ${
-                              inputMode === 'phone' 
-                                ? 'bg-blue-600 text-white' 
-                                : 'text-gray-600 hover:text-gray-800'
-                            }`}
-                          >
-                            📞 Телефон
-                          </button>
+                      <div className="space-y-3">
+                        {/* Кнопка сканирования QR кода */}
+                        <button
+                          onClick={() => setShowQRScanner(true)}
+                          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-md text-sm font-medium flex items-center justify-center space-x-2"
+                        >
+                          <span>📱</span>
+                          <span>Сканировать QR код</span>
+                        </button>
+
+                        {/* Разделитель */}
+                        <div className="flex items-center">
+                          <div className="flex-1 border-t border-gray-300"></div>
+                          <span className="px-3 text-gray-500 text-sm">или</span>
+                          <div className="flex-1 border-t border-gray-300"></div>
                         </div>
 
-                        {/* Режим QR кода */}
-                        {inputMode === 'qr' && (
-                          <div className="space-y-2">
-                    <textarea
-                      value={qrData}
-                      onChange={(e) => setQrData(e.target.value)}
-                      placeholder="Вставьте данные QR кода сюда..."
-                      className="w-full px-3 py-2 border-2 border-red-400 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 h-20 resize-none text-sm text-black bg-white shadow-inner font-mono"
-                    />
-                            <button
-                              onClick={scanQrCode}
-                              className="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-md text-sm font-medium"
-                            >
-                              🔍 Сканировать QR код
-                            </button>
-                          </div>
-                        )}
-
-                        {/* Режим номера телефона */}
-                        {inputMode === 'phone' && (
-                          <div className="space-y-2">
-                            <div>
-                              <label className="block text-sm font-medium text-red-900 mb-1">
-                                Последние 4 цифры номера телефона:
-                              </label>
-                              <input
-                                type="text"
-                                value={phoneDigits}
-                                onChange={(e) => {
-                                  const value = e.target.value.replace(/\D/g, '').slice(0, 4)
-                                  setPhoneDigits(value)
-                                }}
-                                placeholder="Например: 1234"
-                                className="w-full px-3 py-2 border-2 border-red-400 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 text-center text-xl font-bold text-black bg-white shadow-inner"
-                                maxLength={4}
-                              />
-                            </div>
-                            <button
-                              onClick={confirmByPhone}
-                              className="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-md text-sm font-medium"
-                            >
-                              ✅ Подтвердить кальян
-                            </button>
-                          </div>
-                        )}
+                        {/* Ввод последних 4 цифр номера телефона */}
+                        <div className="space-y-2">
+                          <label className="block text-sm font-medium text-red-900">
+                            Последние 4 цифры номера телефона:
+                          </label>
+                          <input
+                            type="text"
+                            value={phoneDigits}
+                            onChange={(e) => {
+                              const value = e.target.value.replace(/\D/g, '').slice(0, 4)
+                              setPhoneDigits(value)
+                            }}
+                            placeholder="Например: 1234"
+                            className="w-full px-3 py-2 border-2 border-red-400 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 text-center text-xl font-bold text-black bg-white shadow-inner"
+                            maxLength={4}
+                          />
+                          <button
+                            onClick={confirmByPhone}
+                            className="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-md text-sm font-medium"
+                          >
+                            ✅ Подтвердить кальян
+                          </button>
+                        </div>
                       </div>
                     )}
                     
