@@ -669,13 +669,13 @@ export default function ProfilePage() {
                     
                     {qrScannerOpen && (
                       <div className="space-y-3">
-                        {/* Кнопка сканирования QR кода */}
+                        {/* Кнопка сканирования QR кода через камеру */}
                         <button
                           onClick={() => setShowQRScanner(true)}
                           className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-md text-sm font-medium flex items-center justify-center space-x-2"
                         >
                           <span>📱</span>
-                          <span>Сканировать QR код</span>
+                          <span>Сканировать QR код камерой</span>
                         </button>
 
                         {/* Разделитель */}
