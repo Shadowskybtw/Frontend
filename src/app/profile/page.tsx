@@ -618,39 +618,6 @@ export default function ProfilePage() {
                 )}
               </div>
               
-              <div className="bg-blue-900/30 border border-blue-500/50 rounded-lg p-4 backdrop-blur-sm">
-                <h3 className="font-semibold text-blue-300 mb-2">Статистика</h3>
-                <div className="text-left space-y-2 text-blue-200 text-sm">
-                  <p>Дата регистрации: {profileData?.created_at ? new Date(profileData.created_at).toLocaleDateString('ru-RU') : 'Сегодня'}</p>
-                  <p>Выкурено всего кальянов: {profileStats?.totalSmokedHookahs || 0}</p>
-                  <p>Получено бесплатных: {profileStats?.freeHookahsReceived || 0}</p>
-                </div>
-                
-                {/* История всех выкуренных кальянов */}
-                {hookahHistory.length > 0 && (
-                  <div className="mt-3 pt-3 border-t border-blue-200">
-                    <h4 className="font-medium text-blue-300 mb-2">История получения кальянов:</h4>
-                    <div className="space-y-2 max-h-40 overflow-y-auto">
-                      {hookahHistory.map((hookah) => (
-                        <div key={hookah.id} className="text-xs text-blue-200 bg-blue-800/50 rounded px-3 py-2 flex justify-between items-center backdrop-blur-sm">
-                          <div className="flex items-center space-x-2">
-                            <span>
-                              {hookah.hookah_type === 'regular' 
-                                ? '🚬 Кальян' 
-                                : '🎁 Бесплатный кальян'
-                              }
-                            </span>
-                          </div>
-                          <span className="text-blue-300 text-xs">
-                            {new Date(hookah.created_at).toLocaleDateString('ru-RU')} в {new Date(hookah.created_at).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-              
               {/* Админские функции */}
               {isAdmin && (
                 <div className="bg-red-900/30 border border-red-500/50 rounded-lg p-4 backdrop-blur-sm">
@@ -751,12 +718,37 @@ export default function ProfilePage() {
                 </div>
               )}
 
-
-              <div className="bg-green-900/30 border border-green-500/50 rounded-lg p-4 backdrop-blur-sm">
-                <h3 className="font-semibold text-green-300 mb-2">Настройки</h3>
-                <p className="text-green-200 text-sm">
-                  Здесь будут настройки профиля
-                </p>
+              <div className="bg-blue-900/30 border border-blue-500/50 rounded-lg p-4 backdrop-blur-sm">
+                <h3 className="font-semibold text-blue-300 mb-2">Статистика</h3>
+                <div className="text-left space-y-2 text-blue-200 text-sm">
+                  <p>Дата регистрации: {profileData?.created_at ? new Date(profileData.created_at).toLocaleDateString('ru-RU') : 'Сегодня'}</p>
+                  <p>Выкурено всего кальянов: {profileStats?.totalSmokedHookahs || 0}</p>
+                  <p>Получено бесплатных: {profileStats?.freeHookahsReceived || 0}</p>
+                </div>
+                
+                {/* История всех выкуренных кальянов */}
+                {hookahHistory.length > 0 && (
+                  <div className="mt-3 pt-3 border-t border-blue-200">
+                    <h4 className="font-medium text-blue-300 mb-2">История получения кальянов:</h4>
+                    <div className="space-y-2 max-h-40 overflow-y-auto">
+                      {hookahHistory.map((hookah) => (
+                        <div key={hookah.id} className="text-xs text-blue-200 bg-blue-800/50 rounded px-3 py-2 flex justify-between items-center backdrop-blur-sm">
+                          <div className="flex items-center space-x-2">
+                            <span>
+                              {hookah.hookah_type === 'regular' 
+                                ? '🚬 Кальян' 
+                                : '🎁 Бесплатный кальян'
+                              }
+                            </span>
+                          </div>
+                          <span className="text-blue-300 text-xs">
+                            {new Date(hookah.created_at).toLocaleDateString('ru-RU')} в {new Date(hookah.created_at).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           ) : (

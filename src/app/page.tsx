@@ -56,6 +56,10 @@ export default function HomePage() {
     const checkTelegramWebApp = () => {
       try {
         if (typeof window !== 'undefined' && (window as any).Telegram?.WebApp) {
+          // Автоматически разворачиваем приложение на весь экран
+          (window as any).Telegram.WebApp.ready()
+          ;(window as any).Telegram.WebApp.expand()
+          
           setIsInTelegram(true)
           const tgUser = (window as any).Telegram.WebApp.initDataUnsafe?.user as TgUser | undefined
           if (tgUser) {

@@ -323,8 +323,8 @@ export default function StocksPage() {
               <Image
                 src={qrCode} 
                 alt="QR Code" 
-                width={128}
-                height={128}
+                width={256}
+                height={256}
                 className="border border-gray-300 rounded-lg"
                 onError={(e) => {
                   console.error('QR Code image failed to load:', e)
