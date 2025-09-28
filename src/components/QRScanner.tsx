@@ -64,6 +64,41 @@ export default function QRScanner({ onScan, onClose, onManualInput }: QRScannerP
         videoRef.current.setAttribute('webkit-playsinline', 'true')
         videoRef.current.muted = true
         videoRef.current.playsInline = true
+        
+        // Добавляем обработчики событий для принудительного отображения
+        const video = videoRef.current
+        
+        const handleLoadedData = () => {
+          console.log('Video loaded data')
+          video.style.display = 'block'
+          video.style.visibility = 'visible'
+          video.style.opacity = '1'
+        }
+        
+        const handleCanPlay = () => {
+          console.log('Video can play')
+          video.style.display = 'block'
+          video.style.visibility = 'visible'
+          video.style.opacity = '1'
+        }
+        
+        const handlePlay = () => {
+          console.log('Video playing')
+          video.style.display = 'block'
+          video.style.visibility = 'visible'
+          video.style.opacity = '1'
+        }
+        
+        video.addEventListener('loadeddata', handleLoadedData)
+        video.addEventListener('canplay', handleCanPlay)
+        video.addEventListener('play', handlePlay)
+        
+        // Очистка обработчиков при размонтировании
+        return () => {
+          video.removeEventListener('loadeddata', handleLoadedData)
+          video.removeEventListener('canplay', handleCanPlay)
+          video.removeEventListener('play', handlePlay)
+        }
       }
 
       // Проверяем камеру
@@ -94,11 +129,31 @@ export default function QRScanner({ onScan, onClose, onManualInput }: QRScannerP
 
         await qrScannerRef.current.start()
         
+        // Принудительно показываем видео и устанавливаем стили
+        if (videoRef.current) {
+          const video = videoRef.current as HTMLVideoElement
+          video.style.display = 'block'
+          video.style.visibility = 'visible'
+          video.style.opacity = '1'
+        }
+        
         // Устанавливаем состояние только после успешного запуска
         setIsScanning(true)
         setIsInitialized(true)
         setError(null)
         console.log('QrScanner started successfully')
+        
+        // Дополнительная проверка через небольшую задержку
+        setTimeout(() => {
+          if (videoRef.current && isScanning) {
+            const video = videoRef.current as HTMLVideoElement
+            video.style.display = 'block'
+            video.style.visibility = 'visible'
+            video.style.opacity = '1'
+            console.log('Video visibility forced after timeout')
+          }
+        }, 500)
+        
         return
 
       } catch (err) {
@@ -115,8 +170,14 @@ export default function QRScanner({ onScan, onClose, onManualInput }: QRScannerP
           })
           
           if (videoRef.current) {
-            videoRef.current.srcObject = stream
-            await videoRef.current.play()
+            const video = videoRef.current as HTMLVideoElement
+            video.srcObject = stream
+            await video.play()
+            
+            // Принудительно показываем видео
+            video.style.display = 'block'
+            video.style.visibility = 'visible'
+            video.style.opacity = '1'
           }
           
           // Создаём QrScanner поверх уже запущенного видео
@@ -134,6 +195,18 @@ export default function QRScanner({ onScan, onClose, onManualInput }: QRScannerP
           setIsInitialized(true)
           setError(null)
           console.log('Fallback getUserMedia started successfully')
+          
+          // Дополнительная проверка через небольшую задержку
+          setTimeout(() => {
+            if (videoRef.current && isScanning) {
+              const video = videoRef.current as HTMLVideoElement
+              video.style.display = 'block'
+              video.style.visibility = 'visible'
+              video.style.opacity = '1'
+              console.log('Fallback video visibility forced after timeout')
+            }
+          }, 500)
+          
           return
 
         } catch (err2) {
@@ -236,7 +309,14 @@ export default function QRScanner({ onScan, onClose, onManualInput }: QRScannerP
                 playsInline
                 autoPlay
                 muted
-                style={{ display: isInitialized ? 'block' : 'none' }}
+                style={{ 
+                  display: isInitialized ? 'block' : 'none',
+                  visibility: isInitialized ? 'visible' : 'hidden',
+                  opacity: isInitialized ? '1' : '0',
+                  width: '100%',
+                  height: '256px',
+                  objectFit: 'cover'
+                }}
               />
               {!isInitialized && !error && (
                 <div className="w-full h-64 bg-gray-200 rounded-lg flex items-center justify-center">
@@ -295,6 +375,16 @@ export default function QRScanner({ onScan, onClose, onManualInput }: QRScannerP
                   <span className="text-green-600 text-xs">Камера активна</span>
                 </div>
               )}
+              
+              {/* Отладочная информация */}
+              <div className="mt-2 text-xs text-gray-500">
+                <p>Состояние: {isInitialized ? 'Инициализирован' : 'Не инициализирован'}</p>
+                <p>Сканирование: {isScanning ? 'Активно' : 'Неактивно'}</p>
+                <p>Пользователь запустил: {userStarted ? 'Да' : 'Нет'}</p>
+                {videoRef.current && (
+                  <p>Видео стили: display={videoRef.current.style.display}, visibility={videoRef.current.style.visibility}</p>
+                )}
+              </div>
             </div>
 
             <div className="mt-4 flex justify-center space-x-2">
