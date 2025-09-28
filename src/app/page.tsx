@@ -36,7 +36,7 @@ export default function HomePage() {
     
     // Load Telegram WebApp script
     const loadTelegramScript = () => {
-      if (typeof window !== 'undefined' && !window.Telegram) {
+      if (typeof window !== 'undefined' && !(window as any).Telegram) {
         const script = document.createElement('script')
         script.src = 'https://telegram.org/js/telegram-web-app.js'
         script.async = true
@@ -55,9 +55,9 @@ export default function HomePage() {
 
     const checkTelegramWebApp = () => {
       try {
-        if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
+        if (typeof window !== 'undefined' && (window as any).Telegram?.WebApp) {
           setIsInTelegram(true)
-          const tgUser = window.Telegram.WebApp.initDataUnsafe?.user as TgUser | undefined
+          const tgUser = (window as any).Telegram.WebApp.initDataUnsafe?.user as TgUser | undefined
           if (tgUser) {
             // Исправляем порядок имени и фамилии
             const correctedUser = {
@@ -139,7 +139,7 @@ export default function HomePage() {
       console.log('Bot username:', botUsername) // Debug log
       console.log('WebApp URL:', webAppUrl) // Debug log
 
-      if (window.Telegram?.WebApp) {
+      if ((window as any).Telegram?.WebApp) {
         console.log('Already in Telegram WebApp, redirecting to register')
         // We are already inside Telegram WebApp
         window.location.href = webAppUrl
@@ -289,7 +289,7 @@ export default function HomePage() {
                 <p>Debug: Bot username = {process.env.NEXT_PUBLIC_TG_BOT_USERNAME || 'не настроен'}</p>
                 <p>Debug: URL = {typeof window !== 'undefined' && window.location ? window.location.origin : 'не доступен'}</p>
                 <p>Debug: Expected bot = pop_222_bot</p>
-                <p>Debug: Window.Telegram = {typeof window !== 'undefined' && window.Telegram ? 'доступен' : 'не доступен'}</p>
+                <p>Debug: Window.Telegram = {typeof window !== 'undefined' && (window as any).Telegram ? 'доступен' : 'не доступен'}</p>
                 <p>Debug: Window object = {typeof window !== 'undefined' ? 'доступен' : 'не доступен'}</p>
               </div>
             </div>

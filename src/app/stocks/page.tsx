@@ -45,7 +45,7 @@ export default function StocksPage() {
   useEffect(() => {
     // Load Telegram WebApp script
     const loadTelegramScript = () => {
-      if (typeof window !== 'undefined' && !window.Telegram) {
+      if (typeof window !== 'undefined' && !(window as any).Telegram) {
         const script = document.createElement('script')
         script.src = 'https://telegram.org/js/telegram-web-app.js'
         script.async = true
@@ -61,9 +61,9 @@ export default function StocksPage() {
 
     const checkTelegramWebApp = () => {
       try {
-        if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
+        if (typeof window !== 'undefined' && (window as any).Telegram?.WebApp) {
           setIsInTelegram(true)
-          const tgUser = window.Telegram.WebApp.initDataUnsafe?.user as TgUser | undefined
+          const tgUser = (window as any).Telegram.WebApp.initDataUnsafe?.user as TgUser | undefined
           if (tgUser) {
             setUser(tgUser)
           }
