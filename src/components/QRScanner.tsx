@@ -32,7 +32,7 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
     } else {
       addDebugInfo(`QR Code detected but scanner not ready - mounted: ${mountedRef.current}, isScanning: ${isScanning}`)
     }
-  }, [onScan, isScanning, isInitialized, addDebugInfo])
+  }, [onScan, addDebugInfo])
 
   const stopScanner = useCallback(async () => {
     addDebugInfo('Stopping scanner...')
@@ -59,7 +59,7 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
     setIsScanning(false)
     setIsInitialized(false)
     addDebugInfo('Scanner state reset - isScanning: false, isInitialized: false')
-  }, [addDebugInfo])
+  }, [])
 
   const startScanner = useCallback(async () => {
     if (isScanning || isInitialized) {
@@ -163,7 +163,7 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
       setIsScanning(false)
       setIsInitialized(false)
     }
-  }, [isScanning, isInitialized, stopScanner, handleScan, addDebugInfo])
+  }, [stopScanner, handleScan])
 
   useEffect(() => {
     mountedRef.current = true
@@ -177,14 +177,14 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
       addDebugInfo('Component unmounting - calling stopScanner')
       stopScanner()
     }
-  }, [stopScanner, addDebugInfo])
+  }, [stopScanner])
 
   const handleClose = useCallback(async () => {
     addDebugInfo('Closing scanner...')
     mountedRef.current = false
     await stopScanner()
     onClose()
-  }, [stopScanner, onClose, addDebugInfo])
+  }, [stopScanner, onClose])
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
