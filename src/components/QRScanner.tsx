@@ -16,6 +16,8 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
   const [userStarted, setUserStarted] = useState(false)
   const [debugInfo, setDebugInfo] = useState<string[]>([])
   const mountedRef = useRef(true)
+  const isScanningRef = useRef(false)
+  const isInitializedRef = useRef(false)
 
   const addDebugInfo = useCallback((info: string) => {
     console.log('DEBUG:', info)
@@ -24,13 +26,13 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
 
   const handleScan = useCallback((result: QrScanner.ScanResult) => {
     addDebugInfo(`QR Code detected: ${result.data}`)
-    addDebugInfo(`Scanner state - mounted: ${mountedRef.current}, isScanning: ${isScanning}, isInitialized: ${isInitialized}`)
+    addDebugInfo(`Scanner state - mounted: ${mountedRef.current}, isScanning: ${isScanningRef.current}, isInitialized: ${isInitializedRef.current}`)
     
-    if (mountedRef.current && isScanning) {
+    if (mountedRef.current && isScanningRef.current) {
       addDebugInfo(`QR Code scanned successfully: ${result.data}`)
       onScan(result.data)
     } else {
-      addDebugInfo(`QR Code detected but scanner not ready - mounted: ${mountedRef.current}, isScanning: ${isScanning}`)
+      addDebugInfo(`QR Code detected but scanner not ready - mounted: ${mountedRef.current}, isScanning: ${isScanningRef.current}`)
     }
   }, [onScan, addDebugInfo])
 
@@ -58,6 +60,8 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
     }
     setIsScanning(false)
     setIsInitialized(false)
+    isScanningRef.current = false
+    isInitializedRef.current = false
     addDebugInfo('Scanner state reset - isScanning: false, isInitialized: false')
   }, [])
 
@@ -133,12 +137,14 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
 
       setIsScanning(true)
       setIsInitialized(true)
+      isScanningRef.current = true
+      isInitializedRef.current = true
       addDebugInfo('Scanner state set to active')
       addDebugInfo(`Final state - isScanning: true, isInitialized: true`)
       
       // Проверяем состояние через небольшую задержку
       setTimeout(() => {
-        addDebugInfo(`State check after 100ms - isScanning: ${isScanning}, isInitialized: ${isInitialized}`)
+        addDebugInfo(`State check after 100ms - isScanning: ${isScanningRef.current}, isInitialized: ${isInitializedRef.current}`)
       }, 100)
 
     } catch (error) {
@@ -162,6 +168,8 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
       
       setIsScanning(false)
       setIsInitialized(false)
+      isScanningRef.current = false
+      isInitializedRef.current = false
     }
   }, [stopScanner, handleScan])
 
