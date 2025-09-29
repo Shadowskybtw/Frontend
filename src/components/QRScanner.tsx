@@ -133,12 +133,29 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
 
   useEffect(() => {
     mountedRef.current = true
+    
+    // Автоматически запускаем камеру при открытии модального окна
+    const autoStart = async () => {
+      // Небольшая задержка для стабильности
+      await new Promise(resolve => setTimeout(resolve, 500))
+      if (mountedRef.current && !isScanning && !isInitialized) {
+        console.log('Auto-starting camera...')
+        try {
+          await handleUserStart()
+        } catch (error) {
+          console.error('Auto-start failed:', error)
+          setError('Не удалось автоматически запустить камеру. Попробуйте вручную.')
+        }
+      }
+    }
+    
+    autoStart()
 
     return () => {
       mountedRef.current = false
       safeStop()
     }
-  }, [safeStop])
+  }, [safeStop, handleUserStart, isScanning, isInitialized])
 
   const handleClose = async () => {
     mountedRef.current = false
@@ -147,7 +164,7 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-semibold">Сканирование QR кода</h3>
@@ -159,7 +176,7 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
           </button>
         </div>
 
-            <div className="relative">
+        <div className="relative">
               <video
                 ref={videoRef}
                 className="w-full h-64 bg-gray-200 rounded-lg object-cover"
@@ -178,28 +195,9 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
               {!isInitialized && !error && (
                 <div className="w-full h-64 bg-gray-200 rounded-lg flex items-center justify-center">
                   <div className="text-center">
-                    {!userStarted ? (
-                      <>
-                        <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                          <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                          </svg>
-                        </div>
-                        <p className="text-gray-600 text-sm mb-4">Нажмите кнопку для запуска камеры</p>
-                        <button
-                          onClick={handleUserStart}
-                          className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium"
-                        >
-                          📷 Запустить камеру
-                        </button>
-                      </>
-                    ) : (
-                      <>
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
-                        <p className="text-gray-600 text-sm">Запуск камеры...</p>
-                      </>
-                    )}
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+                    <p className="text-gray-600 text-sm">Запуск камеры...</p>
+                    <p className="text-gray-500 text-xs mt-1">Разрешите доступ к камере</p>
                   </div>
                 </div>
               )}
@@ -208,6 +206,12 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
         {error && (
           <div className="mt-4 p-3 bg-red-100 border border-red-300 rounded-lg">
             <p className="text-red-800 text-sm">{error}</p>
+            <button
+              onClick={handleUserStart}
+              className="mt-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm"
+            >
+              📷 Попробовать снова
+            </button>
           </div>
         )}
 
@@ -215,9 +219,7 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
               <p className="text-gray-600 text-sm">
                 {isScanning 
                   ? 'Наведите камеру на QR код для сканирования' 
-                  : userStarted 
-                    ? 'Запуск камеры...' 
-                    : 'Нажмите кнопку выше для запуска камеры'
+                  : 'Запуск камеры...'
                 }
               </p>
               {isScanning && (
