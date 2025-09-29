@@ -14,95 +14,65 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
   const [isScanning, setIsScanning] = useState(false)
   const [isInitialized, setIsInitialized] = useState(false)
   const [userStarted, setUserStarted] = useState(false)
-  const [debugInfo, setDebugInfo] = useState<string[]>([])
   const mountedRef = useRef(true)
   const isScanningRef = useRef(false)
   const isInitializedRef = useRef(false)
 
-  const addDebugInfo = useCallback((info: string) => {
-    console.log('DEBUG:', info)
-    setDebugInfo(prev => [...prev, `${new Date().toLocaleTimeString()}: ${info}`])
-  }, [])
-
   const handleScan = useCallback((result: QrScanner.ScanResult) => {
-    addDebugInfo(`QR Code detected: ${result.data}`)
-    addDebugInfo(`Scanner state - mounted: ${mountedRef.current}, isScanning: ${isScanningRef.current}, isInitialized: ${isInitializedRef.current}`)
-    
     if (mountedRef.current && isScanningRef.current) {
-      addDebugInfo(`QR Code scanned successfully: ${result.data}`)
       onScan(result.data)
-    } else {
-      addDebugInfo(`QR Code detected but scanner not ready - mounted: ${mountedRef.current}, isScanning: ${isScanningRef.current}`)
     }
-  }, [onScan, addDebugInfo])
+  }, [onScan])
 
   const stopScanner = useCallback(async () => {
-    addDebugInfo('Stopping scanner...')
     try {
       if (qrScannerRef.current) {
         await qrScannerRef.current.stop()
         qrScannerRef.current.destroy()
         qrScannerRef.current = null
-        addDebugInfo('QrScanner stopped and destroyed')
       }
       if (videoRef.current && videoRef.current.srcObject) {
         const stream = videoRef.current.srcObject as MediaStream
-        stream.getTracks().forEach(track => {
-          track.stop()
-          addDebugInfo(`Track stopped: ${track.kind}`)
-        })
+        stream.getTracks().forEach(track => track.stop())
         videoRef.current.srcObject = null
-        addDebugInfo('Video srcObject cleared')
       }
     } catch (e) {
-      addDebugInfo(`Error stopping scanner: ${e}`)
       console.warn('Error stopping scanner:', e)
     }
     setIsScanning(false)
     setIsInitialized(false)
     isScanningRef.current = false
     isInitializedRef.current = false
-    addDebugInfo('Scanner state reset - isScanning: false, isInitialized: false')
   }, [])
 
   const startScanner = useCallback(async () => {
     if (isScanning || isInitialized) {
-      addDebugInfo('Scanner already running, ignoring start request')
       return
     }
 
-    addDebugInfo('User started scanner')
     setUserStarted(true)
     setError(null)
-    addDebugInfo('Starting QR scanner...')
 
     try {
       // Проверяем наличие камеры
-      addDebugInfo('Checking for camera...')
       const hasCamera = await QrScanner.hasCamera()
-      addDebugInfo(`Camera available: ${hasCamera}`)
       
       if (!hasCamera) {
         setError('Камера не найдена')
-        addDebugInfo('No camera found')
         return
       }
 
       // Очищаем предыдущий сканер
-      addDebugInfo('Cleaning up previous scanner...')
       await stopScanner()
 
       // Небольшая задержка для стабильности
-      addDebugInfo('Waiting 300ms for stability...')
       await new Promise(resolve => setTimeout(resolve, 300))
 
       if (!videoRef.current) {
         setError('Video element not found')
-        addDebugInfo('Video element not found')
         return
       }
 
-      addDebugInfo('Creating QrScanner instance...')
       // Создаем QrScanner
       qrScannerRef.current = new QrScanner(
         videoRef.current,
@@ -114,12 +84,9 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
           preferredCamera: 'environment'
         }
       )
-      addDebugInfo('QrScanner instance created')
 
       // Запускаем сканер
-      addDebugInfo('Starting QrScanner...')
       await qrScannerRef.current.start()
-      addDebugInfo('QrScanner started successfully')
       
       // Устанавливаем стили после успешного запуска
       if (videoRef.current) {
@@ -132,38 +99,25 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
         video.style.objectFit = 'cover'
         video.style.backgroundColor = 'transparent'
         video.style.borderRadius = '8px'
-        addDebugInfo('Video styles applied')
       }
 
       setIsScanning(true)
       setIsInitialized(true)
       isScanningRef.current = true
       isInitializedRef.current = true
-      addDebugInfo('Scanner state set to active')
-      addDebugInfo(`Final state - isScanning: true, isInitialized: true`)
-      
-      // Проверяем состояние через небольшую задержку
-      setTimeout(() => {
-        addDebugInfo(`State check after 100ms - isScanning: ${isScanningRef.current}, isInitialized: ${isInitializedRef.current}`)
-      }, 100)
 
     } catch (error) {
-      addDebugInfo(`Error starting scanner: ${error}`)
       console.error('Error starting scanner:', error)
       const errorMessage = error instanceof Error ? error.message : String(error)
       
       if (errorMessage.includes('NotAllowedError')) {
         setError('Доступ к камере заблокирован. Разрешите доступ в настройках.')
-        addDebugInfo('Camera access denied')
       } else if (errorMessage.includes('NotReadableError')) {
         setError('Камера занята другим приложением.')
-        addDebugInfo('Camera in use by another app')
       } else if (errorMessage.includes('NotFoundError')) {
         setError('Камера не найдена.')
-        addDebugInfo('Camera not found')
       } else {
         setError(`Ошибка: ${errorMessage}`)
-        addDebugInfo(`Unknown error: ${errorMessage}`)
       }
       
       setIsScanning(false)
@@ -175,20 +129,14 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
 
   useEffect(() => {
     mountedRef.current = true
-    addDebugInfo('Component mounted')
-    
-    // НЕ запускаем автоматически - только по кнопке пользователя
-    addDebugInfo('Waiting for user to start scanner')
 
     return () => {
       mountedRef.current = false
-      addDebugInfo('Component unmounting - calling stopScanner')
       stopScanner()
     }
   }, [stopScanner])
 
   const handleClose = useCallback(async () => {
-    addDebugInfo('Closing scanner...')
     mountedRef.current = false
     await stopScanner()
     onClose()
@@ -271,23 +219,6 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
           )}
         </div>
 
-        {/* Отладочная информация */}
-        {debugInfo.length > 0 && (
-          <div className="mt-4 p-3 bg-gray-100 border border-gray-300 rounded-lg">
-            <h4 className="text-sm font-semibold text-gray-700 mb-2">Отладка:</h4>
-            <div className="max-h-32 overflow-y-auto text-xs text-gray-600">
-              {debugInfo.map((info, index) => (
-                <div key={index} className="mb-1">{info}</div>
-              ))}
-            </div>
-            <button
-              onClick={() => setDebugInfo([])}
-              className="mt-2 text-xs text-blue-600 hover:text-blue-800"
-            >
-              Очистить
-            </button>
-          </div>
-        )}
 
         <div className="mt-4 flex justify-center">
           <button
