@@ -68,32 +68,67 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
       await safeStop()
 
       // Небольшая задержка для стабильности
-      await new Promise(resolve => setTimeout(resolve, 100))
+      await new Promise(resolve => setTimeout(resolve, 200))
 
-      // Создаем QrScanner стандартным способом
+      // Создаем QrScanner с минимальными настройками
       if (videoRef.current) {
-        qrScannerRef.current = new QrScanner(
-          videoRef.current,
-          handleScan,
-          {
-            maxScansPerSecond: 5,
-            highlightScanRegion: true,
-            highlightCodeOutline: true,
-            preferredCamera: 'environment'
-          }
-        )
-
-        console.log('Starting QrScanner...')
+        console.log('Creating QrScanner instance...')
+        
         try {
+          qrScannerRef.current = new QrScanner(
+            videoRef.current,
+            handleScan,
+            {
+              maxScansPerSecond: 2,
+              highlightScanRegion: false,
+              highlightCodeOutline: false,
+              preferredCamera: 'environment',
+              returnDetailedScanResult: true
+            }
+          )
+
+          console.log('Starting QrScanner...')
           await qrScannerRef.current.start()
           console.log('QrScanner.start() completed')
-        } catch (startError) {
-          console.error('QrScanner start error:', startError)
-          setError('Ошибка запуска сканера QR кодов')
-          throw startError
+          
+        } catch (qrError) {
+          console.error('QrScanner failed, trying alternative approach:', qrError)
+          
+          // Альтернативный способ - получаем поток напрямую
+          const stream = await navigator.mediaDevices.getUserMedia({
+            video: { 
+              facingMode: 'environment',
+              width: { ideal: 640 },
+              height: { ideal: 480 }
+            }
+          })
+          
+          if (videoRef.current) {
+            videoRef.current.srcObject = stream
+            await videoRef.current.play()
+            
+            // Пытаемся создать QrScanner после получения потока
+            try {
+              qrScannerRef.current = new QrScanner(
+                videoRef.current,
+                handleScan,
+                {
+                  maxScansPerSecond: 1,
+                  highlightScanRegion: false,
+                  highlightCodeOutline: false
+                }
+              )
+              await qrScannerRef.current.start()
+              console.log('QrScanner started on existing stream')
+            } catch (secondError) {
+              console.error('QrScanner failed on existing stream:', secondError)
+              // Камера работает, но сканирование может не работать
+              setError('Камера запущена, но сканирование QR кодов может не работать. Попробуйте ввести код вручную.')
+            }
+          }
         }
         
-        // Устанавливаем стили после запуска
+        // Устанавливаем стили после успешного запуска
         if (videoRef.current) {
           const video = videoRef.current as HTMLVideoElement
           video.style.display = 'block'
@@ -103,6 +138,7 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
           video.style.height = '256px'
           video.style.objectFit = 'cover'
           video.style.backgroundColor = 'transparent'
+          video.style.borderRadius = '8px'
         }
       }
       
@@ -123,7 +159,7 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
       } else if (em.includes('NotFoundError')) {
         setError('Камера не найдена. Убедитесь, что у вас есть камера.')
       } else {
-        setError('Не удалось запустить камеру. Попробуйте ввести QR код вручную.')
+        setError(`Не удалось запустить камеру: ${em}`)
       }
       
       setIsScanning(false)
@@ -198,6 +234,12 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
                     <p className="text-gray-600 text-sm">Запуск камеры...</p>
                     <p className="text-gray-500 text-xs mt-1">Разрешите доступ к камере</p>
+                    <button
+                      onClick={handleUserStart}
+                      className="mt-3 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm"
+                    >
+                      📷 Запустить вручную
+                    </button>
                   </div>
                 </div>
               )}
