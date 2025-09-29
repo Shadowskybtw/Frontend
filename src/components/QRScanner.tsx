@@ -237,16 +237,7 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
               
             </div>
 
-            <div className="mt-4 flex justify-center space-x-2">
-              <button
-                onClick={() => {
-                  console.log('Testing QR scan with sample data')
-                  onScan('test-qr-code-12345')
-                }}
-                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm"
-              >
-                🧪 Тест
-              </button>
+            <div className="mt-4 flex justify-center">
               <button
                 onClick={handleClose}
                 className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg"

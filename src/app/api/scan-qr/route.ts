@@ -16,12 +16,32 @@ export async function POST(request: NextRequest) {
 
     // Если передан QR код
     if (qr_data) {
-      // Парсим данные QR кода
-      const userData = JSON.parse(qr_data)
+      let userData
+      
+      try {
+        // Пытаемся парсить как JSON
+        userData = JSON.parse(qr_data)
+        console.log('Parsed QR data as JSON:', userData)
+      } catch (parseError) {
+        // Если не JSON, проверяем, может быть это просто TG ID
+        console.log('QR data is not JSON, treating as raw data:', qr_data)
+        
+        // Если это число, используем как TG ID
+        const numericId = parseInt(qr_data)
+        if (!isNaN(numericId)) {
+          userData = { tg_id: numericId }
+        } else {
+          return NextResponse.json({ 
+            success: false, 
+            message: 'Invalid QR code format. Expected JSON or numeric ID.' 
+          }, { status: 400 })
+        }
+      }
+      
       const tgId = userData.tg_id
 
       if (!tgId) {
-        return NextResponse.json({ success: false, message: 'Invalid QR code' }, { status: 400 })
+        return NextResponse.json({ success: false, message: 'Invalid QR code - no TG ID found' }, { status: 400 })
       }
 
       // Получаем пользователя по TG ID
