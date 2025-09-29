@@ -241,10 +241,10 @@ export default function StocksPage() {
       <main className="flex-1 flex items-center justify-center p-4">
         <div className="max-w-md w-full bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-700 p-8">
           <div className="text-center">
-            <div className="flex items-center justify-center mb-2">
+            <div className="flex items-center justify-between mb-2">
               <Link 
                 href="/"
-                className="text-white hover:text-gray-300 transition-colors mr-4 flex items-center"
+                className="text-white hover:text-gray-300 transition-colors flex items-center"
               >
                 <svg className="w-6 h-6 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -254,6 +254,7 @@ export default function StocksPage() {
               <h1 className="text-3xl font-bold text-white">
                 🎁 Мои акции
               </h1>
+              <div className="w-16"></div> {/* Spacer for centering */}
             </div>
             <p className="text-gray-300 mb-8">
               Отслеживайте прогресс ваших акций
