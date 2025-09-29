@@ -17,9 +17,14 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
   const mountedRef = useRef(true)
 
   const handleScan = useCallback((result: QrScanner.ScanResult) => {
+    console.log('QR Code detected:', result.data)
+    console.log('Scanner state - mounted:', mountedRef.current, 'isScanning:', isScanning)
+    
     if (mountedRef.current && isScanning) {
-      console.log('QR Code scanned:', result.data)
+      console.log('QR Code scanned successfully:', result.data)
       onScan(result.data)
+    } else {
+      console.log('QR Code detected but scanner not ready')
     }
   }, [onScan, isScanning])
 
@@ -52,57 +57,60 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
     setError(null)
     
     try {
-      // Получаем видео поток и сразу используем его
-      console.log('Getting video stream...')
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { 
-          facingMode: 'environment',
-          width: { ideal: 1280 },
-          height: { ideal: 720 }
-        }
-      })
-      
-      if (videoRef.current) {
-        const video = videoRef.current as HTMLVideoElement
-        video.srcObject = stream
-        await video.play()
-        
-        // Устанавливаем стили
-        video.style.display = 'block'
-        video.style.visibility = 'visible'
-        video.style.opacity = '1'
-        video.style.width = '100%'
-        video.style.height = '256px'
-        video.style.objectFit = 'cover'
-        video.style.backgroundColor = 'transparent'
-        
-        console.log('Video stream set and playing')
+      // Проверяем камеру
+      const hasCamera = await QrScanner.hasCamera()
+      if (!hasCamera) {
+        setError('Камера не найдена. Введите код вручную.')
+        return
       }
-      
-      // Создаем QrScanner поверх уже работающего видео
+
+      // Очищаем предыдущий сканер
+      await safeStop()
+
+      // Небольшая задержка для стабильности
+      await new Promise(resolve => setTimeout(resolve, 100))
+
+      // Создаем QrScanner стандартным способом
       if (videoRef.current) {
         qrScannerRef.current = new QrScanner(
           videoRef.current,
           handleScan,
           {
-            maxScansPerSecond: 1,
-            highlightScanRegion: false,
-            highlightCodeOutline: false,
+            maxScansPerSecond: 5,
+            highlightScanRegion: true,
+            highlightCodeOutline: true,
+            preferredCamera: 'environment'
           }
         )
-      }
 
-      console.log('Starting QrScanner on existing video...')
-      if (qrScannerRef.current) {
-        await qrScannerRef.current.start()
-        console.log('QrScanner.start() completed')
+        console.log('Starting QrScanner...')
+        try {
+          await qrScannerRef.current.start()
+          console.log('QrScanner.start() completed')
+        } catch (startError) {
+          console.error('QrScanner start error:', startError)
+          setError('Ошибка запуска сканера QR кодов')
+          throw startError
+        }
+        
+        // Устанавливаем стили после запуска
+        if (videoRef.current) {
+          const video = videoRef.current as HTMLVideoElement
+          video.style.display = 'block'
+          video.style.visibility = 'visible'
+          video.style.opacity = '1'
+          video.style.width = '100%'
+          video.style.height = '256px'
+          video.style.objectFit = 'cover'
+          video.style.backgroundColor = 'transparent'
+        }
       }
       
       // Устанавливаем состояние
       setIsScanning(true)
       setIsInitialized(true)
       setError(null)
-      console.log('Scanner started successfully with manual stream')
+      console.log('Scanner started successfully')
       
     } catch (error) {
       console.error('Error starting camera:', error)
@@ -215,13 +223,30 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
               {isScanning && (
                 <div className="mt-2 flex items-center justify-center space-x-2">
                   <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                  <span className="text-green-600 text-xs">Камера активна</span>
+                  <span className="text-green-600 text-xs">Сканирование QR кодов...</span>
+                </div>
+              )}
+              
+              {isScanning && (
+                <div className="mt-2 text-center">
+                  <div className="inline-block px-3 py-1 bg-green-100 text-green-800 text-xs rounded-full animate-pulse">
+                    Наведите камеру на QR код
+                  </div>
                 </div>
               )}
               
             </div>
 
-            <div className="mt-4 flex justify-center">
+            <div className="mt-4 flex justify-center space-x-2">
+              <button
+                onClick={() => {
+                  console.log('Testing QR scan with sample data')
+                  onScan('test-qr-code-12345')
+                }}
+                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm"
+              >
+                🧪 Тест
+              </button>
               <button
                 onClick={handleClose}
                 className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg"
