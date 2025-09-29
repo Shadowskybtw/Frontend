@@ -516,10 +516,19 @@ export default function ProfilePage() {
       {/* Header */}
       <header className="bg-black/50 backdrop-blur-sm border-b border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-center items-center h-20">
+          <div className="flex justify-between items-center h-20">
+            <Link 
+              href="/"
+              className="text-white hover:text-gray-300 transition-colors"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </Link>
             <h1 className="text-3xl font-bold text-white tracking-wider">
               <span className="text-red-500">D</span>UNGEON
             </h1>
+            <div className="w-6 h-6"></div> {/* Spacer for centering */}
           </div>
         </div>
       </header>
@@ -759,14 +768,6 @@ export default function ProfilePage() {
             </div>
           )}
 
-          <div className="mt-8 pt-6 border-t border-gray-600">
-            <Link 
-              href="/"
-              className="text-blue-400 hover:text-blue-300 text-sm"
-            >
-              ← Вернуться на главную
-            </Link>
-          </div>
         </div>
       </div>
       
