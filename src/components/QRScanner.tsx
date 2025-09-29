@@ -24,13 +24,15 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
 
   const handleScan = useCallback((result: QrScanner.ScanResult) => {
     addDebugInfo(`QR Code detected: ${result.data}`)
+    addDebugInfo(`Scanner state - mounted: ${mountedRef.current}, isScanning: ${isScanning}, isInitialized: ${isInitialized}`)
+    
     if (mountedRef.current && isScanning) {
       addDebugInfo(`QR Code scanned successfully: ${result.data}`)
       onScan(result.data)
     } else {
-      addDebugInfo('QR Code detected but scanner not ready')
+      addDebugInfo(`QR Code detected but scanner not ready - mounted: ${mountedRef.current}, isScanning: ${isScanning}`)
     }
-  }, [onScan, isScanning, addDebugInfo])
+  }, [onScan, isScanning, isInitialized, addDebugInfo])
 
   const stopScanner = useCallback(async () => {
     addDebugInfo('Stopping scanner...')
@@ -56,7 +58,7 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
     }
     setIsScanning(false)
     setIsInitialized(false)
-    addDebugInfo('Scanner state reset')
+    addDebugInfo('Scanner state reset - isScanning: false, isInitialized: false')
   }, [addDebugInfo])
 
   const startScanner = useCallback(async () => {
@@ -132,6 +134,12 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
       setIsScanning(true)
       setIsInitialized(true)
       addDebugInfo('Scanner state set to active')
+      addDebugInfo(`Final state - isScanning: true, isInitialized: true`)
+      
+      // Проверяем состояние через небольшую задержку
+      setTimeout(() => {
+        addDebugInfo(`State check after 100ms - isScanning: ${isScanning}, isInitialized: ${isInitialized}`)
+      }, 100)
 
     } catch (error) {
       addDebugInfo(`Error starting scanner: ${error}`)
@@ -166,7 +174,7 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
 
     return () => {
       mountedRef.current = false
-      addDebugInfo('Component unmounting')
+      addDebugInfo('Component unmounting - calling stopScanner')
       stopScanner()
     }
   }, [stopScanner, addDebugInfo])
