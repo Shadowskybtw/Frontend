@@ -516,19 +516,10 @@ export default function ProfilePage() {
       {/* Header */}
       <header className="bg-black/50 backdrop-blur-sm border-b border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
-            <Link 
-              href="/"
-              className="text-white hover:text-gray-300 transition-colors"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-            </Link>
+          <div className="flex justify-center items-center h-20">
             <h1 className="text-3xl font-bold text-white tracking-wider">
               <span className="text-red-500">D</span>UNGEON
             </h1>
-            <div className="w-6 h-6"></div> {/* Spacer for centering */}
           </div>
         </div>
       </header>
@@ -537,12 +528,22 @@ export default function ProfilePage() {
       <main className="flex-1 flex items-center justify-center p-4">
         <div className="max-w-md w-full bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-700 p-8">
           <div className="text-center">
-            <h1 className="text-3xl font-bold text-white mb-2">
-              👤 Профиль
-            </h1>
-          <p className="text-gray-300 mb-8">
-            Управляйте своим профилем
-          </p>
+            <div className="flex items-center justify-center mb-2">
+              <Link 
+                href="/"
+                className="text-white hover:text-gray-300 transition-colors mr-3"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </Link>
+              <h1 className="text-3xl font-bold text-white">
+                👤 Профиль
+              </h1>
+            </div>
+            <p className="text-gray-300 mb-8">
+              Управляйте своим профилем
+            </p>
 
           {isInTelegram && user ? (
             <div className="space-y-4">
