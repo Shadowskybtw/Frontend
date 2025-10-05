@@ -6,7 +6,7 @@ import { useUser } from '@/contexts/UserContext'
 interface PurchaseHistory {
   id: number
   user_id: number
-  hookah_type: 'regular' | 'free' | 'removed'
+  hookah_type: 'regular' | 'free'
   slot_number?: number | null
   stock_id?: number | null
   admin_id?: number | null
@@ -111,78 +111,78 @@ export default function HistoryPage() {
               </div>
             ) : (
               <div className="space-y-4">
-                {history.map((item) => {
-                  const getItemInfo = () => {
-                    switch (item.hookah_type) {
-                      case 'free':
-                        return {
-                          icon: '🎁',
-                          title: 'Бесплатный кальян',
-                          bgColor: 'bg-green-900/30 border-green-500/50',
-                          description: 'Получен за завершение акции 5+1'
-                        }
-                      case 'regular':
-                        return {
-                          icon: '🛒',
-                          title: 'Обычная покупка',
-                          bgColor: 'bg-gray-700/50 border-gray-600',
-                          description: item.slot_number ? `Слот ${item.slot_number}/5` : 'Кальян добавлен'
-                        }
-                      default:
-                        return {
-                          icon: '❓',
-                          title: 'Неизвестно',
-                          bgColor: 'bg-gray-700/50 border-gray-600',
-                          description: 'Неизвестное действие'
-                        }
+                {history
+                  .filter(item => item.hookah_type === 'regular' || item.hookah_type === 'free')
+                  .map((item) => {
+                    const getItemInfo = () => {
+                      switch (item.hookah_type) {
+                        case 'free':
+                          return {
+                            icon: '🎁',
+                            title: 'Бесплатный кальян',
+                            bgColor: 'bg-green-900/30 border-green-500/50',
+                            description: 'Получен за завершение акции 5+1'
+                          }
+                        case 'regular':
+                          return {
+                            icon: '🛒',
+                            title: 'Обычная покупка',
+                            bgColor: 'bg-gray-700/50 border-gray-600',
+                            description: item.slot_number ? `Слот ${item.slot_number}/5` : 'Кальян добавлен'
+                          }
+                        default:
+                          // Этот случай больше не должен происходить благодаря фильтрации выше
+                          return null
+                      }
                     }
-                  }
 
-                  const itemInfo = getItemInfo()
+                    const itemInfo = getItemInfo()
+                    
+                    // Если itemInfo null, не отображаем элемент
+                    if (!itemInfo) return null
 
-                  return (
-                    <div
-                      key={item.id}
-                      className={`p-4 rounded-lg border ${itemInfo.bgColor}`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-3">
-                          <span className="text-2xl">
-                            {itemInfo.icon}
-                          </span>
-                          <div>
-                            <h3 className="font-semibold text-white">
-                              {itemInfo.title}
-                            </h3>
-                            <p className="text-gray-400 text-sm">
-                              {itemInfo.description}
-                            </p>
-                            <p className="text-gray-500 text-xs">
-                              {new Date(item.created_at).toLocaleDateString('ru-RU', {
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit'
-                              })}
-                            </p>
+                    return (
+                      <div
+                        key={item.id}
+                        className={`p-4 rounded-lg border ${itemInfo.bgColor}`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-3">
+                            <span className="text-2xl">
+                              {itemInfo.icon}
+                            </span>
+                            <div>
+                              <h3 className="font-semibold text-white">
+                                {itemInfo.title}
+                              </h3>
+                              <p className="text-gray-400 text-sm">
+                                {itemInfo.description}
+                              </p>
+                              <p className="text-gray-500 text-xs">
+                                {new Date(item.created_at).toLocaleDateString('ru-RU', {
+                                  year: 'numeric',
+                                  month: 'long',
+                                  day: 'numeric',
+                                  hour: '2-digit',
+                                  minute: '2-digit'
+                                })}
+                              </p>
+                            </div>
+                          </div>
+                          
+                          <div className="text-right">
+                            {item.scan_method && (
+                              <div className="text-gray-400 text-xs">
+                                {item.scan_method === 'admin_add' && '👑 Админ добавил'}
+                                {item.scan_method === 'promotion_complete' && '🎯 Акция завершена'}
+                                {item.scan_method === 'qr_scan' && '📷 QR код'}
+                              </div>
+                            )}
                           </div>
                         </div>
-                        
-                        <div className="text-right">
-                          {item.scan_method && (
-                            <div className="text-gray-400 text-xs">
-                              {item.scan_method === 'admin_add' && '👑 Админ добавил'}
-                              {item.scan_method === 'admin_remove' && '👑 Админ убрал'}
-                              {item.scan_method === 'promotion_complete' && '🎯 Акция завершена'}
-                              {item.scan_method === 'qr_scan' && '📷 QR код'}
-                            </div>
-                          )}
-                        </div>
                       </div>
-                    </div>
-                  )
-                })}
+                    )
+                  })}
               </div>
             )}
 

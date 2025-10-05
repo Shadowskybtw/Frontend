@@ -345,7 +345,7 @@ export const db = {
 
   async addHookahToHistory(
     userId: number, 
-    hookahType: 'regular' | 'free' | 'removed', 
+    hookahType: 'regular' | 'free', 
     slotNumber?: number,
     stockId?: number,
     adminId?: number | null,
