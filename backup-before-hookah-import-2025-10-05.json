@@ -1,0 +1,3138 @@
+{
+  "metadata": {
+    "exported_at": "2025-10-05T12:44:24.043Z",
+    "exported_by": "HookahImporter",
+    "version": "1.0",
+    "total_users": 234,
+    "total_stocks": 70,
+    "total_hookahs": 19
+  },
+  "users": [
+    {
+      "id": 10,
+      "tg_id": "1027936207",
+      "first_name": "Илья",
+      "last_name": "Черкашин",
+      "phone": "+79370657597",
+      "username": null,
+      "created_at": "2025-06-06T15:01:30.798Z",
+      "updated_at": "2025-10-05T12:34:01.253Z"
+    },
+    {
+      "id": 11,
+      "tg_id": "610656536",
+      "first_name": "Данила",
+      "last_name": "Измайлов",
+      "phone": "+79376558400",
+      "username": null,
+      "created_at": "2025-06-06T15:02:40.314Z",
+      "updated_at": "2025-10-05T12:34:02.035Z"
+    },
+    {
+      "id": 12,
+      "tg_id": "883911484",
+      "first_name": "Илья",
+      "last_name": "Фролов",
+      "phone": "+79967448499",
+      "username": null,
+      "created_at": "2025-06-06T15:04:57.657Z",
+      "updated_at": "2025-10-05T12:34:02.509Z"
+    },
+    {
+      "id": 13,
+      "tg_id": "6307473739",
+      "first_name": "Егор",
+      "last_name": "Белоногов",
+      "phone": "+79092394192",
+      "username": null,
+      "created_at": "2025-06-06T15:05:22.451Z",
+      "updated_at": "2025-10-05T12:34:02.672Z"
+    },
+    {
+      "id": 14,
+      "tg_id": "1962719148",
+      "first_name": "Иван",
+      "last_name": "Савватеев",
+      "phone": "+79879262380",
+      "username": null,
+      "created_at": "2025-06-06T15:41:55.364Z",
+      "updated_at": "2025-10-05T12:34:02.984Z"
+    },
+    {
+      "id": 15,
+      "tg_id": "5916603942",
+      "first_name": "Егор",
+      "last_name": "Кравченко",
+      "phone": "+79879077447",
+      "username": null,
+      "created_at": "2025-06-07T12:59:22.694Z",
+      "updated_at": "2025-10-05T12:34:03.261Z"
+    },
+    {
+      "id": 16,
+      "tg_id": "454922712",
+      "first_name": "Штрауш",
+      "last_name": "Штраус",
+      "phone": "+79967259554",
+      "username": null,
+      "created_at": "2025-06-07T14:24:35.951Z",
+      "updated_at": "2025-10-05T12:34:03.619Z"
+    },
+    {
+      "id": 17,
+      "tg_id": "367815510",
+      "first_name": "Руслан",
+      "last_name": "Каримов",
+      "phone": "+79276959619",
+      "username": null,
+      "created_at": "2025-06-09T15:54:17.147Z",
+      "updated_at": "2025-10-05T12:34:03.814Z"
+    },
+    {
+      "id": 18,
+      "tg_id": "6585577649",
+      "first_name": "макс",
+      "last_name": "макс",
+      "phone": "+79913802218",
+      "username": null,
+      "created_at": "2025-06-09T16:26:58.444Z",
+      "updated_at": "2025-10-05T12:34:04.150Z"
+    },
+    {
+      "id": 19,
+      "tg_id": "642604183",
+      "first_name": "Арсений",
+      "last_name": "Орехов",
+      "phone": "+79297062353",
+      "username": null,
+      "created_at": "2025-06-10T03:26:39.341Z",
+      "updated_at": "2025-10-05T12:34:04.321Z"
+    },
+    {
+      "id": 20,
+      "tg_id": "508089672",
+      "first_name": "Артем",
+      "last_name": "Шикунов",
+      "phone": "+79967441568",
+      "username": null,
+      "created_at": "2025-06-10T05:59:12.743Z",
+      "updated_at": "2025-10-05T12:34:04.547Z"
+    },
+    {
+      "id": 21,
+      "tg_id": "1016923611",
+      "first_name": "Ирина",
+      "last_name": "Быкова",
+      "phone": "+79879263875",
+      "username": null,
+      "created_at": "2025-06-10T06:19:04.324Z",
+      "updated_at": "2025-10-05T12:34:04.715Z"
+    },
+    {
+      "id": 22,
+      "tg_id": "1493678447",
+      "first_name": "Александр",
+      "last_name": "Ткаченко",
+      "phone": "+79272673977",
+      "username": null,
+      "created_at": "2025-06-10T07:16:12.315Z",
+      "updated_at": "2025-10-05T12:34:04.890Z"
+    },
+    {
+      "id": 23,
+      "tg_id": "434085685",
+      "first_name": "Сергей",
+      "last_name": "Васюткин",
+      "phone": "+79966199792",
+      "username": null,
+      "created_at": "2025-06-10T15:25:24.583Z",
+      "updated_at": "2025-10-05T12:34:05.059Z"
+    },
+    {
+      "id": 24,
+      "tg_id": "493427643",
+      "first_name": "Дмитрий",
+      "last_name": "Иглин",
+      "phone": "+79879808981",
+      "username": null,
+      "created_at": "2025-06-10T15:32:34.242Z",
+      "updated_at": "2025-10-05T12:34:05.298Z"
+    },
+    {
+      "id": 25,
+      "tg_id": "170429155",
+      "first_name": "Алексей",
+      "last_name": "Хажаинов",
+      "phone": "+79600877877",
+      "username": null,
+      "created_at": "2025-06-12T07:19:06.248Z",
+      "updated_at": "2025-10-05T12:34:05.475Z"
+    },
+    {
+      "id": 26,
+      "tg_id": "1365146383",
+      "first_name": "Денис",
+      "last_name": "Водопоев",
+      "phone": "+79270569422",
+      "username": null,
+      "created_at": "2025-06-12T09:21:22.698Z",
+      "updated_at": "2025-10-05T12:34:05.634Z"
+    },
+    {
+      "id": 27,
+      "tg_id": "667390895",
+      "first_name": "Агас",
+      "last_name": "Алекян",
+      "phone": "+79379996179",
+      "username": null,
+      "created_at": "2025-06-12T12:15:01.003Z",
+      "updated_at": "2025-10-05T12:34:05.840Z"
+    },
+    {
+      "id": 28,
+      "tg_id": "1620653512",
+      "first_name": "Иришка",
+      "last_name": "Мятная пастилка",
+      "phone": "+79608085510",
+      "username": null,
+      "created_at": "2025-06-12T13:59:00.542Z",
+      "updated_at": "2025-10-05T12:34:06.009Z"
+    },
+    {
+      "id": 29,
+      "tg_id": "1015634156",
+      "first_name": "Артур",
+      "last_name": "Наумов",
+      "phone": "+79879829961",
+      "username": null,
+      "created_at": "2025-06-13T14:32:54.309Z",
+      "updated_at": "2025-10-05T12:34:06.176Z"
+    },
+    {
+      "id": 30,
+      "tg_id": "595219785",
+      "first_name": "Никита",
+      "last_name": "Блинов",
+      "phone": "+79276115783",
+      "username": null,
+      "created_at": "2025-06-16T12:47:31.281Z",
+      "updated_at": "2025-10-05T12:34:06.331Z"
+    },
+    {
+      "id": 31,
+      "tg_id": "5514107829",
+      "first_name": "Эдо",
+      "last_name": "Адамян",
+      "phone": "+79879544926",
+      "username": null,
+      "created_at": "2025-06-17T16:17:05.489Z",
+      "updated_at": "2025-10-05T12:34:06.511Z"
+    },
+    {
+      "id": 32,
+      "tg_id": "369762509",
+      "first_name": "Фаниль",
+      "last_name": "Динмухаметов",
+      "phone": "+79276988479",
+      "username": null,
+      "created_at": "2025-06-18T06:37:45.275Z",
+      "updated_at": "2025-10-05T12:34:06.702Z"
+    },
+    {
+      "id": 33,
+      "tg_id": "811996031",
+      "first_name": "Андрей",
+      "last_name": "Щебень",
+      "phone": "+79099235999",
+      "username": null,
+      "created_at": "2025-06-18T07:37:41.690Z",
+      "updated_at": "2025-10-05T12:34:06.916Z"
+    },
+    {
+      "id": 34,
+      "tg_id": "928773514",
+      "first_name": "Иван",
+      "last_name": "Тихонов",
+      "phone": "+79297113440",
+      "username": null,
+      "created_at": "2025-06-18T14:33:52.863Z",
+      "updated_at": "2025-10-05T12:34:07.683Z"
+    },
+    {
+      "id": 35,
+      "tg_id": "323119247",
+      "first_name": "Анна",
+      "last_name": "Богомолова",
+      "phone": "+79170110018",
+      "username": null,
+      "created_at": "2025-06-20T11:43:05.585Z",
+      "updated_at": "2025-10-05T12:34:07.922Z"
+    },
+    {
+      "id": 36,
+      "tg_id": "459515344",
+      "first_name": "Александр",
+      "last_name": "Бузуев",
+      "phone": "+79967459226",
+      "username": null,
+      "created_at": "2025-06-21T16:02:48.090Z",
+      "updated_at": "2025-10-05T12:34:08.139Z"
+    },
+    {
+      "id": 37,
+      "tg_id": "472682134",
+      "first_name": "Ильдар",
+      "last_name": "Шакиров",
+      "phone": "+79372022087",
+      "username": null,
+      "created_at": "2025-06-21T16:10:53.050Z",
+      "updated_at": "2025-10-05T12:34:08.353Z"
+    },
+    {
+      "id": 38,
+      "tg_id": "278622925",
+      "first_name": "Алексей",
+      "last_name": "Кузнецов",
+      "phone": "+79613822102",
+      "username": null,
+      "created_at": "2025-06-22T09:13:49.464Z",
+      "updated_at": "2025-10-05T12:34:08.519Z"
+    },
+    {
+      "id": 39,
+      "tg_id": "1854293083",
+      "first_name": "Пётр",
+      "last_name": "Гудь",
+      "phone": "+79397177571",
+      "username": null,
+      "created_at": "2025-06-23T10:17:12.035Z",
+      "updated_at": "2025-10-05T12:34:08.721Z"
+    },
+    {
+      "id": 40,
+      "tg_id": "185052285",
+      "first_name": "Тор",
+      "last_name": "Арсентьев",
+      "phone": "+79967272555",
+      "username": null,
+      "created_at": "2025-06-24T09:39:17.076Z",
+      "updated_at": "2025-10-05T12:34:08.914Z"
+    },
+    {
+      "id": 41,
+      "tg_id": "1245792014",
+      "first_name": "Дарья",
+      "last_name": "Кузнецова",
+      "phone": "+79170380713",
+      "username": null,
+      "created_at": "2025-06-24T09:52:02.239Z",
+      "updated_at": "2025-10-05T12:34:09.065Z"
+    },
+    {
+      "id": 42,
+      "tg_id": "2048941947",
+      "first_name": "Усман",
+      "last_name": "Низаметдинов",
+      "phone": "+79270066544",
+      "username": null,
+      "created_at": "2025-06-26T08:33:10.841Z",
+      "updated_at": "2025-10-05T12:34:09.258Z"
+    },
+    {
+      "id": 43,
+      "tg_id": "391557666",
+      "first_name": "Андрей",
+      "last_name": "Смирнов",
+      "phone": "+79277197742",
+      "username": null,
+      "created_at": "2025-06-26T13:52:00.263Z",
+      "updated_at": "2025-10-05T12:34:09.460Z"
+    },
+    {
+      "id": 44,
+      "tg_id": "1238065105",
+      "first_name": "Олег",
+      "last_name": "Степанников",
+      "phone": "+79276071134",
+      "username": null,
+      "created_at": "2025-06-26T16:11:28.246Z",
+      "updated_at": "2025-10-05T12:34:09.668Z"
+    },
+    {
+      "id": 45,
+      "tg_id": "7847377542",
+      "first_name": "Виталий",
+      "last_name": "Маркушин",
+      "phone": "+79171190449",
+      "username": null,
+      "created_at": "2025-06-27T09:02:05.638Z",
+      "updated_at": "2025-10-05T12:34:09.856Z"
+    },
+    {
+      "id": 46,
+      "tg_id": "7186018671",
+      "first_name": "Данил",
+      "last_name": "Сюткин",
+      "phone": "+79991177111",
+      "username": null,
+      "created_at": "2025-06-27T12:41:09.296Z",
+      "updated_at": "2025-10-05T12:34:10.086Z"
+    },
+    {
+      "id": 47,
+      "tg_id": "929560644",
+      "first_name": "Герман",
+      "last_name": "Ломоносов",
+      "phone": "+79198038520",
+      "username": null,
+      "created_at": "2025-06-27T18:11:27.088Z",
+      "updated_at": "2025-10-05T12:34:10.724Z"
+    },
+    {
+      "id": 48,
+      "tg_id": "769123900",
+      "first_name": "Арслан",
+      "last_name": "Салахов",
+      "phone": "+79852591255",
+      "username": null,
+      "created_at": "2025-06-29T15:59:42.441Z",
+      "updated_at": "2025-10-05T12:34:10.989Z"
+    },
+    {
+      "id": 49,
+      "tg_id": "497607867",
+      "first_name": "Олег",
+      "last_name": "Горбунов",
+      "phone": "+79276972559",
+      "username": null,
+      "created_at": "2025-07-01T07:32:35.552Z",
+      "updated_at": "2025-10-05T12:34:11.172Z"
+    },
+    {
+      "id": 50,
+      "tg_id": "796935263",
+      "first_name": "Андрей",
+      "last_name": "Шульц",
+      "phone": "+79379990026",
+      "username": null,
+      "created_at": "2025-07-01T14:06:12.507Z",
+      "updated_at": "2025-10-05T12:34:11.351Z"
+    },
+    {
+      "id": 51,
+      "tg_id": "741571700",
+      "first_name": "Оля",
+      "last_name": "Никиточкина",
+      "phone": "+79170166313",
+      "username": null,
+      "created_at": "2025-07-02T08:09:37.951Z",
+      "updated_at": "2025-10-05T12:34:11.549Z"
+    },
+    {
+      "id": 52,
+      "tg_id": "1163791221",
+      "first_name": "Екатерина",
+      "last_name": "Выжленкова",
+      "phone": "+79022373985",
+      "username": null,
+      "created_at": "2025-07-02T12:15:11.838Z",
+      "updated_at": "2025-10-05T12:34:11.792Z"
+    },
+    {
+      "id": 53,
+      "tg_id": "884234560",
+      "first_name": "Ксения",
+      "last_name": "Нургатина",
+      "phone": "+79270193232",
+      "username": null,
+      "created_at": "2025-07-02T12:23:09.101Z",
+      "updated_at": "2025-10-05T12:34:12.041Z"
+    },
+    {
+      "id": 54,
+      "tg_id": "440949357",
+      "first_name": "Ильяс",
+      "last_name": "Чоноев",
+      "phone": "+79879221681",
+      "username": null,
+      "created_at": "2025-07-04T13:50:35.635Z",
+      "updated_at": "2025-10-05T12:34:12.228Z"
+    },
+    {
+      "id": 55,
+      "tg_id": "177892254",
+      "first_name": "Виталий",
+      "last_name": "Иванов",
+      "phone": "+79277077782",
+      "username": null,
+      "created_at": "2025-07-04T16:26:47.829Z",
+      "updated_at": "2025-10-05T12:34:12.402Z"
+    },
+    {
+      "id": 56,
+      "tg_id": "321552337",
+      "first_name": "Данил",
+      "last_name": "Павлов",
+      "phone": "+79024137390",
+      "username": null,
+      "created_at": "2025-07-07T09:47:09.879Z",
+      "updated_at": "2025-10-05T12:34:12.605Z"
+    },
+    {
+      "id": 57,
+      "tg_id": "378358652",
+      "first_name": "Михаил",
+      "last_name": "Беспалов",
+      "phone": "+79963429790",
+      "username": null,
+      "created_at": "2025-07-07T15:13:47.275Z",
+      "updated_at": "2025-10-05T12:34:12.833Z"
+    },
+    {
+      "id": 58,
+      "tg_id": "566256174",
+      "first_name": "Станислав",
+      "last_name": "Шумячер",
+      "phone": "+79879175393",
+      "username": null,
+      "created_at": "2025-07-07T16:24:25.402Z",
+      "updated_at": "2025-10-05T12:34:12.995Z"
+    },
+    {
+      "id": 59,
+      "tg_id": "119322280",
+      "first_name": "Павел",
+      "last_name": "Куликов",
+      "phone": "+79277199972",
+      "username": null,
+      "created_at": "2025-07-08T17:00:42.917Z",
+      "updated_at": "2025-10-05T12:34:13.238Z"
+    },
+    {
+      "id": 60,
+      "tg_id": "5206834597",
+      "first_name": "Виктор",
+      "last_name": "Неп",
+      "phone": "+79277312929",
+      "username": null,
+      "created_at": "2025-07-10T07:06:32.868Z",
+      "updated_at": "2025-10-05T12:34:13.428Z"
+    },
+    {
+      "id": 61,
+      "tg_id": "6424080706",
+      "first_name": "Andranik",
+      "last_name": "Arshakyan",
+      "phone": "+79966241753",
+      "username": null,
+      "created_at": "2025-07-10T10:43:35.947Z",
+      "updated_at": "2025-10-05T12:34:13.896Z"
+    },
+    {
+      "id": 62,
+      "tg_id": "1815087120",
+      "first_name": "Родион",
+      "last_name": "Фомин",
+      "phone": "+79179438237",
+      "username": null,
+      "created_at": "2025-07-10T12:21:51.213Z",
+      "updated_at": "2025-10-05T12:34:14.090Z"
+    },
+    {
+      "id": 63,
+      "tg_id": "341664436",
+      "first_name": "Александр",
+      "last_name": "Богдашкин",
+      "phone": "+79608299999",
+      "username": null,
+      "created_at": "2025-07-10T15:28:39.674Z",
+      "updated_at": "2025-10-05T12:34:14.248Z"
+    },
+    {
+      "id": 64,
+      "tg_id": "872242442",
+      "first_name": "Екатерина Варлашина",
+      "last_name": "Варлашина",
+      "phone": "+79874422195",
+      "username": null,
+      "created_at": "2025-07-11T10:10:24.682Z",
+      "updated_at": "2025-10-05T12:34:14.440Z"
+    },
+    {
+      "id": 65,
+      "tg_id": "1226525919",
+      "first_name": "Варис",
+      "last_name": "Гафоров",
+      "phone": "+79879029910",
+      "username": null,
+      "created_at": "2025-07-11T10:43:31.521Z",
+      "updated_at": "2025-10-05T12:34:14.638Z"
+    },
+    {
+      "id": 66,
+      "tg_id": "1273831819",
+      "first_name": "Евгений",
+      "last_name": "Осоргин",
+      "phone": "+79220663491",
+      "username": null,
+      "created_at": "2025-07-11T12:21:26.739Z",
+      "updated_at": "2025-10-05T12:34:14.851Z"
+    },
+    {
+      "id": 67,
+      "tg_id": "357290846",
+      "first_name": "Ярослав",
+      "last_name": "Наумов",
+      "phone": "+79270173416",
+      "username": null,
+      "created_at": "2025-07-11T13:20:47.430Z",
+      "updated_at": "2025-10-05T12:34:15.136Z"
+    },
+    {
+      "id": 68,
+      "tg_id": "6110195795",
+      "first_name": "Андрей",
+      "last_name": "Даричев",
+      "phone": "+79272112344",
+      "username": null,
+      "created_at": "2025-07-11T14:02:11.803Z",
+      "updated_at": "2025-10-05T12:34:15.391Z"
+    },
+    {
+      "id": 69,
+      "tg_id": "1142161708",
+      "first_name": "Саша",
+      "last_name": "Асанбаева",
+      "phone": "+79373315002",
+      "username": null,
+      "created_at": "2025-07-12T06:38:45.337Z",
+      "updated_at": "2025-10-05T12:34:15.773Z"
+    },
+    {
+      "id": 70,
+      "tg_id": "1905378471",
+      "first_name": "Сергей",
+      "last_name": "Елизаров",
+      "phone": "+79677688771",
+      "username": null,
+      "created_at": "2025-07-12T13:43:43.211Z",
+      "updated_at": "2025-10-05T12:34:15.938Z"
+    },
+    {
+      "id": 71,
+      "tg_id": "7937924616",
+      "first_name": "Владимир",
+      "last_name": "Квасов",
+      "phone": "+79277887706",
+      "username": null,
+      "created_at": "2025-07-12T15:04:07.440Z",
+      "updated_at": "2025-10-05T12:34:16.201Z"
+    },
+    {
+      "id": 72,
+      "tg_id": "1224198436",
+      "first_name": "Даниил",
+      "last_name": "Волков",
+      "phone": "+79959094812",
+      "username": null,
+      "created_at": "2025-07-14T06:14:48.715Z",
+      "updated_at": "2025-10-05T12:34:16.354Z"
+    },
+    {
+      "id": 73,
+      "tg_id": "5587882397",
+      "first_name": "Владислав Лукьянов",
+      "last_name": "Лукьянов",
+      "phone": "+79379973330",
+      "username": null,
+      "created_at": "2025-07-14T09:56:15.577Z",
+      "updated_at": "2025-10-05T12:34:16.526Z"
+    },
+    {
+      "id": 74,
+      "tg_id": "355663303",
+      "first_name": "Даниил",
+      "last_name": "Щетинин",
+      "phone": "+79169334830",
+      "username": null,
+      "created_at": "2025-07-14T13:11:46.836Z",
+      "updated_at": "2025-10-05T12:34:16.678Z"
+    },
+    {
+      "id": 75,
+      "tg_id": "189142562",
+      "first_name": "Данил",
+      "last_name": "Черкасов",
+      "phone": "+79279057892",
+      "username": null,
+      "created_at": "2025-07-15T11:42:04.444Z",
+      "updated_at": "2025-10-05T12:34:16.833Z"
+    },
+    {
+      "id": 76,
+      "tg_id": "547686045",
+      "first_name": "Павел",
+      "last_name": "Волков",
+      "phone": "+79613811019",
+      "username": null,
+      "created_at": "2025-07-16T07:17:02.923Z",
+      "updated_at": "2025-10-05T12:34:17.063Z"
+    },
+    {
+      "id": 77,
+      "tg_id": "1431790202",
+      "first_name": "Нурлан",
+      "last_name": "Галиев",
+      "phone": "+79674808713",
+      "username": null,
+      "created_at": "2025-07-18T17:06:33.370Z",
+      "updated_at": "2025-10-05T12:34:17.237Z"
+    },
+    {
+      "id": 78,
+      "tg_id": "969653398",
+      "first_name": "Владислав",
+      "last_name": "Плященко",
+      "phone": "+79125911214",
+      "username": null,
+      "created_at": "2025-07-20T14:52:49.447Z",
+      "updated_at": "2025-10-05T12:34:17.404Z"
+    },
+    {
+      "id": 79,
+      "tg_id": "1478342724",
+      "first_name": "Константин",
+      "last_name": "Иринков",
+      "phone": "+79170120704",
+      "username": null,
+      "created_at": "2025-07-23T13:30:21.745Z",
+      "updated_at": "2025-10-05T12:34:17.611Z"
+    },
+    {
+      "id": 80,
+      "tg_id": "7905675282",
+      "first_name": "Геворг",
+      "last_name": "Боцинян",
+      "phone": "+79654199900",
+      "username": null,
+      "created_at": "2025-07-24T16:06:32.811Z",
+      "updated_at": "2025-10-05T12:34:17.839Z"
+    },
+    {
+      "id": 81,
+      "tg_id": "475675102",
+      "first_name": "Сайфулла",
+      "last_name": "Закиров",
+      "phone": "+79170175798",
+      "username": null,
+      "created_at": "2025-07-25T10:05:58.343Z",
+      "updated_at": "2025-10-05T12:34:17.986Z"
+    },
+    {
+      "id": 82,
+      "tg_id": "5827654616",
+      "first_name": "Александр",
+      "last_name": "Саранцев",
+      "phone": "+79270140726",
+      "username": null,
+      "created_at": "2025-07-25T15:25:15.078Z",
+      "updated_at": "2025-10-05T12:34:18.165Z"
+    },
+    {
+      "id": 83,
+      "tg_id": "371767629",
+      "first_name": "Мария",
+      "last_name": "Гаврилова",
+      "phone": "+79276580859",
+      "username": null,
+      "created_at": "2025-07-29T10:45:03.909Z",
+      "updated_at": "2025-10-05T12:34:18.471Z"
+    },
+    {
+      "id": 84,
+      "tg_id": "2120103777",
+      "first_name": "Артем",
+      "last_name": "Маренков",
+      "phone": "+79874535955",
+      "username": null,
+      "created_at": "2025-07-30T14:05:27.468Z",
+      "updated_at": "2025-10-05T12:34:18.661Z"
+    },
+    {
+      "id": 85,
+      "tg_id": "700322606",
+      "first_name": "Эмиль",
+      "last_name": "Алиев",
+      "phone": "+79877466797",
+      "username": null,
+      "created_at": "2025-07-31T10:21:28.933Z",
+      "updated_at": "2025-10-05T12:34:18.874Z"
+    },
+    {
+      "id": 86,
+      "tg_id": "1072930648",
+      "first_name": "Амир",
+      "last_name": "Абдуллаев",
+      "phone": "+79170375986",
+      "username": null,
+      "created_at": "2025-07-31T11:09:13.900Z",
+      "updated_at": "2025-10-05T12:34:19.099Z"
+    },
+    {
+      "id": 87,
+      "tg_id": "892177232",
+      "first_name": "Эльвин",
+      "last_name": "Ибадуллаев",
+      "phone": "+79677669434",
+      "username": null,
+      "created_at": "2025-07-31T16:59:27.850Z",
+      "updated_at": "2025-10-05T12:34:19.266Z"
+    },
+    {
+      "id": 88,
+      "tg_id": "656873932",
+      "first_name": "Данил",
+      "last_name": "Фролов",
+      "phone": "+79397015391",
+      "username": null,
+      "created_at": "2025-07-31T18:01:19.739Z",
+      "updated_at": "2025-10-05T12:34:19.415Z"
+    },
+    {
+      "id": 89,
+      "tg_id": "333648932",
+      "first_name": "Виталла",
+      "last_name": "Мальцева",
+      "phone": "+79371881111",
+      "username": null,
+      "created_at": "2025-08-01T08:01:02.569Z",
+      "updated_at": "2025-10-05T12:34:19.641Z"
+    },
+    {
+      "id": 90,
+      "tg_id": "419601655",
+      "first_name": "Тимур штрейфель",
+      "last_name": "Штрейфель",
+      "phone": "+79677258275",
+      "username": null,
+      "created_at": "2025-08-01T15:06:36.016Z",
+      "updated_at": "2025-10-05T12:34:19.794Z"
+    },
+    {
+      "id": 91,
+      "tg_id": "710028356",
+      "first_name": "Антон",
+      "last_name": "Курзов",
+      "phone": "+79997019293",
+      "username": null,
+      "created_at": "2025-08-02T14:23:05.597Z",
+      "updated_at": "2025-10-05T12:34:19.954Z"
+    },
+    {
+      "id": 92,
+      "tg_id": "1331368509",
+      "first_name": "Дмитрий",
+      "last_name": "Синев",
+      "phone": "+79272967906",
+      "username": null,
+      "created_at": "2025-08-03T09:07:34.342Z",
+      "updated_at": "2025-10-05T12:34:20.111Z"
+    },
+    {
+      "id": 93,
+      "tg_id": "925726416",
+      "first_name": "Максим",
+      "last_name": "Першин",
+      "phone": "+79174947036",
+      "username": null,
+      "created_at": "2025-08-03T09:38:48.564Z",
+      "updated_at": "2025-10-05T12:34:20.259Z"
+    },
+    {
+      "id": 94,
+      "tg_id": "7025972081",
+      "first_name": "Артем",
+      "last_name": "Московцев",
+      "phone": "+79954912592",
+      "username": null,
+      "created_at": "2025-08-04T06:08:00.977Z",
+      "updated_at": "2025-10-05T12:34:20.412Z"
+    },
+    {
+      "id": 95,
+      "tg_id": "532515390",
+      "first_name": "Надежда",
+      "last_name": "Куляс",
+      "phone": "+79277089389",
+      "username": null,
+      "created_at": "2025-08-04T15:37:33.294Z",
+      "updated_at": "2025-10-05T12:34:20.571Z"
+    },
+    {
+      "id": 96,
+      "tg_id": "349706232",
+      "first_name": "Тамерлан",
+      "last_name": "Алиев",
+      "phone": "+79397129000",
+      "username": null,
+      "created_at": "2025-08-05T10:52:21.417Z",
+      "updated_at": "2025-10-05T12:34:20.738Z"
+    },
+    {
+      "id": 97,
+      "tg_id": "1129431567",
+      "first_name": "Артур",
+      "last_name": "Будаков",
+      "phone": "+79193898879",
+      "username": null,
+      "created_at": "2025-08-05T16:59:13.292Z",
+      "updated_at": "2025-10-05T12:34:20.886Z"
+    },
+    {
+      "id": 98,
+      "tg_id": "2003165221",
+      "first_name": "Владимир",
+      "last_name": "Неретин",
+      "phone": "+79198532199",
+      "username": null,
+      "created_at": "2025-08-06T11:06:32.728Z",
+      "updated_at": "2025-10-05T12:34:21.070Z"
+    },
+    {
+      "id": 99,
+      "tg_id": "5569744105",
+      "first_name": "Алексей",
+      "last_name": "Петров",
+      "phone": "+79272943848",
+      "username": null,
+      "created_at": "2025-08-06T13:31:44.859Z",
+      "updated_at": "2025-10-05T12:34:21.248Z"
+    },
+    {
+      "id": 100,
+      "tg_id": "539404033",
+      "first_name": "Кирилл",
+      "last_name": "Андрюхин",
+      "phone": "+79270251003",
+      "username": null,
+      "created_at": "2025-08-09T07:11:59.384Z",
+      "updated_at": "2025-10-05T12:34:21.435Z"
+    },
+    {
+      "id": 101,
+      "tg_id": "472572658",
+      "first_name": "Михаил",
+      "last_name": "Новиков",
+      "phone": "+79270140907",
+      "username": null,
+      "created_at": "2025-08-09T12:35:42.736Z",
+      "updated_at": "2025-10-05T12:34:21.614Z"
+    },
+    {
+      "id": 102,
+      "tg_id": "899138269",
+      "first_name": "Роман",
+      "last_name": "Лебедев",
+      "phone": "+79277979019",
+      "username": null,
+      "created_at": "2025-08-09T13:09:31.755Z",
+      "updated_at": "2025-10-05T12:34:21.794Z"
+    },
+    {
+      "id": 103,
+      "tg_id": "983874452",
+      "first_name": "Богдан",
+      "last_name": "Пимашин",
+      "phone": "+79879575873",
+      "username": null,
+      "created_at": "2025-08-11T10:59:35.175Z",
+      "updated_at": "2025-10-05T12:34:22.001Z"
+    },
+    {
+      "id": 104,
+      "tg_id": "1027325882",
+      "first_name": "Артем",
+      "last_name": "Краснов",
+      "phone": "+79871533697",
+      "username": null,
+      "created_at": "2025-08-11T15:27:43.029Z",
+      "updated_at": "2025-10-05T12:34:22.184Z"
+    },
+    {
+      "id": 105,
+      "tg_id": "742731038",
+      "first_name": "Кирилл",
+      "last_name": "Хайбулаев",
+      "phone": "+79377974837",
+      "username": null,
+      "created_at": "2025-08-12T07:49:12.523Z",
+      "updated_at": "2025-10-05T12:34:22.489Z"
+    },
+    {
+      "id": 106,
+      "tg_id": "1435703411",
+      "first_name": "Александра",
+      "last_name": "Подмаркова",
+      "phone": "+447838655186",
+      "username": null,
+      "created_at": "2025-08-12T12:05:44.242Z",
+      "updated_at": "2025-10-05T12:34:22.691Z"
+    },
+    {
+      "id": 107,
+      "tg_id": "5039243064",
+      "first_name": "Никита",
+      "last_name": "Бакулов",
+      "phone": "+79967349453",
+      "username": null,
+      "created_at": "2025-08-12T13:02:38.986Z",
+      "updated_at": "2025-10-05T12:34:22.885Z"
+    },
+    {
+      "id": 108,
+      "tg_id": "630675105",
+      "first_name": "Миша Адыгея",
+      "last_name": "Адынец",
+      "phone": "+79053068824",
+      "username": null,
+      "created_at": "2025-08-13T09:51:40.565Z",
+      "updated_at": "2025-10-05T12:34:23.159Z"
+    },
+    {
+      "id": 109,
+      "tg_id": "531601156",
+      "first_name": "Олег",
+      "last_name": "Макаров",
+      "phone": "+79967219412",
+      "username": null,
+      "created_at": "2025-08-13T10:01:27.347Z",
+      "updated_at": "2025-10-05T12:34:23.365Z"
+    },
+    {
+      "id": 110,
+      "tg_id": "1018467177",
+      "first_name": "Андрей",
+      "last_name": "Пушкарёв",
+      "phone": "+79871572321",
+      "username": null,
+      "created_at": "2025-08-13T14:24:05.488Z",
+      "updated_at": "2025-10-05T12:34:23.599Z"
+    },
+    {
+      "id": 111,
+      "tg_id": "302828229",
+      "first_name": "Юлия",
+      "last_name": "Натапова",
+      "phone": "+79179491418",
+      "username": null,
+      "created_at": "2025-08-13T16:33:55.186Z",
+      "updated_at": "2025-10-05T12:34:23.900Z"
+    },
+    {
+      "id": 112,
+      "tg_id": "416315065",
+      "first_name": "Анастасия",
+      "last_name": "Маргун",
+      "phone": "+79376501125",
+      "username": null,
+      "created_at": "2025-08-13T16:34:12.431Z",
+      "updated_at": "2025-10-05T12:34:24.165Z"
+    },
+    {
+      "id": 113,
+      "tg_id": "513177696",
+      "first_name": "Алёна",
+      "last_name": "Игнатова",
+      "phone": "+79084972997",
+      "username": null,
+      "created_at": "2025-08-13T18:11:47.168Z",
+      "updated_at": "2025-10-05T12:34:24.368Z"
+    },
+    {
+      "id": 114,
+      "tg_id": "742460384",
+      "first_name": "Дмитрий",
+      "last_name": "Рунов",
+      "phone": "+79879586573",
+      "username": null,
+      "created_at": "2025-08-14T08:12:56.811Z",
+      "updated_at": "2025-10-05T12:34:24.772Z"
+    },
+    {
+      "id": 115,
+      "tg_id": "83349863",
+      "first_name": "Дмитрий",
+      "last_name": "Веселов",
+      "phone": "+79608126685",
+      "username": null,
+      "created_at": "2025-08-14T08:39:56.211Z",
+      "updated_at": "2025-10-05T12:34:25.014Z"
+    },
+    {
+      "id": 116,
+      "tg_id": "641276634",
+      "first_name": "Вероника",
+      "last_name": "Белякова",
+      "phone": "+79370612430",
+      "username": null,
+      "created_at": "2025-08-14T08:57:35.957Z",
+      "updated_at": "2025-10-05T12:34:25.230Z"
+    },
+    {
+      "id": 117,
+      "tg_id": "623422750",
+      "first_name": "Ильгиз",
+      "last_name": "Диняев",
+      "phone": "+79297956432",
+      "username": null,
+      "created_at": "2025-08-14T11:26:26.358Z",
+      "updated_at": "2025-10-05T12:34:25.421Z"
+    },
+    {
+      "id": 118,
+      "tg_id": "716001548",
+      "first_name": "Анна",
+      "last_name": "Филиппова",
+      "phone": "+79171417779",
+      "username": null,
+      "created_at": "2025-08-15T15:37:03.057Z",
+      "updated_at": "2025-10-05T12:34:25.678Z"
+    },
+    {
+      "id": 119,
+      "tg_id": "1856552252",
+      "first_name": "Никита Жиганов",
+      "last_name": "Жиганов",
+      "phone": "+79626345091",
+      "username": null,
+      "created_at": "2025-08-15T15:37:52.946Z",
+      "updated_at": "2025-10-05T12:34:25.904Z"
+    },
+    {
+      "id": 120,
+      "tg_id": "758565037",
+      "first_name": "Василий",
+      "last_name": "Корнеев",
+      "phone": "+79170176554",
+      "username": null,
+      "created_at": "2025-08-15T17:40:02.400Z",
+      "updated_at": "2025-10-05T12:34:26.330Z"
+    },
+    {
+      "id": 121,
+      "tg_id": "2112663326",
+      "first_name": "Даша",
+      "last_name": "Варлашина",
+      "phone": "+79083874972",
+      "username": null,
+      "created_at": "2025-08-16T13:01:07.875Z",
+      "updated_at": "2025-10-05T12:34:26.582Z"
+    },
+    {
+      "id": 122,
+      "tg_id": "584895675",
+      "first_name": "Валентина",
+      "last_name": "Анисимова",
+      "phone": "+79270015195",
+      "username": null,
+      "created_at": "2025-08-17T14:07:57.656Z",
+      "updated_at": "2025-10-05T12:34:26.839Z"
+    },
+    {
+      "id": 123,
+      "tg_id": "1055213676",
+      "first_name": "Саламу",
+      "last_name": "Гацаев",
+      "phone": "+79277650185",
+      "username": null,
+      "created_at": "2025-08-17T16:25:52.528Z",
+      "updated_at": "2025-10-05T12:34:26.998Z"
+    },
+    {
+      "id": 124,
+      "tg_id": "1393703692",
+      "first_name": "Александр",
+      "last_name": "Привалов",
+      "phone": "+79376425580",
+      "username": null,
+      "created_at": "2025-08-17T16:33:22.907Z",
+      "updated_at": "2025-10-05T12:34:27.158Z"
+    },
+    {
+      "id": 125,
+      "tg_id": "137187828",
+      "first_name": "Губайдулина Айдар",
+      "last_name": "Губайдуллин",
+      "phone": "+79600357879",
+      "username": null,
+      "created_at": "2025-08-19T12:27:47.596Z",
+      "updated_at": "2025-10-05T12:34:27.326Z"
+    },
+    {
+      "id": 126,
+      "tg_id": "1251199322",
+      "first_name": "Данила",
+      "last_name": "Степанов",
+      "phone": "+79170394459",
+      "username": null,
+      "created_at": "2025-08-19T17:59:34.274Z",
+      "updated_at": "2025-10-05T12:34:27.506Z"
+    },
+    {
+      "id": 127,
+      "tg_id": "404152711",
+      "first_name": "Максим",
+      "last_name": "Грек",
+      "phone": "+79376639120",
+      "username": null,
+      "created_at": "2025-08-20T10:30:26.349Z",
+      "updated_at": "2025-10-05T12:34:27.775Z"
+    },
+    {
+      "id": 128,
+      "tg_id": "1482798591",
+      "first_name": "Данила",
+      "last_name": "Сныткин",
+      "phone": "+79198044893",
+      "username": null,
+      "created_at": "2025-08-21T10:27:25.703Z",
+      "updated_at": "2025-10-05T12:34:27.938Z"
+    },
+    {
+      "id": 129,
+      "tg_id": "275431424",
+      "first_name": "Данила",
+      "last_name": "Домбровский",
+      "phone": "+79871690496",
+      "username": null,
+      "created_at": "2025-08-22T15:28:22.767Z",
+      "updated_at": "2025-10-05T12:34:28.193Z"
+    },
+    {
+      "id": 130,
+      "tg_id": "5207494176",
+      "first_name": "Владимир",
+      "last_name": "Кириллов",
+      "phone": "+79879295990",
+      "username": null,
+      "created_at": "2025-08-22T15:28:38.603Z",
+      "updated_at": "2025-10-05T12:34:28.447Z"
+    },
+    {
+      "id": 131,
+      "tg_id": "411688456",
+      "first_name": "Ильгам",
+      "last_name": "Ибрагимов",
+      "phone": "+79179500072",
+      "username": null,
+      "created_at": "2025-08-23T06:58:26.360Z",
+      "updated_at": "2025-10-05T12:34:28.687Z"
+    },
+    {
+      "id": 132,
+      "tg_id": "500737897",
+      "first_name": "Ларионов Олег",
+      "last_name": "Ларионов",
+      "phone": "+79178145025",
+      "username": null,
+      "created_at": "2025-08-23T07:41:38.124Z",
+      "updated_at": "2025-10-05T12:34:28.947Z"
+    },
+    {
+      "id": 133,
+      "tg_id": "776260773",
+      "first_name": "Артём",
+      "last_name": "Ульянов",
+      "phone": "+79277635741",
+      "username": null,
+      "created_at": "2025-08-23T10:20:57.531Z",
+      "updated_at": "2025-10-05T12:34:29.287Z"
+    },
+    {
+      "id": 134,
+      "tg_id": "6189859591",
+      "first_name": "Андрей",
+      "last_name": "Нуждов",
+      "phone": "+79270127849",
+      "username": null,
+      "created_at": "2025-08-23T17:07:51.972Z",
+      "updated_at": "2025-10-05T12:34:29.449Z"
+    },
+    {
+      "id": 135,
+      "tg_id": "705301880",
+      "first_name": "Элина",
+      "last_name": "Кияткина",
+      "phone": "+79272079335",
+      "username": null,
+      "created_at": "2025-08-23T18:43:18.333Z",
+      "updated_at": "2025-10-05T12:34:30.338Z"
+    },
+    {
+      "id": 136,
+      "tg_id": "643516711",
+      "first_name": "Денис",
+      "last_name": "Погодин",
+      "phone": "+79277155043",
+      "username": null,
+      "created_at": "2025-08-24T08:11:49.563Z",
+      "updated_at": "2025-10-05T12:34:30.721Z"
+    },
+    {
+      "id": 137,
+      "tg_id": "587325328",
+      "first_name": "Дарья",
+      "last_name": "Богаткина",
+      "phone": "+79869583513",
+      "username": null,
+      "created_at": "2025-08-24T13:31:50.384Z",
+      "updated_at": "2025-10-05T12:34:30.964Z"
+    },
+    {
+      "id": 138,
+      "tg_id": "1600474976",
+      "first_name": "Вячеслав",
+      "last_name": "Саламатин",
+      "phone": "+79277261067",
+      "username": null,
+      "created_at": "2025-08-25T10:17:53.945Z",
+      "updated_at": "2025-10-05T12:34:31.112Z"
+    },
+    {
+      "id": 139,
+      "tg_id": "468548764",
+      "first_name": "Артём",
+      "last_name": "Клочков",
+      "phone": "+79376618786",
+      "username": null,
+      "created_at": "2025-08-26T09:56:26.256Z",
+      "updated_at": "2025-10-05T12:34:31.335Z"
+    },
+    {
+      "id": 140,
+      "tg_id": "954701790",
+      "first_name": "Александр",
+      "last_name": "Кудряшов",
+      "phone": "+79376402356",
+      "username": null,
+      "created_at": "2025-08-26T10:56:19.416Z",
+      "updated_at": "2025-10-05T12:34:31.738Z"
+    },
+    {
+      "id": 141,
+      "tg_id": "496745648",
+      "first_name": "Виталий",
+      "last_name": "Самаркин",
+      "phone": "+79991727258",
+      "username": null,
+      "created_at": "2025-08-27T08:16:45.125Z",
+      "updated_at": "2025-10-05T12:34:31.898Z"
+    },
+    {
+      "id": 142,
+      "tg_id": "1627225443",
+      "first_name": "Анатолий",
+      "last_name": "Рахальский",
+      "phone": "+79270122090",
+      "username": null,
+      "created_at": "2025-08-27T08:16:59.056Z",
+      "updated_at": "2025-10-05T12:34:32.352Z"
+    },
+    {
+      "id": 143,
+      "tg_id": "1065567148",
+      "first_name": "Александр",
+      "last_name": "Гусев",
+      "phone": "+79170371322",
+      "username": null,
+      "created_at": "2025-08-28T15:13:35.030Z",
+      "updated_at": "2025-10-05T12:34:32.831Z"
+    },
+    {
+      "id": 144,
+      "tg_id": "1531992576",
+      "first_name": "Артём",
+      "last_name": "Белкин",
+      "phone": "+79871693924",
+      "username": null,
+      "created_at": "2025-08-29T09:27:07.278Z",
+      "updated_at": "2025-10-05T12:34:33.019Z"
+    },
+    {
+      "id": 145,
+      "tg_id": "295586770",
+      "first_name": "Максим",
+      "last_name": "Егоров",
+      "phone": "+79613869878",
+      "username": null,
+      "created_at": "2025-08-29T13:13:00.401Z",
+      "updated_at": "2025-10-05T12:34:33.314Z"
+    },
+    {
+      "id": 146,
+      "tg_id": "350060014",
+      "first_name": "Даниил",
+      "last_name": "Пивоваров",
+      "phone": "+79277024824",
+      "username": null,
+      "created_at": "2025-08-29T13:39:15.102Z",
+      "updated_at": "2025-10-05T12:34:33.565Z"
+    },
+    {
+      "id": 147,
+      "tg_id": "972165486",
+      "first_name": "Анна",
+      "last_name": "Назарова",
+      "phone": "+79871612253",
+      "username": null,
+      "created_at": "2025-08-29T14:25:50.481Z",
+      "updated_at": "2025-10-05T12:34:33.737Z"
+    },
+    {
+      "id": 148,
+      "tg_id": "1753016799",
+      "first_name": "Дмитрий",
+      "last_name": "Таликин",
+      "phone": "+79270139169",
+      "username": null,
+      "created_at": "2025-08-30T09:15:52.176Z",
+      "updated_at": "2025-10-05T12:34:33.970Z"
+    },
+    {
+      "id": 149,
+      "tg_id": "760604303",
+      "first_name": "Кирилл",
+      "last_name": "Крюков",
+      "phone": "+79376630112",
+      "username": null,
+      "created_at": "2025-08-30T12:15:40.021Z",
+      "updated_at": "2025-10-05T12:34:34.280Z"
+    },
+    {
+      "id": 150,
+      "tg_id": "793306705",
+      "first_name": "Михаил",
+      "last_name": "Шишкин",
+      "phone": "+79963421037",
+      "username": null,
+      "created_at": "2025-08-30T12:15:51.473Z",
+      "updated_at": "2025-10-05T12:34:34.559Z"
+    },
+    {
+      "id": 151,
+      "tg_id": "6034752124",
+      "first_name": "Максим",
+      "last_name": "Лагущин",
+      "phone": "+79179744553",
+      "username": null,
+      "created_at": "2025-08-30T13:17:41.329Z",
+      "updated_at": "2025-10-05T12:34:34.755Z"
+    },
+    {
+      "id": 152,
+      "tg_id": "1889065085",
+      "first_name": "Ульяна Боровских",
+      "last_name": "Боровских",
+      "phone": "+79962135689",
+      "username": null,
+      "created_at": "2025-08-30T13:27:05.737Z",
+      "updated_at": "2025-10-05T12:34:34.931Z"
+    },
+    {
+      "id": 153,
+      "tg_id": "671435615",
+      "first_name": "Kate",
+      "last_name": "Miagkova",
+      "phone": "+79277574184",
+      "username": null,
+      "created_at": "2025-08-30T14:52:28.212Z",
+      "updated_at": "2025-10-05T12:34:35.380Z"
+    },
+    {
+      "id": 154,
+      "tg_id": "702582171",
+      "first_name": "Иван Попов",
+      "last_name": "Попов",
+      "phone": "+79371757037",
+      "username": null,
+      "created_at": "2025-08-30T16:29:09.201Z",
+      "updated_at": "2025-10-05T12:34:35.645Z"
+    },
+    {
+      "id": 155,
+      "tg_id": "1133475568",
+      "first_name": "Андрей",
+      "last_name": "Сидельников",
+      "phone": "+78801732564",
+      "username": null,
+      "created_at": "2025-08-30T16:55:07.116Z",
+      "updated_at": "2025-10-05T12:34:36.121Z"
+    },
+    {
+      "id": 156,
+      "tg_id": "5717110321",
+      "first_name": "Кристина",
+      "last_name": "Попова",
+      "phone": "+79272966577",
+      "username": null,
+      "created_at": "2025-08-31T08:08:57.752Z",
+      "updated_at": "2025-10-05T12:34:36.353Z"
+    },
+    {
+      "id": 157,
+      "tg_id": "486900580",
+      "first_name": "Максим",
+      "last_name": "Еремеев",
+      "phone": "+79397551617",
+      "username": null,
+      "created_at": "2025-09-01T10:45:23.852Z",
+      "updated_at": "2025-10-05T12:34:36.840Z"
+    },
+    {
+      "id": 158,
+      "tg_id": "1058599686",
+      "first_name": "Иван",
+      "last_name": "Мичурин",
+      "phone": "+79272034453",
+      "username": null,
+      "created_at": "2025-09-01T17:09:27.031Z",
+      "updated_at": "2025-10-05T12:34:37.108Z"
+    },
+    {
+      "id": 159,
+      "tg_id": "952957899",
+      "first_name": "Армат",
+      "last_name": "Капаев",
+      "phone": "+79371703206",
+      "username": null,
+      "created_at": "2025-09-01T17:11:14.876Z",
+      "updated_at": "2025-10-05T12:34:37.352Z"
+    },
+    {
+      "id": 160,
+      "tg_id": "244460952",
+      "first_name": "Александр",
+      "last_name": "Полянский",
+      "phone": "+79151799759",
+      "username": null,
+      "created_at": "2025-09-02T14:59:15.719Z",
+      "updated_at": "2025-10-05T12:34:37.583Z"
+    },
+    {
+      "id": 161,
+      "tg_id": "283957204",
+      "first_name": "Владислав",
+      "last_name": "Нугис",
+      "phone": "+79278945140",
+      "username": null,
+      "created_at": "2025-09-03T10:18:17.399Z",
+      "updated_at": "2025-10-05T12:34:37.765Z"
+    },
+    {
+      "id": 162,
+      "tg_id": "1096403808",
+      "first_name": "Павел",
+      "last_name": "Казаков",
+      "phone": "+79276076595",
+      "username": null,
+      "created_at": "2025-09-03T12:56:10.361Z",
+      "updated_at": "2025-10-05T12:34:37.975Z"
+    },
+    {
+      "id": 163,
+      "tg_id": "1380457095",
+      "first_name": "Хусейн",
+      "last_name": "Каюмов",
+      "phone": "+79372021610",
+      "username": null,
+      "created_at": "2025-09-03T13:19:39.897Z",
+      "updated_at": "2025-10-05T12:34:38.340Z"
+    },
+    {
+      "id": 164,
+      "tg_id": "290377974",
+      "first_name": "Роман",
+      "last_name": "Каримов",
+      "phone": "+79871844645",
+      "username": null,
+      "created_at": "2025-09-04T07:02:08.068Z",
+      "updated_at": "2025-10-05T12:34:38.488Z"
+    },
+    {
+      "id": 165,
+      "tg_id": "360444798",
+      "first_name": "Иван",
+      "last_name": "Домницкий",
+      "phone": "+79178179918",
+      "username": null,
+      "created_at": "2025-09-04T08:45:36.117Z",
+      "updated_at": "2025-10-05T12:34:38.657Z"
+    },
+    {
+      "id": 166,
+      "tg_id": "944561139",
+      "first_name": "Полина",
+      "last_name": "Устенкова",
+      "phone": "+79276109169",
+      "username": null,
+      "created_at": "2025-09-05T07:34:56.363Z",
+      "updated_at": "2025-10-05T12:34:38.938Z"
+    },
+    {
+      "id": 167,
+      "tg_id": "269405287",
+      "first_name": "Екатерина",
+      "last_name": "О",
+      "phone": "+79093429774",
+      "username": null,
+      "created_at": "2025-09-05T11:41:58.192Z",
+      "updated_at": "2025-10-05T12:34:39.178Z"
+    },
+    {
+      "id": 168,
+      "tg_id": "1078586733",
+      "first_name": "Никита",
+      "last_name": "Клинг",
+      "phone": "+79965894732",
+      "username": null,
+      "created_at": "2025-09-05T15:00:10.436Z",
+      "updated_at": "2025-10-05T12:34:39.332Z"
+    },
+    {
+      "id": 169,
+      "tg_id": "901713164",
+      "first_name": "Тимур",
+      "last_name": "Черчиев",
+      "phone": "+79871567860",
+      "username": null,
+      "created_at": "2025-09-06T10:20:31.369Z",
+      "updated_at": "2025-10-05T12:34:39.531Z"
+    },
+    {
+      "id": 170,
+      "tg_id": "125406656",
+      "first_name": "Роман",
+      "last_name": "Хабибуллин",
+      "phone": "+79276004860",
+      "username": null,
+      "created_at": "2025-09-06T14:53:32.768Z",
+      "updated_at": "2025-10-05T12:34:39.776Z"
+    },
+    {
+      "id": 171,
+      "tg_id": "929750890",
+      "first_name": "Леонид",
+      "last_name": "Панцырев",
+      "phone": "+79871509973",
+      "username": null,
+      "created_at": "2025-09-07T09:10:43.514Z",
+      "updated_at": "2025-10-05T12:34:40.018Z"
+    },
+    {
+      "id": 172,
+      "tg_id": "1974918198",
+      "first_name": "Наталья",
+      "last_name": "Федорина",
+      "phone": "+79277187845",
+      "username": null,
+      "created_at": "2025-09-07T10:13:00.913Z",
+      "updated_at": "2025-10-05T12:34:40.181Z"
+    },
+    {
+      "id": 173,
+      "tg_id": "974172021",
+      "first_name": "Арсений",
+      "last_name": "Губарев",
+      "phone": "+79379841861",
+      "username": null,
+      "created_at": "2025-09-07T13:10:55.598Z",
+      "updated_at": "2025-10-05T12:34:40.492Z"
+    },
+    {
+      "id": 174,
+      "tg_id": "97158263",
+      "first_name": "Эдгар",
+      "last_name": "Маркосян",
+      "phone": "+79649909866",
+      "username": null,
+      "created_at": "2025-09-07T14:27:40.727Z",
+      "updated_at": "2025-10-05T12:34:40.797Z"
+    },
+    {
+      "id": 175,
+      "tg_id": "5284080054",
+      "first_name": "Ярослав",
+      "last_name": "Лукьянов",
+      "phone": "+79170183218",
+      "username": null,
+      "created_at": "2025-09-07T14:58:42.254Z",
+      "updated_at": "2025-10-05T12:34:40.972Z"
+    },
+    {
+      "id": 176,
+      "tg_id": "770669470",
+      "first_name": "Константин",
+      "last_name": "Иванов",
+      "phone": "+79167751001",
+      "username": null,
+      "created_at": "2025-09-07T15:01:57.831Z",
+      "updated_at": "2025-10-05T12:34:41.144Z"
+    },
+    {
+      "id": 177,
+      "tg_id": "539679534",
+      "first_name": "Пупсик",
+      "last_name": "Пупсикович",
+      "phone": "+79958321032",
+      "username": null,
+      "created_at": "2025-09-08T08:39:15.121Z",
+      "updated_at": "2025-10-05T12:34:41.317Z"
+    },
+    {
+      "id": 178,
+      "tg_id": "325856843",
+      "first_name": "Владимир",
+      "last_name": "Друзенко",
+      "phone": "+79639140766",
+      "username": null,
+      "created_at": "2025-09-08T11:12:35.190Z",
+      "updated_at": "2025-10-05T12:34:41.515Z"
+    },
+    {
+      "id": 179,
+      "tg_id": "912760860",
+      "first_name": "Алексей",
+      "last_name": "Гребеньщиков",
+      "phone": "+79371749673",
+      "username": null,
+      "created_at": "2025-09-08T13:47:54.201Z",
+      "updated_at": "2025-10-05T12:34:41.793Z"
+    },
+    {
+      "id": 180,
+      "tg_id": "6912185083",
+      "first_name": "Михаил",
+      "last_name": "Клименко",
+      "phone": "+79033308871",
+      "username": null,
+      "created_at": "2025-09-08T15:20:45.839Z",
+      "updated_at": "2025-10-05T12:34:42.038Z"
+    },
+    {
+      "id": 181,
+      "tg_id": "531009370",
+      "first_name": "Анастасия",
+      "last_name": "Крючкова",
+      "phone": "+79063415500",
+      "username": null,
+      "created_at": "2025-09-10T15:02:45.474Z",
+      "updated_at": "2025-10-05T12:34:42.281Z"
+    },
+    {
+      "id": 182,
+      "tg_id": "684521979",
+      "first_name": "Светлана",
+      "last_name": "Прокопова",
+      "phone": "+79277071365",
+      "username": null,
+      "created_at": "2025-09-11T06:19:01.061Z",
+      "updated_at": "2025-10-05T12:34:42.484Z"
+    },
+    {
+      "id": 183,
+      "tg_id": "1288800265",
+      "first_name": "Олег",
+      "last_name": "Олегов",
+      "phone": "+79276888841",
+      "username": null,
+      "created_at": "2025-09-11T15:00:25.795Z",
+      "updated_at": "2025-10-05T12:34:42.657Z"
+    },
+    {
+      "id": 184,
+      "tg_id": "806252989",
+      "first_name": "Сергей",
+      "last_name": "Володин",
+      "phone": "+79677270077",
+      "username": null,
+      "created_at": "2025-09-12T07:33:18.397Z",
+      "updated_at": "2025-10-05T12:34:42.829Z"
+    },
+    {
+      "id": 185,
+      "tg_id": "6119146263",
+      "first_name": "Владимир",
+      "last_name": "Яшин",
+      "phone": "+79643159987",
+      "username": null,
+      "created_at": "2025-09-12T11:41:41.039Z",
+      "updated_at": "2025-10-05T12:34:43.009Z"
+    },
+    {
+      "id": 186,
+      "tg_id": "1878962281",
+      "first_name": "Анатолий",
+      "last_name": "Гузенко",
+      "phone": "+79991702710",
+      "username": null,
+      "created_at": "2025-09-12T13:27:45.505Z",
+      "updated_at": "2025-10-05T12:34:43.161Z"
+    },
+    {
+      "id": 187,
+      "tg_id": "362177658",
+      "first_name": "Данила",
+      "last_name": "Левошин",
+      "phone": "+79372190140",
+      "username": null,
+      "created_at": "2025-09-12T15:27:49.211Z",
+      "updated_at": "2025-10-05T12:34:43.341Z"
+    },
+    {
+      "id": 188,
+      "tg_id": "498995489",
+      "first_name": "Александр",
+      "last_name": "Житенев",
+      "phone": "+79171632616",
+      "username": null,
+      "created_at": "2025-09-12T15:32:24.485Z",
+      "updated_at": "2025-10-05T12:34:43.503Z"
+    },
+    {
+      "id": 189,
+      "tg_id": "165367049",
+      "first_name": "Arthur",
+      "last_name": "Artemov",
+      "phone": "+79178157009",
+      "username": null,
+      "created_at": "2025-09-13T06:56:00.455Z",
+      "updated_at": "2025-10-05T12:34:43.722Z"
+    },
+    {
+      "id": 190,
+      "tg_id": "948326160",
+      "first_name": "Яна",
+      "last_name": "Барцева",
+      "phone": "+79879447096",
+      "username": null,
+      "created_at": "2025-09-13T07:05:43.903Z",
+      "updated_at": "2025-10-05T12:34:44.054Z"
+    },
+    {
+      "id": 191,
+      "tg_id": "5223604730",
+      "first_name": "Илья",
+      "last_name": "Шувалов",
+      "phone": "+79297065717",
+      "username": null,
+      "created_at": "2025-09-13T10:41:49.481Z",
+      "updated_at": "2025-10-05T12:34:44.268Z"
+    },
+    {
+      "id": 192,
+      "tg_id": "1398190117",
+      "first_name": "Дмитрий",
+      "last_name": "Руц",
+      "phone": "+79297046223",
+      "username": null,
+      "created_at": "2025-09-13T13:54:19.514Z",
+      "updated_at": "2025-10-05T12:34:44.569Z"
+    },
+    {
+      "id": 193,
+      "tg_id": "5104322827",
+      "first_name": "Рахим",
+      "last_name": "Рахмонов",
+      "phone": "+79879220560",
+      "username": null,
+      "created_at": "2025-09-13T14:23:43.015Z",
+      "updated_at": "2025-10-05T12:34:44.909Z"
+    },
+    {
+      "id": 194,
+      "tg_id": "390710465",
+      "first_name": "Vadim",
+      "last_name": "Chichkin",
+      "phone": "+79277579468",
+      "username": null,
+      "created_at": "2025-09-13T14:25:06.084Z",
+      "updated_at": "2025-10-05T12:34:45.358Z"
+    },
+    {
+      "id": 195,
+      "tg_id": "6703211477",
+      "first_name": "Юрий",
+      "last_name": "Королев",
+      "phone": "+79967361361",
+      "username": null,
+      "created_at": "2025-09-13T14:54:46.738Z",
+      "updated_at": "2025-10-05T12:34:45.516Z"
+    },
+    {
+      "id": 196,
+      "tg_id": "737603341",
+      "first_name": "Алексей",
+      "last_name": "Семенов",
+      "phone": "+79879123124",
+      "username": null,
+      "created_at": "2025-09-13T16:15:55.123Z",
+      "updated_at": "2025-10-05T12:34:45.666Z"
+    },
+    {
+      "id": 197,
+      "tg_id": "289185653",
+      "first_name": "Никита",
+      "last_name": "Акимов",
+      "phone": "+79372129877",
+      "username": null,
+      "created_at": "2025-09-14T11:09:04.091Z",
+      "updated_at": "2025-10-05T12:34:45.812Z"
+    },
+    {
+      "id": 198,
+      "tg_id": "1522035595",
+      "first_name": "Алексей",
+      "last_name": "Агафонов",
+      "phone": "+79277458810",
+      "username": null,
+      "created_at": "2025-09-14T18:33:55.440Z",
+      "updated_at": "2025-10-05T12:34:45.965Z"
+    },
+    {
+      "id": 199,
+      "tg_id": "180147220",
+      "first_name": "Илья",
+      "last_name": "Лебедев",
+      "phone": "+79132515997",
+      "username": null,
+      "created_at": "2025-09-16T08:09:44.428Z",
+      "updated_at": "2025-10-05T12:34:46.126Z"
+    },
+    {
+      "id": 200,
+      "tg_id": "6459694320",
+      "first_name": "Дмитрий",
+      "last_name": "Шпортенко",
+      "phone": "+79022387255",
+      "username": null,
+      "created_at": "2025-09-16T12:18:08.960Z",
+      "updated_at": "2025-10-05T12:34:46.288Z"
+    },
+    {
+      "id": 201,
+      "tg_id": "502379721",
+      "first_name": "Нурлан",
+      "last_name": "Алиев",
+      "phone": "+79376493931",
+      "username": null,
+      "created_at": "2025-09-16T16:24:27.288Z",
+      "updated_at": "2025-10-05T12:34:46.468Z"
+    },
+    {
+      "id": 202,
+      "tg_id": "5946076822",
+      "first_name": "варвара",
+      "last_name": "тимофеева",
+      "phone": "+77058726885",
+      "username": null,
+      "created_at": "2025-09-16T17:35:51.576Z",
+      "updated_at": "2025-10-05T12:34:46.709Z"
+    },
+    {
+      "id": 203,
+      "tg_id": "772666772",
+      "first_name": "Артур",
+      "last_name": "Габрелян",
+      "phone": "+79649809522",
+      "username": null,
+      "created_at": "2025-09-17T14:31:09.337Z",
+      "updated_at": "2025-10-05T12:34:46.878Z"
+    },
+    {
+      "id": 204,
+      "tg_id": "608016579",
+      "first_name": "Алиса",
+      "last_name": "Чернов а",
+      "phone": "+79041932269",
+      "username": null,
+      "created_at": "2025-09-18T07:06:17.845Z",
+      "updated_at": "2025-10-05T12:34:47.048Z"
+    },
+    {
+      "id": 205,
+      "tg_id": "5633125594",
+      "first_name": "Иван",
+      "last_name": "Носов",
+      "phone": "+79370617013",
+      "username": null,
+      "created_at": "2025-09-18T12:33:51.815Z",
+      "updated_at": "2025-10-05T12:34:47.281Z"
+    },
+    {
+      "id": 206,
+      "tg_id": "7142496325",
+      "first_name": "Асем шаалал",
+      "last_name": "Шаалал",
+      "phone": "+79272674665",
+      "username": null,
+      "created_at": "2025-09-20T08:00:54.535Z",
+      "updated_at": "2025-10-05T12:34:47.430Z"
+    },
+    {
+      "id": 207,
+      "tg_id": "5532498439",
+      "first_name": "Анатолий",
+      "last_name": "Осипов",
+      "phone": "+79170323943",
+      "username": null,
+      "created_at": "2025-09-20T15:10:16.669Z",
+      "updated_at": "2025-10-05T12:34:47.584Z"
+    },
+    {
+      "id": 208,
+      "tg_id": "1493829891",
+      "first_name": "Руслан",
+      "last_name": "Бадриев",
+      "phone": "+79093234046",
+      "username": null,
+      "created_at": "2025-09-20T16:08:34.817Z",
+      "updated_at": "2025-10-05T12:34:47.747Z"
+    },
+    {
+      "id": 209,
+      "tg_id": "224033041",
+      "first_name": "Максим",
+      "last_name": "Пааличенко",
+      "phone": "+79276127324",
+      "username": null,
+      "created_at": "2025-09-21T09:56:52.675Z",
+      "updated_at": "2025-10-05T12:34:47.915Z"
+    },
+    {
+      "id": 210,
+      "tg_id": "772003695",
+      "first_name": "Алексей Панкрушин",
+      "last_name": "Панкрашин",
+      "phone": "+79371811242",
+      "username": null,
+      "created_at": "2025-09-21T12:02:10.014Z",
+      "updated_at": "2025-10-05T12:34:48.184Z"
+    },
+    {
+      "id": 211,
+      "tg_id": "1249881406",
+      "first_name": "Егор",
+      "last_name": "Таланов",
+      "phone": "+79626024069",
+      "username": null,
+      "created_at": "2025-09-21T15:18:06.154Z",
+      "updated_at": "2025-10-05T12:34:48.425Z"
+    },
+    {
+      "id": 212,
+      "tg_id": "1352975970",
+      "first_name": "Алина",
+      "last_name": "Исаргакова",
+      "phone": "+79378622522",
+      "username": null,
+      "created_at": "2025-09-22T16:06:57.731Z",
+      "updated_at": "2025-10-05T12:34:48.719Z"
+    },
+    {
+      "id": 213,
+      "tg_id": "407279911",
+      "first_name": "Дмитрий",
+      "last_name": "Левин",
+      "phone": "+79277137317",
+      "username": null,
+      "created_at": "2025-09-23T10:13:53.898Z",
+      "updated_at": "2025-10-05T12:34:48.962Z"
+    },
+    {
+      "id": 1,
+      "tg_id": "937011437",
+      "first_name": "Николай",
+      "last_name": "Шадовский",
+      "phone": "+79270036642",
+      "username": "shadowskydie",
+      "created_at": "2025-09-24T07:35:24.090Z",
+      "updated_at": "2025-09-27T15:15:28.412Z"
+    },
+    {
+      "id": 2,
+      "tg_id": "6922083035",
+      "first_name": "Николай",
+      "last_name": "Гитлер",
+      "phone": "+79270036643",
+      "username": "skywrldbtw",
+      "created_at": "2025-09-24T08:15:10.095Z",
+      "updated_at": "2025-09-27T15:20:08.748Z"
+    },
+    {
+      "id": 214,
+      "tg_id": "808698079",
+      "first_name": "Денис",
+      "last_name": "Габбасов",
+      "phone": "+79372046290",
+      "username": null,
+      "created_at": "2025-09-24T12:05:35.246Z",
+      "updated_at": "2025-10-05T12:34:49.140Z"
+    },
+    {
+      "id": 3,
+      "tg_id": "736766814",
+      "first_name": "Дамир",
+      "last_name": "Джумашев",
+      "phone": "89997027707",
+      "username": "dzhumasshev",
+      "created_at": "2025-09-24T12:21:52.076Z",
+      "updated_at": "2025-09-24T12:21:52.076Z"
+    },
+    {
+      "id": 215,
+      "tg_id": "1352410412",
+      "first_name": "Дмитрий",
+      "last_name": "Малахов",
+      "phone": "+79277670445",
+      "username": null,
+      "created_at": "2025-09-24T13:49:25.949Z",
+      "updated_at": "2025-10-05T12:34:49.322Z"
+    },
+    {
+      "id": 4,
+      "tg_id": "1159515006",
+      "first_name": "Данияр ",
+      "last_name": "Алтынов",
+      "phone": "+77758036733",
+      "username": "D818G",
+      "created_at": "2025-09-26T07:43:39.174Z",
+      "updated_at": "2025-09-27T15:15:28.694Z"
+    },
+    {
+      "id": 5,
+      "tg_id": "5766925451",
+      "first_name": "Кирилл ",
+      "last_name": "Bomber",
+      "phone": "+79107623254",
+      "username": "k7k54",
+      "created_at": "2025-09-26T11:32:04.262Z",
+      "updated_at": "2025-09-26T11:32:04.262Z"
+    },
+    {
+      "id": 216,
+      "tg_id": "2130041297",
+      "first_name": "Алексей",
+      "last_name": "Хасьянов",
+      "phone": "+79379998077",
+      "username": null,
+      "created_at": "2025-09-26T11:49:15.539Z",
+      "updated_at": "2025-10-05T12:34:49.555Z"
+    },
+    {
+      "id": 217,
+      "tg_id": "852550157",
+      "first_name": "Владислав",
+      "last_name": "Белов",
+      "phone": "+79879371488",
+      "username": null,
+      "created_at": "2025-09-26T12:56:12.189Z",
+      "updated_at": "2025-10-05T12:34:49.753Z"
+    },
+    {
+      "id": 218,
+      "tg_id": "775161324",
+      "first_name": "Владислав Воробьев",
+      "last_name": "Воробьев",
+      "phone": "+79379808272",
+      "username": null,
+      "created_at": "2025-09-26T13:42:47.189Z",
+      "updated_at": "2025-10-05T12:34:50.065Z"
+    },
+    {
+      "id": 219,
+      "tg_id": "6033708460",
+      "first_name": "Милана",
+      "last_name": "Идзиева",
+      "phone": "+79179539888",
+      "username": null,
+      "created_at": "2025-09-26T17:17:38.940Z",
+      "updated_at": "2025-10-05T12:34:50.296Z"
+    },
+    {
+      "id": 220,
+      "tg_id": "399370051",
+      "first_name": "Кира",
+      "last_name": "Ворон",
+      "phone": "+79372063326",
+      "username": null,
+      "created_at": "2025-09-26T18:06:52.553Z",
+      "updated_at": "2025-10-05T12:34:50.638Z"
+    },
+    {
+      "id": 221,
+      "tg_id": "412295268",
+      "first_name": "Егор",
+      "last_name": "Барсуков",
+      "phone": "+79377923717",
+      "username": null,
+      "created_at": "2025-09-27T13:38:28.779Z",
+      "updated_at": "2025-10-05T12:34:50.820Z"
+    },
+    {
+      "id": 6,
+      "tg_id": "885843500",
+      "first_name": "Qwer",
+      "last_name": "Ttt",
+      "phone": "79371715747",
+      "username": "lwdzd",
+      "created_at": "2025-09-28T17:38:27.744Z",
+      "updated_at": "2025-09-28T17:40:53.733Z"
+    },
+    {
+      "id": 7,
+      "tg_id": "5375895369",
+      "first_name": "Черножопый",
+      "last_name": "Обэмэ",
+      "phone": "89021816098",
+      "username": "Bachok763",
+      "created_at": "2025-09-28T17:45:23.955Z",
+      "updated_at": "2025-09-28T18:26:58.970Z"
+    },
+    {
+      "id": 8,
+      "tg_id": "1347269957",
+      "first_name": "Дима",
+      "last_name": "Тихонов",
+      "phone": "89277043742",
+      "username": "vodnogo1488",
+      "created_at": "2025-09-28T18:24:02.155Z",
+      "updated_at": "2025-09-28T18:24:25.508Z"
+    },
+    {
+      "id": 222,
+      "tg_id": "1047496963",
+      "first_name": "Давид",
+      "last_name": "М",
+      "phone": "+79613806805",
+      "username": null,
+      "created_at": "2025-09-29T06:04:08.833Z",
+      "updated_at": "2025-10-05T12:34:51.031Z"
+    },
+    {
+      "id": 223,
+      "tg_id": "943723474",
+      "first_name": "Богдан",
+      "last_name": "Шувакин",
+      "phone": "+79272033010",
+      "username": null,
+      "created_at": "2025-09-29T12:48:56.199Z",
+      "updated_at": "2025-10-05T12:34:51.213Z"
+    },
+    {
+      "id": 224,
+      "tg_id": "960631141",
+      "first_name": "Александр",
+      "last_name": "Дронин",
+      "phone": "+79170120048",
+      "username": null,
+      "created_at": "2025-09-29T13:28:15.553Z",
+      "updated_at": "2025-10-05T12:34:51.392Z"
+    },
+    {
+      "id": 225,
+      "tg_id": "593041255",
+      "first_name": "Александра",
+      "last_name": "Вахт на",
+      "phone": "+79324304808",
+      "username": null,
+      "created_at": "2025-09-29T16:09:31.959Z",
+      "updated_at": "2025-10-05T12:34:51.559Z"
+    },
+    {
+      "id": 226,
+      "tg_id": "1118172925",
+      "first_name": "Андрей",
+      "last_name": "Киселев",
+      "phone": "+79170336174",
+      "username": null,
+      "created_at": "2025-09-30T09:50:45.372Z",
+      "updated_at": "2025-10-05T12:34:51.716Z"
+    },
+    {
+      "id": 227,
+      "tg_id": "5063637381",
+      "first_name": "Никита",
+      "last_name": "Володин",
+      "phone": "+79270066441",
+      "username": null,
+      "created_at": "2025-09-30T09:57:08.241Z",
+      "updated_at": "2025-10-05T12:34:51.896Z"
+    },
+    {
+      "id": 228,
+      "tg_id": "1028855495",
+      "first_name": "Илья",
+      "last_name": "золотарев",
+      "phone": "+79376595421",
+      "username": null,
+      "created_at": "2025-10-01T04:53:39.431Z",
+      "updated_at": "2025-10-05T12:34:52.125Z"
+    },
+    {
+      "id": 9,
+      "tg_id": "2085260735",
+      "first_name": "Кондер",
+      "last_name": "Абдулович",
+      "phone": "89277165542",
+      "username": "KarimovRa01",
+      "created_at": "2025-10-01T07:41:17.079Z",
+      "updated_at": "2025-10-01T07:44:29.027Z"
+    },
+    {
+      "id": 229,
+      "tg_id": "748966525",
+      "first_name": "Александр",
+      "last_name": "Петров",
+      "phone": "+79033039300",
+      "username": null,
+      "created_at": "2025-10-01T11:13:31.562Z",
+      "updated_at": "2025-10-05T12:34:52.296Z"
+    },
+    {
+      "id": 230,
+      "tg_id": "5102524290",
+      "first_name": "Мария",
+      "last_name": "Гордеева",
+      "phone": "+79277809421",
+      "username": null,
+      "created_at": "2025-10-01T11:32:09.969Z",
+      "updated_at": "2025-10-05T12:34:52.484Z"
+    },
+    {
+      "id": 231,
+      "tg_id": "900550278",
+      "first_name": "Владимир",
+      "last_name": "Семенов",
+      "phone": "+79376598209",
+      "username": null,
+      "created_at": "2025-10-03T09:28:30.404Z",
+      "updated_at": "2025-10-05T12:34:52.746Z"
+    },
+    {
+      "id": 232,
+      "tg_id": "844698651",
+      "first_name": "александр",
+      "last_name": "Кузнецов",
+      "phone": "+79297051530",
+      "username": null,
+      "created_at": "2025-10-03T11:10:15.556Z",
+      "updated_at": "2025-10-05T12:34:53.084Z"
+    },
+    {
+      "id": 233,
+      "tg_id": "220108509",
+      "first_name": "Аделя Любимая ❤️",
+      "last_name": "Гайнуллина",
+      "phone": "+79179529157",
+      "username": null,
+      "created_at": "2025-10-03T14:55:59.371Z",
+      "updated_at": "2025-10-05T12:34:53.354Z"
+    },
+    {
+      "id": 234,
+      "tg_id": "6616446606",
+      "first_name": "Алексей",
+      "last_name": "Сидоров",
+      "phone": "+79950981307",
+      "username": null,
+      "created_at": "2025-10-04T10:12:38.186Z",
+      "updated_at": "2025-10-05T12:34:53.549Z"
+    }
+  ],
+  "stocks": [
+    {
+      "id": 1,
+      "user_id": 2,
+      "stock_name": "5+1 кальян",
+      "progress": 0,
+      "created_at": "2025-09-24T09:33:09.559Z",
+      "updated_at": "2025-09-24T09:33:09.559Z",
+      "user_tg_id": "6922083035"
+    },
+    {
+      "id": 2,
+      "user_id": 2,
+      "stock_name": "Нарисовый кальян",
+      "progress": 0,
+      "created_at": "2025-09-24T09:33:15.809Z",
+      "updated_at": "2025-09-24T09:33:15.809Z",
+      "user_tg_id": "6922083035"
+    },
+    {
+      "id": 3,
+      "user_id": 1,
+      "stock_name": "5+1 кальян",
+      "progress": 0,
+      "created_at": "2025-09-24T09:45:07.016Z",
+      "updated_at": "2025-09-24T09:45:07.016Z",
+      "user_tg_id": "937011437"
+    },
+    {
+      "id": 4,
+      "user_id": 1,
+      "stock_name": "5+1 кальян",
+      "progress": 0,
+      "created_at": "2025-09-24T09:46:22.804Z",
+      "updated_at": "2025-09-24T09:46:22.804Z",
+      "user_tg_id": "937011437"
+    },
+    {
+      "id": 5,
+      "user_id": 1,
+      "stock_name": "5+1 кальян",
+      "progress": 0,
+      "created_at": "2025-09-24T09:46:31.224Z",
+      "updated_at": "2025-09-24T09:46:31.224Z",
+      "user_tg_id": "937011437"
+    },
+    {
+      "id": 6,
+      "user_id": 1,
+      "stock_name": "5+1 кальян",
+      "progress": 0,
+      "created_at": "2025-09-24T09:57:28.262Z",
+      "updated_at": "2025-09-24T09:57:28.262Z",
+      "user_tg_id": "937011437"
+    },
+    {
+      "id": 7,
+      "user_id": 1,
+      "stock_name": "5+1 кальян",
+      "progress": 0,
+      "created_at": "2025-09-24T09:58:03.677Z",
+      "updated_at": "2025-09-24T09:58:03.677Z",
+      "user_tg_id": "937011437"
+    },
+    {
+      "id": 8,
+      "user_id": 1,
+      "stock_name": "5+1 кальян",
+      "progress": 0,
+      "created_at": "2025-09-24T10:02:43.404Z",
+      "updated_at": "2025-09-24T10:02:43.404Z",
+      "user_tg_id": "937011437"
+    },
+    {
+      "id": 9,
+      "user_id": 1,
+      "stock_name": "5+1 кальян",
+      "progress": 0,
+      "created_at": "2025-09-24T10:13:13.791Z",
+      "updated_at": "2025-09-24T10:13:13.791Z",
+      "user_tg_id": "937011437"
+    },
+    {
+      "id": 10,
+      "user_id": 1,
+      "stock_name": "5+1 кальян",
+      "progress": 0,
+      "created_at": "2025-09-24T10:21:44.874Z",
+      "updated_at": "2025-09-24T10:21:44.874Z",
+      "user_tg_id": "937011437"
+    },
+    {
+      "id": 11,
+      "user_id": 1,
+      "stock_name": "5+1 кальян",
+      "progress": 0,
+      "created_at": "2025-09-24T10:43:34.875Z",
+      "updated_at": "2025-09-24T10:43:34.875Z",
+      "user_tg_id": "937011437"
+    },
+    {
+      "id": 12,
+      "user_id": 1,
+      "stock_name": "5+1 кальян",
+      "progress": 0,
+      "created_at": "2025-09-24T10:43:56.538Z",
+      "updated_at": "2025-09-24T10:43:56.538Z",
+      "user_tg_id": "937011437"
+    },
+    {
+      "id": 13,
+      "user_id": 1,
+      "stock_name": "5+1 кальян",
+      "progress": 0,
+      "created_at": "2025-09-24T10:49:57.379Z",
+      "updated_at": "2025-09-24T10:49:57.379Z",
+      "user_tg_id": "937011437"
+    },
+    {
+      "id": 14,
+      "user_id": 1,
+      "stock_name": "5+1 кальян",
+      "progress": 0,
+      "created_at": "2025-09-24T11:00:21.422Z",
+      "updated_at": "2025-09-24T11:00:21.422Z",
+      "user_tg_id": "937011437"
+    },
+    {
+      "id": 15,
+      "user_id": 1,
+      "stock_name": "5+1 кальян",
+      "progress": 0,
+      "created_at": "2025-09-24T11:01:03.215Z",
+      "updated_at": "2025-09-24T11:01:03.215Z",
+      "user_tg_id": "937011437"
+    },
+    {
+      "id": 16,
+      "user_id": 1,
+      "stock_name": "5+1 кальян",
+      "progress": 0,
+      "created_at": "2025-09-24T11:10:40.697Z",
+      "updated_at": "2025-09-24T11:10:40.697Z",
+      "user_tg_id": "937011437"
+    },
+    {
+      "id": 17,
+      "user_id": 1,
+      "stock_name": "5+1 кальян",
+      "progress": 0,
+      "created_at": "2025-09-24T11:11:14.580Z",
+      "updated_at": "2025-09-24T11:11:14.580Z",
+      "user_tg_id": "937011437"
+    },
+    {
+      "id": 18,
+      "user_id": 1,
+      "stock_name": "5+1 кальян",
+      "progress": 0,
+      "created_at": "2025-09-24T11:54:29.181Z",
+      "updated_at": "2025-09-24T11:54:29.181Z",
+      "user_tg_id": "937011437"
+    },
+    {
+      "id": 19,
+      "user_id": 1,
+      "stock_name": "5+1 кальян",
+      "progress": 0,
+      "created_at": "2025-09-24T12:20:22.637Z",
+      "updated_at": "2025-09-24T12:20:22.637Z",
+      "user_tg_id": "937011437"
+    },
+    {
+      "id": 20,
+      "user_id": 3,
+      "stock_name": "5+1 кальян",
+      "progress": 20,
+      "created_at": "2025-09-24T12:21:58.163Z",
+      "updated_at": "2025-09-24T12:22:21.489Z",
+      "user_tg_id": "736766814"
+    },
+    {
+      "id": 21,
+      "user_id": 3,
+      "stock_name": "5+1 кальян",
+      "progress": 0,
+      "created_at": "2025-09-24T12:22:36.936Z",
+      "updated_at": "2025-09-24T12:22:36.936Z",
+      "user_tg_id": "736766814"
+    },
+    {
+      "id": 22,
+      "user_id": 3,
+      "stock_name": "5+1 кальян",
+      "progress": 0,
+      "created_at": "2025-09-24T12:22:46.067Z",
+      "updated_at": "2025-09-24T12:22:46.067Z",
+      "user_tg_id": "736766814"
+    },
+    {
+      "id": 23,
+      "user_id": 1,
+      "stock_name": "5+1 кальян",
+      "progress": 0,
+      "created_at": "2025-09-24T12:22:52.989Z",
+      "updated_at": "2025-09-24T12:22:52.989Z",
+      "user_tg_id": "937011437"
+    },
+    {
+      "id": 24,
+      "user_id": 3,
+      "stock_name": "5+1 кальян",
+      "progress": 0,
+      "created_at": "2025-09-24T12:22:54.784Z",
+      "updated_at": "2025-09-24T12:22:54.784Z",
+      "user_tg_id": "736766814"
+    },
+    {
+      "id": 25,
+      "user_id": 3,
+      "stock_name": "5+1 кальян",
+      "progress": 100,
+      "created_at": "2025-09-24T12:23:20.908Z",
+      "updated_at": "2025-09-24T16:15:52.889Z",
+      "user_tg_id": "736766814"
+    },
+    {
+      "id": 26,
+      "user_id": 1,
+      "stock_name": "5+1 кальян",
+      "progress": 0,
+      "created_at": "2025-09-24T12:23:24.853Z",
+      "updated_at": "2025-09-24T12:23:24.853Z",
+      "user_tg_id": "937011437"
+    },
+    {
+      "id": 27,
+      "user_id": 1,
+      "stock_name": "5+1 кальян",
+      "progress": 0,
+      "created_at": "2025-09-24T12:34:32.978Z",
+      "updated_at": "2025-09-24T12:34:32.978Z",
+      "user_tg_id": "937011437"
+    },
+    {
+      "id": 28,
+      "user_id": 2,
+      "stock_name": "5+1 кальян",
+      "progress": 20,
+      "created_at": "2025-09-24T12:34:49.551Z",
+      "updated_at": "2025-09-24T12:35:04.791Z",
+      "user_tg_id": "6922083035"
+    },
+    {
+      "id": 29,
+      "user_id": 2,
+      "stock_name": "5+1 кальян",
+      "progress": 20,
+      "created_at": "2025-09-24T12:35:29.609Z",
+      "updated_at": "2025-09-24T12:35:40.964Z",
+      "user_tg_id": "6922083035"
+    },
+    {
+      "id": 30,
+      "user_id": 1,
+      "stock_name": "5+1 кальян",
+      "progress": 0,
+      "created_at": "2025-09-24T12:42:03.225Z",
+      "updated_at": "2025-09-24T12:42:03.225Z",
+      "user_tg_id": "937011437"
+    },
+    {
+      "id": 31,
+      "user_id": 2,
+      "stock_name": "5+1 кальян",
+      "progress": 0,
+      "created_at": "2025-09-24T12:42:18.614Z",
+      "updated_at": "2025-09-24T12:42:18.614Z",
+      "user_tg_id": "6922083035"
+    },
+    {
+      "id": 32,
+      "user_id": 2,
+      "stock_name": "5+1 кальян",
+      "progress": 100,
+      "created_at": "2025-09-24T12:42:29.413Z",
+      "updated_at": "2025-09-24T12:43:12.116Z",
+      "user_tg_id": "6922083035"
+    },
+    {
+      "id": 33,
+      "user_id": 2,
+      "stock_name": "5+1 кальян",
+      "progress": 0,
+      "created_at": "2025-09-24T12:43:20.176Z",
+      "updated_at": "2025-09-24T12:43:20.176Z",
+      "user_tg_id": "6922083035"
+    },
+    {
+      "id": 34,
+      "user_id": 1,
+      "stock_name": "5+1 кальян",
+      "progress": 0,
+      "created_at": "2025-09-24T12:51:28.640Z",
+      "updated_at": "2025-09-24T12:51:28.640Z",
+      "user_tg_id": "937011437"
+    },
+    {
+      "id": 35,
+      "user_id": 2,
+      "stock_name": "5+1 кальян",
+      "progress": 0,
+      "created_at": "2025-09-24T12:51:49.461Z",
+      "updated_at": "2025-09-24T12:51:49.461Z",
+      "user_tg_id": "6922083035"
+    },
+    {
+      "id": 36,
+      "user_id": 2,
+      "stock_name": "5+1 кальян",
+      "progress": 20,
+      "created_at": "2025-09-24T12:51:59.387Z",
+      "updated_at": "2025-09-24T12:52:06.610Z",
+      "user_tg_id": "6922083035"
+    },
+    {
+      "id": 37,
+      "user_id": 2,
+      "stock_name": "5+1 кальян",
+      "progress": 0,
+      "created_at": "2025-09-24T12:52:17.568Z",
+      "updated_at": "2025-09-24T12:52:17.568Z",
+      "user_tg_id": "6922083035"
+    },
+    {
+      "id": 38,
+      "user_id": 2,
+      "stock_name": "5+1 кальян",
+      "progress": 0,
+      "created_at": "2025-09-24T12:52:27.812Z",
+      "updated_at": "2025-09-24T12:52:27.812Z",
+      "user_tg_id": "6922083035"
+    },
+    {
+      "id": 39,
+      "user_id": 1,
+      "stock_name": "5+1 кальян",
+      "progress": 0,
+      "created_at": "2025-09-24T13:09:28.736Z",
+      "updated_at": "2025-09-24T13:09:28.736Z",
+      "user_tg_id": "937011437"
+    },
+    {
+      "id": 40,
+      "user_id": 2,
+      "stock_name": "5+1 кальян",
+      "progress": 0,
+      "created_at": "2025-09-24T13:09:49.962Z",
+      "updated_at": "2025-09-24T13:09:49.962Z",
+      "user_tg_id": "6922083035"
+    },
+    {
+      "id": 41,
+      "user_id": 2,
+      "stock_name": "5+1 кальян",
+      "progress": 20,
+      "created_at": "2025-09-24T13:10:00.540Z",
+      "updated_at": "2025-09-24T13:10:09.224Z",
+      "user_tg_id": "6922083035"
+    },
+    {
+      "id": 42,
+      "user_id": 2,
+      "stock_name": "5+1 кальян",
+      "progress": 0,
+      "created_at": "2025-09-24T13:10:23.169Z",
+      "updated_at": "2025-09-24T13:10:23.169Z",
+      "user_tg_id": "6922083035"
+    },
+    {
+      "id": 43,
+      "user_id": 1,
+      "stock_name": "5+1 кальян",
+      "progress": 0,
+      "created_at": "2025-09-24T13:27:23.505Z",
+      "updated_at": "2025-09-24T13:27:23.505Z",
+      "user_tg_id": "937011437"
+    },
+    {
+      "id": 44,
+      "user_id": 2,
+      "stock_name": "5+1 кальян",
+      "progress": 20,
+      "created_at": "2025-09-24T13:27:47.604Z",
+      "updated_at": "2025-09-24T13:27:53.810Z",
+      "user_tg_id": "6922083035"
+    },
+    {
+      "id": 45,
+      "user_id": 2,
+      "stock_name": "5+1 кальян",
+      "progress": 0,
+      "created_at": "2025-09-24T13:28:10.644Z",
+      "updated_at": "2025-09-24T13:28:10.644Z",
+      "user_tg_id": "6922083035"
+    },
+    {
+      "id": 46,
+      "user_id": 2,
+      "stock_name": "5+1 кальян",
+      "progress": 20,
+      "created_at": "2025-09-24T13:28:27.756Z",
+      "updated_at": "2025-09-24T13:28:35.460Z",
+      "user_tg_id": "6922083035"
+    },
+    {
+      "id": 47,
+      "user_id": 2,
+      "stock_name": "5+1 кальян",
+      "progress": 0,
+      "created_at": "2025-09-24T13:28:46.698Z",
+      "updated_at": "2025-09-24T13:28:46.698Z",
+      "user_tg_id": "6922083035"
+    },
+    {
+      "id": 48,
+      "user_id": 2,
+      "stock_name": "5+1 кальян",
+      "progress": 0,
+      "created_at": "2025-09-24T13:28:55.115Z",
+      "updated_at": "2025-09-24T13:28:55.115Z",
+      "user_tg_id": "6922083035"
+    },
+    {
+      "id": 49,
+      "user_id": 1,
+      "stock_name": "5+1 кальян",
+      "progress": 0,
+      "created_at": "2025-09-24T13:30:25.528Z",
+      "updated_at": "2025-09-24T13:30:25.528Z",
+      "user_tg_id": "937011437"
+    },
+    {
+      "id": 50,
+      "user_id": 1,
+      "stock_name": "5+1 кальян",
+      "progress": 100,
+      "created_at": "2025-09-24T13:33:13.250Z",
+      "updated_at": "2025-09-27T15:16:27.213Z",
+      "user_tg_id": "937011437"
+    },
+    {
+      "id": 51,
+      "user_id": 2,
+      "stock_name": "5+1 кальян",
+      "progress": 20,
+      "created_at": "2025-09-24T13:33:24.699Z",
+      "updated_at": "2025-09-24T13:33:32.373Z",
+      "user_tg_id": "6922083035"
+    },
+    {
+      "id": 52,
+      "user_id": 2,
+      "stock_name": "5+1 кальян",
+      "progress": 100,
+      "created_at": "2025-09-24T13:33:52.605Z",
+      "updated_at": "2025-09-25T06:34:57.652Z",
+      "user_tg_id": "6922083035"
+    },
+    {
+      "id": 53,
+      "user_id": 4,
+      "stock_name": "5+1 кальян",
+      "progress": 100,
+      "created_at": "2025-09-26T07:44:01.728Z",
+      "updated_at": "2025-09-26T07:44:47.323Z",
+      "user_tg_id": "1159515006"
+    },
+    {
+      "id": 54,
+      "user_id": 2,
+      "stock_name": "5+1 кальян",
+      "progress": 100,
+      "created_at": "2025-09-26T08:56:29.518Z",
+      "updated_at": "2025-09-26T08:57:18.032Z",
+      "user_tg_id": "6922083035"
+    },
+    {
+      "id": 55,
+      "user_id": 2,
+      "stock_name": "5+1 кальян",
+      "progress": 100,
+      "created_at": "2025-09-26T08:57:30.234Z",
+      "updated_at": "2025-09-26T09:23:06.163Z",
+      "user_tg_id": "6922083035"
+    },
+    {
+      "id": 56,
+      "user_id": 2,
+      "stock_name": "5+1 кальян",
+      "progress": 100,
+      "created_at": "2025-09-26T09:23:33.205Z",
+      "updated_at": "2025-09-26T09:44:10.791Z",
+      "user_tg_id": "6922083035"
+    },
+    {
+      "id": 57,
+      "user_id": 2,
+      "stock_name": "5+1 кальян",
+      "progress": 100,
+      "created_at": "2025-09-26T09:44:22.338Z",
+      "updated_at": "2025-09-26T09:45:16.343Z",
+      "user_tg_id": "6922083035"
+    },
+    {
+      "id": 58,
+      "user_id": 2,
+      "stock_name": "5+1 кальян",
+      "progress": 100,
+      "created_at": "2025-09-26T09:45:27.108Z",
+      "updated_at": "2025-09-27T14:47:50.371Z",
+      "user_tg_id": "6922083035"
+    },
+    {
+      "id": 59,
+      "user_id": 5,
+      "stock_name": "5+1 кальян",
+      "progress": 0,
+      "created_at": "2025-09-26T11:32:26.328Z",
+      "updated_at": "2025-09-26T11:32:26.328Z",
+      "user_tg_id": "5766925451"
+    },
+    {
+      "id": 60,
+      "user_id": 2,
+      "stock_name": "5+1 кальян",
+      "progress": 100,
+      "created_at": "2025-09-27T14:48:50.390Z",
+      "updated_at": "2025-09-27T15:19:44.142Z",
+      "user_tg_id": "6922083035"
+    },
+    {
+      "id": 61,
+      "user_id": 1,
+      "stock_name": "5+1 кальян",
+      "progress": 100,
+      "created_at": "2025-09-27T15:16:58.704Z",
+      "updated_at": "2025-09-27T15:56:19.593Z",
+      "user_tg_id": "937011437"
+    },
+    {
+      "id": 62,
+      "user_id": 2,
+      "stock_name": "5+1 кальян",
+      "progress": 100,
+      "created_at": "2025-09-27T15:19:48.706Z",
+      "updated_at": "2025-09-29T15:38:34.362Z",
+      "user_tg_id": "6922083035"
+    },
+    {
+      "id": 63,
+      "user_id": 1,
+      "stock_name": "5+1 кальян",
+      "progress": 100,
+      "created_at": "2025-09-27T15:56:36.507Z",
+      "updated_at": "2025-09-29T16:17:02.280Z",
+      "user_tg_id": "937011437"
+    },
+    {
+      "id": 64,
+      "user_id": 6,
+      "stock_name": "5+1 кальян",
+      "progress": 100,
+      "created_at": "2025-09-28T17:38:34.430Z",
+      "updated_at": "2025-09-28T17:43:03.096Z",
+      "user_tg_id": "885843500"
+    },
+    {
+      "id": 65,
+      "user_id": 7,
+      "stock_name": "5+1 кальян",
+      "progress": 100,
+      "created_at": "2025-09-28T17:46:25.138Z",
+      "updated_at": "2025-09-28T18:25:59.314Z",
+      "user_tg_id": "5375895369"
+    },
+    {
+      "id": 66,
+      "user_id": 7,
+      "stock_name": "5+1 кальян",
+      "progress": 0,
+      "created_at": "2025-09-28T18:26:19.406Z",
+      "updated_at": "2025-09-28T18:26:19.406Z",
+      "user_tg_id": "5375895369"
+    },
+    {
+      "id": 67,
+      "user_id": 2,
+      "stock_name": "5+1 кальян",
+      "progress": 20,
+      "created_at": "2025-09-29T15:38:41.665Z",
+      "updated_at": "2025-09-30T07:10:42.844Z",
+      "user_tg_id": "6922083035"
+    },
+    {
+      "id": 68,
+      "user_id": 1,
+      "stock_name": "5+1 кальян",
+      "progress": 20,
+      "created_at": "2025-09-30T16:55:35.262Z",
+      "updated_at": "2025-10-02T06:14:19.035Z",
+      "user_tg_id": "937011437"
+    },
+    {
+      "id": 69,
+      "user_id": 9,
+      "stock_name": "5+1 кальян",
+      "progress": 100,
+      "created_at": "2025-10-01T07:41:39.483Z",
+      "updated_at": "2025-10-01T07:42:17.990Z",
+      "user_tg_id": "2085260735"
+    },
+    {
+      "id": 70,
+      "user_id": 9,
+      "stock_name": "5+1 кальян",
+      "progress": 0,
+      "created_at": "2025-10-01T07:42:27.161Z",
+      "updated_at": "2025-10-01T07:42:27.161Z",
+      "user_tg_id": "2085260735"
+    }
+  ],
+  "free_hookahs": [
+    {
+      "id": 1,
+      "user_id": 2,
+      "used": true,
+      "used_at": "2025-09-24T12:43:30.084Z",
+      "created_at": "2025-09-24T12:43:12.164Z",
+      "user_tg_id": "6922083035"
+    },
+    {
+      "id": 2,
+      "user_id": 3,
+      "used": true,
+      "used_at": "2025-09-24T16:16:17.466Z",
+      "created_at": "2025-09-24T16:15:53.126Z",
+      "user_tg_id": "736766814"
+    },
+    {
+      "id": 3,
+      "user_id": 2,
+      "used": true,
+      "used_at": "2025-09-25T06:36:14.926Z",
+      "created_at": "2025-09-25T06:34:57.888Z",
+      "user_tg_id": "6922083035"
+    },
+    {
+      "id": 4,
+      "user_id": 4,
+      "used": true,
+      "used_at": "2025-09-26T07:44:51.287Z",
+      "created_at": "2025-09-26T07:44:47.468Z",
+      "user_tg_id": "1159515006"
+    },
+    {
+      "id": 5,
+      "user_id": 2,
+      "used": true,
+      "used_at": "2025-09-26T08:56:46.626Z",
+      "created_at": "2025-09-26T08:56:30.139Z",
+      "user_tg_id": "6922083035"
+    },
+    {
+      "id": 6,
+      "user_id": 2,
+      "used": true,
+      "used_at": "2025-09-26T08:57:22.325Z",
+      "created_at": "2025-09-26T08:57:18.175Z",
+      "user_tg_id": "6922083035"
+    },
+    {
+      "id": 7,
+      "user_id": 2,
+      "used": true,
+      "used_at": "2025-09-26T09:22:35.363Z",
+      "created_at": "2025-09-26T08:57:30.802Z",
+      "user_tg_id": "6922083035"
+    },
+    {
+      "id": 8,
+      "user_id": 2,
+      "used": true,
+      "used_at": "2025-09-26T09:23:10.856Z",
+      "created_at": "2025-09-26T09:23:06.404Z",
+      "user_tg_id": "6922083035"
+    },
+    {
+      "id": 9,
+      "user_id": 2,
+      "used": true,
+      "used_at": "2025-09-26T09:23:44.216Z",
+      "created_at": "2025-09-26T09:23:33.404Z",
+      "user_tg_id": "6922083035"
+    },
+    {
+      "id": 10,
+      "user_id": 2,
+      "used": true,
+      "used_at": "2025-09-26T09:44:30.984Z",
+      "created_at": "2025-09-26T09:44:22.534Z",
+      "user_tg_id": "6922083035"
+    },
+    {
+      "id": 11,
+      "user_id": 2,
+      "used": true,
+      "used_at": "2025-09-26T09:45:32.730Z",
+      "created_at": "2025-09-26T09:45:27.294Z",
+      "user_tg_id": "6922083035"
+    },
+    {
+      "id": 12,
+      "user_id": 2,
+      "used": true,
+      "used_at": "2025-09-27T14:48:56.997Z",
+      "created_at": "2025-09-27T14:48:50.585Z",
+      "user_tg_id": "6922083035"
+    },
+    {
+      "id": 13,
+      "user_id": 1,
+      "used": true,
+      "used_at": "2025-09-27T15:17:25.526Z",
+      "created_at": "2025-09-27T15:16:58.894Z",
+      "user_tg_id": "937011437"
+    },
+    {
+      "id": 14,
+      "user_id": 2,
+      "used": true,
+      "used_at": "2025-09-27T15:19:52.172Z",
+      "created_at": "2025-09-27T15:19:48.895Z",
+      "user_tg_id": "6922083035"
+    },
+    {
+      "id": 15,
+      "user_id": 1,
+      "used": true,
+      "used_at": "2025-09-27T16:02:15.404Z",
+      "created_at": "2025-09-27T15:56:36.727Z",
+      "user_tg_id": "937011437"
+    },
+    {
+      "id": 16,
+      "user_id": 7,
+      "used": true,
+      "used_at": "2025-09-28T18:26:26.881Z",
+      "created_at": "2025-09-28T18:26:19.596Z",
+      "user_tg_id": "5375895369"
+    },
+    {
+      "id": 17,
+      "user_id": 2,
+      "used": true,
+      "used_at": "2025-09-29T15:38:44.029Z",
+      "created_at": "2025-09-29T15:38:41.867Z",
+      "user_tg_id": "6922083035"
+    },
+    {
+      "id": 18,
+      "user_id": 1,
+      "used": true,
+      "used_at": "2025-09-30T16:55:43.696Z",
+      "created_at": "2025-09-30T16:55:35.461Z",
+      "user_tg_id": "937011437"
+    },
+    {
+      "id": 19,
+      "user_id": 9,
+      "used": true,
+      "used_at": "2025-10-01T07:42:31.190Z",
+      "created_at": "2025-10-01T07:42:27.349Z",
+      "user_tg_id": "2085260735"
+    }
+  ]
+}
