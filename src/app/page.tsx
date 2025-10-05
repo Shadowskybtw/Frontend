@@ -1,6 +1,7 @@
 "use client"
 import React, { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
+import Navigation from '@/components/Navigation'
 
 type TgUser = {
   id: number
@@ -189,16 +190,8 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black flex flex-col">
-      {/* Header */}
-      <header className="bg-black/50 backdrop-blur-sm border-b border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-center items-center h-20">
-            <h1 className="text-3xl font-bold text-white tracking-wider">
-              <span className="text-red-500">D</span>UNGEON
-            </h1>
-          </div>
-        </div>
-      </header>
+      {/* Navigation */}
+      <Navigation />
 
       {/* Main Content */}
       <main className="flex-1 flex items-center justify-center p-4">
