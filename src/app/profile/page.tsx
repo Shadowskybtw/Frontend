@@ -672,7 +672,13 @@ export default function ProfilePage() {
                   Админ панель
                 </h2>
                 <button
-                  onClick={() => setAdminPanelOpen(false)}
+                  onClick={() => {
+                    setAdminPanelOpen(false)
+                    // Сбрасываем данные найденного пользователя при закрытии панели
+                    setSearchedUser(null)
+                    setSearchPhone('')
+                    setGuestSearchPhone('')
+                  }}
                   className="text-gray-400 hover:text-white text-2xl"
                 >
                   ✕
@@ -690,6 +696,46 @@ export default function ProfilePage() {
                     <span className="text-xl">📷</span>
                     <span>Открыть сканер</span>
                   </button>
+                </div>
+
+                {/* Управление кальянами (как в старой админ панели) */}
+                <div className="bg-green-900/30 border border-green-500/50 rounded-lg p-4">
+                  <h3 className="font-semibold text-green-300 mb-3">Управление кальянами</h3>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-sm font-medium text-green-300 mb-1">
+                        Последние 4 цифры номера телефона:
+                      </label>
+                      <input
+                        type="text"
+                        value={guestSearchPhone}
+                        onChange={(e) => {
+                          const value = e.target.value.replace(/\D/g, '').slice(0, 4)
+                          setGuestSearchPhone(value)
+                        }}
+                        placeholder="Например: 1234"
+                        className="w-full px-3 py-2 border-2 border-green-400 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 text-center text-xl font-bold text-black bg-white shadow-inner"
+                        maxLength={4}
+                      />
+                    </div>
+                    
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={addHookahDirectly}
+                        disabled={isAddingHookah || isRemovingHookah || guestSearchPhone.length !== 4}
+                        className="flex-1 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white py-2 px-3 rounded-md text-sm font-medium"
+                      >
+                        {isAddingHookah ? '⏳ Добавляем...' : '➕ Добавить кальян'}
+                      </button>
+                      <button
+                        onClick={removeHookahDirectly}
+                        disabled={isRemovingHookah || isAddingHookah || guestSearchPhone.length !== 4}
+                        className="flex-1 bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white py-2 px-3 rounded-md text-sm font-medium"
+                      >
+                        {isRemovingHookah ? '⏳ Убираем...' : '➖ Убрать кальян'}
+                      </button>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Поиск пользователя */}
@@ -761,46 +807,6 @@ export default function ProfilePage() {
                         </div>
                       </div>
                     )}
-                  </div>
-                </div>
-
-                {/* Управление кальянами (как в старой админ панели) */}
-                <div className="bg-green-900/30 border border-green-500/50 rounded-lg p-4">
-                  <h3 className="font-semibold text-green-300 mb-3">Управление кальянами</h3>
-                  <div className="space-y-3">
-                    <div>
-                      <label className="block text-sm font-medium text-green-300 mb-1">
-                        Последние 4 цифры номера телефона:
-                      </label>
-                      <input
-                        type="text"
-                        value={guestSearchPhone}
-                        onChange={(e) => {
-                          const value = e.target.value.replace(/\D/g, '').slice(0, 4)
-                          setGuestSearchPhone(value)
-                        }}
-                        placeholder="Например: 1234"
-                        className="w-full px-3 py-2 border-2 border-green-400 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 text-center text-xl font-bold text-black bg-white shadow-inner"
-                        maxLength={4}
-                      />
-                    </div>
-                    
-                    <div className="flex space-x-2">
-                      <button
-                        onClick={addHookahDirectly}
-                        disabled={isAddingHookah || isRemovingHookah || guestSearchPhone.length !== 4}
-                        className="flex-1 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white py-2 px-3 rounded-md text-sm font-medium"
-                      >
-                        {isAddingHookah ? '⏳ Добавляем...' : '➕ Добавить кальян'}
-                      </button>
-                      <button
-                        onClick={removeHookahDirectly}
-                        disabled={isRemovingHookah || isAddingHookah || guestSearchPhone.length !== 4}
-                        className="flex-1 bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white py-2 px-3 rounded-md text-sm font-medium"
-                      >
-                        {isRemovingHookah ? '⏳ Убираем...' : '➖ Убрать кальян'}
-                      </button>
-                    </div>
                   </div>
                 </div>
 
