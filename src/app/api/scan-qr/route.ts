@@ -131,7 +131,10 @@ export async function POST(request: NextRequest) {
       await db.addHookahToHistory(
         user.id, 
         'regular', 
-        newSlotNumber
+        newSlotNumber,
+        stock.id,
+        null, // adminId
+        'admin_add' // scanMethod
       )
       console.log('✅ Hookah added to history successfully')
     } catch (historyError) {

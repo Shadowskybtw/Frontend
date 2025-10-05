@@ -332,17 +332,18 @@ export const db = {
     hookahType: 'regular' | 'free' | 'removed', 
     slotNumber?: number,
     stockId?: number,
-    adminId?: number,
+    adminId?: number | null,
     scanMethod?: string
   ): Promise<HookahHistory> {
     console.log('Adding hookah to history:', { userId, hookahType, slotNumber, stockId, adminId, scanMethod })
     
-    // Создаем запись только с основными полями (которые точно есть в БД)
+    // Создаем запись с правильным временем
     const history = await prisma.hookahHistory.create({
       data: {
         user_id: userId,
         hookah_type: hookahType,
         slot_number: slotNumber || null,
+        created_at: new Date() // Устанавливаем текущее время
       }
     })
     console.log('Hookah added to history:', history)

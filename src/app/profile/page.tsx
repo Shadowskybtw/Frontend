@@ -60,6 +60,8 @@ export default function ProfilePage() {
   const [guestSearchPhone, setGuestSearchPhone] = useState('')
   const [foundGuest, setFoundGuest] = useState<any>(null)
   const [isSearchingGuest, setIsSearchingGuest] = useState(false)
+  const [isAddingHookah, setIsAddingHookah] = useState(false)
+  const [isRemovingHookah, setIsRemovingHookah] = useState(false)
 
   useEffect(() => {
     if (isInitialized && user?.id) {
@@ -256,8 +258,9 @@ export default function ProfilePage() {
 
   // Добавить кальян гостю (заполняет слот)
   const addHookahToGuest = async () => {
-    if (!foundGuest) return
+    if (!foundGuest || isAddingHookah) return
     
+    setIsAddingHookah(true)
     try {
       const response = await fetch('/api/scan-qr', {
         method: 'POST',
@@ -281,13 +284,16 @@ export default function ProfilePage() {
     } catch (error) {
       console.error('Error adding hookah to guest:', error)
       alert('Ошибка добавления кальяна')
+    } finally {
+      setIsAddingHookah(false)
     }
   }
 
   // Убрать кальян у гостя (освобождает слот)
   const removeHookahFromGuest = async () => {
-    if (!foundGuest) return
+    if (!foundGuest || isRemovingHookah) return
     
+    setIsRemovingHookah(true)
     try {
       const response = await fetch('/api/remove-hookah', {
         method: 'POST',
@@ -311,6 +317,8 @@ export default function ProfilePage() {
     } catch (error) {
       console.error('Error removing hookah from guest:', error)
       alert('Ошибка удаления кальяна')
+    } finally {
+      setIsRemovingHookah(false)
     }
   }
 
@@ -704,15 +712,17 @@ export default function ProfilePage() {
                       <div className="mt-4 flex space-x-2">
                         <button
                           onClick={addHookahToGuest}
-                          className="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 px-3 rounded-md text-sm font-medium"
+                          disabled={isAddingHookah || isRemovingHookah}
+                          className="flex-1 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white py-2 px-3 rounded-md text-sm font-medium"
                         >
-                          ➕ Добавить кальян
+                          {isAddingHookah ? '⏳ Добавляем...' : '➕ Добавить кальян'}
                         </button>
                         <button
                           onClick={removeHookahFromGuest}
-                          className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 px-3 rounded-md text-sm font-medium"
+                          disabled={isRemovingHookah || isAddingHookah}
+                          className="flex-1 bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white py-2 px-3 rounded-md text-sm font-medium"
                         >
-                          ➖ Убрать кальян
+                          {isRemovingHookah ? '⏳ Убираем...' : '➖ Убрать кальян'}
                         </button>
                       </div>
                     </div>

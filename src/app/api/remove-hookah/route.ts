@@ -62,7 +62,10 @@ export async function POST(request: NextRequest) {
       await db.addHookahToHistory(
         user.id, 
         'removed', 
-        Math.floor(updatedStock.progress / 20)
+        Math.floor(updatedStock.progress / 20),
+        stock.id,
+        null, // adminId
+        'admin_remove' // scanMethod
       )
       console.log('✅ Hookah removal added to history successfully')
     } catch (historyError) {

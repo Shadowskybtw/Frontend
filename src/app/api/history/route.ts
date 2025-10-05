@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { neon } from '@neondatabase/serverless'
-
-const db = neon(process.env.DATABASE_URL!)
+import { db } from '@/lib/db'
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,49 +15,27 @@ export async function POST(request: NextRequest) {
     const itemsPerPage = 10
     const offset = (page - 1) * itemsPerPage
 
-    // Получаем историю покупок пользователя (пока используем моковые данные)
-    // const history = await db`
-    //   SELECT 
-    //     fh.id,
-    //     fh.created_at,
-    //     fh.used as is_free,
-    //     fh.used_at,
-    //     fh.created_at as purchase_date
-    //   FROM free_hookahs fh
-    //   JOIN users u ON fh.user_id = u.id
-    //   WHERE u.tg_id = ${tg_id}
-    //   ORDER BY fh.created_at DESC
-    //   LIMIT 100
-    // `
-
-    // Для демонстрации создаем больше тестовых записей с пагинацией
-    const allMockHistory = []
-    const totalItems = 25 // Общее количество записей для демонстрации
-    
-    for (let i = 1; i <= totalItems; i++) {
-      const daysAgo = i * 2
-      const isFree = i % 5 === 0 // Каждый 5-й кальян бесплатный
-      
-      allMockHistory.push({
-        id: i,
-        created_at: new Date(Date.now() - daysAgo * 86400000).toISOString(),
-        is_free: isFree,
-        rating: Math.floor(Math.random() * 3) + 3, // Рейтинг от 3 до 5
-        rating_comment: isFree 
-          ? 'Бесплатный кальян - отлично!' 
-          : ['Отличный кальян!', 'Очень понравилось', 'Супер!', 'Классно!', 'Замечательно!'][Math.floor(Math.random() * 5)]
-      })
+    // Получаем пользователя по tg_id
+    const user = await db.getUserByTgId(tg_id)
+    if (!user) {
+      return NextResponse.json(
+        { success: false, message: 'Пользователь не найден' },
+        { status: 404 }
+      )
     }
 
+    // Получаем историю кальянов пользователя
+    const history = await db.getHookahHistory(user.id)
+    
     // Применяем пагинацию
-    const paginatedHistory = allMockHistory.slice(offset, offset + itemsPerPage)
+    const paginatedHistory = history.slice(offset, offset + itemsPerPage)
 
     return NextResponse.json({
       success: true,
       history: paginatedHistory,
-      total: totalItems,
+      total: history.length,
       page: page,
-      totalPages: Math.ceil(totalItems / itemsPerPage)
+      totalPages: Math.ceil(history.length / itemsPerPage)
     })
 
   } catch (error) {
