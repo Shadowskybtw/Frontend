@@ -74,6 +74,43 @@ export default function StocksPage() {
       loadFreeHookahs(testUser.id)
     }
 
+    const createTestUser = async (tgUser: TgUser) => {
+      try {
+        console.log('Creating test user directly in database...')
+        
+        // Создаем пользователя напрямую в базе данных
+        const response = await fetch('/api/check-or-register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            tg_id: tgUser.id,
+            firstName: tgUser.first_name || 'Unknown',
+            lastName: tgUser.last_name || 'User',
+            username: tgUser.username
+          })
+        })
+
+        const data = await response.json()
+        console.log('Direct user creation response:', data)
+
+        if (data.success) {
+          setUser(data.user)
+          loadStocks(data.user.tg_id)
+          loadQrCode(data.user.tg_id)
+          loadFreeHookahs(data.user.tg_id)
+          console.log('✅ Test user created successfully!')
+        } else {
+          console.error('❌ Failed to create test user:', data.message)
+          loadFallbackData()
+        }
+      } catch (error) {
+        console.error('❌ Error creating test user:', error)
+        loadFallbackData()
+      }
+    }
+
     const checkOrRegisterUser = async (tgUser: TgUser) => {
       try {
         console.log('Checking or registering user:', tgUser)
@@ -96,18 +133,20 @@ export default function StocksPage() {
         console.log('Check/register response:', data)
 
         if (data.success) {
+          console.log('User check/register successful:', data)
           setUser(data.user)
           loadStocks(data.user.tg_id)
           loadQrCode(data.user.tg_id)
           loadFreeHookahs(data.user.tg_id)
           
           if (data.isNewUser) {
-            console.log('New user registered successfully!')
+            console.log('✅ New user registered successfully!')
           } else {
-            console.log('Existing user loaded successfully!')
+            console.log('✅ Existing user loaded successfully!')
           }
         } else {
-          console.error('Failed to check/register user:', data.message)
+          console.error('❌ Failed to check/register user:', data.message)
+          console.error('❌ Full error response:', data)
           // Fallback to test data
           loadFallbackData()
         }
@@ -165,8 +204,10 @@ export default function StocksPage() {
             }
           }
         } else {
-          console.log('Telegram WebApp not available, using fallback')
-          loadFallbackData()
+          console.log('Telegram WebApp not available, trying to create test user')
+          // Пытаемся создать тестового пользователя
+          const testUser = { id: 123456789, first_name: 'Test', last_name: 'User', username: 'testuser' }
+          createTestUser(testUser)
         }
       } catch (error) {
         console.error('Error checking Telegram WebApp on stocks page:', error)
