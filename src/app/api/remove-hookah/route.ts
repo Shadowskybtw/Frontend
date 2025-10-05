@@ -24,11 +24,11 @@ export async function POST(request: NextRequest) {
     // Создаем уникальный ключ для запроса
     userKey = phone_digits || 'unknown'
     
-    // Проверяем, не выполняется ли уже запрос для этого пользователя
-    if (activeRequests.has(userKey)) {
-      console.log(`⚠️ [${requestId}] Request already in progress for user ${userKey}, ignoring`)
-      return NextResponse.json({ success: false, message: 'Request already in progress for this user' }, { status: 429 })
-    }
+    // Временно отключаем блокировку для отладки
+    // if (activeRequests.has(userKey)) {
+    //   console.log(`⚠️ [${requestId}] Request already in progress for user ${userKey}, ignoring`)
+    //   return NextResponse.json({ success: false, message: 'Request already in progress for this user' }, { status: 429 })
+    // }
     
     // Добавляем запрос в активные
     activeRequests.set(userKey, Date.now())

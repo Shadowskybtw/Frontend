@@ -31,6 +31,15 @@ CREATE TABLE IF NOT EXISTS free_hookahs (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Hookah history table
+CREATE TABLE IF NOT EXISTS hookah_history (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  hookah_type VARCHAR(50) NOT NULL CHECK (hookah_type IN ('regular', 'free', 'removed')),
+  slot_number INTEGER,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- Indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_users_tg_id ON users(tg_id);
 CREATE INDEX IF NOT EXISTS idx_stocks_user_id ON stocks(user_id);

@@ -261,15 +261,15 @@ export default function ProfilePage() {
   const addHookahToGuest = async () => {
     if (!foundGuest || isAddingHookah || isRemovingHookah) return
     
-    // Дополнительная защита от множественных нажатий
-    const now = Date.now()
-    if (now - lastActionTime < 2000) { // 2 секунды между действиями
-      console.log('⏰ Too soon after last action, ignoring')
-      return
-    }
+    // Временно отключаем cooldown для отладки
+    // const now = Date.now()
+    // if (now - lastActionTime < 2000) { // 2 секунды между действиями
+    //   console.log('⏰ Too soon after last action, ignoring')
+    //   return
+    // }
     
     setIsAddingHookah(true)
-    setLastActionTime(now)
+    // setLastActionTime(now)
     
     try {
       console.log('🚀 Adding hookah to guest:', guestSearchPhone)
@@ -306,15 +306,15 @@ export default function ProfilePage() {
   const removeHookahFromGuest = async () => {
     if (!foundGuest || isRemovingHookah || isAddingHookah) return
     
-    // Дополнительная защита от множественных нажатий
-    const now = Date.now()
-    if (now - lastActionTime < 2000) { // 2 секунды между действиями
-      console.log('⏰ Too soon after last action, ignoring')
-      return
-    }
+    // Временно отключаем cooldown для отладки
+    // const now = Date.now()
+    // if (now - lastActionTime < 2000) { // 2 секунды между действиями
+    //   console.log('⏰ Too soon after last action, ignoring')
+    //   return
+    // }
     
     setIsRemovingHookah(true)
-    setLastActionTime(now)
+    // setLastActionTime(now)
     
     try {
       console.log('🚀 Removing hookah from guest:', guestSearchPhone)
