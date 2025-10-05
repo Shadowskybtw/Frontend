@@ -94,24 +94,17 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Проверяем, сколько слотов уже заполнено
-    const currentSlots = Math.floor(stock.progress / 20)
-    const maxSlots = 5
-    
-    if (currentSlots >= maxSlots) {
-      // Если все слоты заполнены, создаем новую акцию с 0 прогрессом
-      const newStock = await db.createStock({
-        user_id: user.id,
-        stock_name: '5+1 кальян',
-        progress: 0
-      })
+    // Проверяем, заполнены ли все слоты (100% прогресса)
+    if (stock.progress >= 100) {
+      // Если все слоты заполнены, сбрасываем прогресс на 0
+      const resetStock = await db.updateStockProgress(stock.id, 0)
       
       // Создаем бесплатный кальян для завершенной акции
       await db.createFreeHookah(user.id)
       
       return NextResponse.json({ 
         success: true, 
-        message: 'Акция завершена! Получен бесплатный кальян! Начата новая акция.',
+        message: 'Акция завершена! Получен бесплатный кальян! Прогресс сброшен.',
         user: {
           id: user.id,
           tg_id: user.tg_id,
@@ -120,7 +113,7 @@ export async function POST(request: NextRequest) {
           phone: user.phone,
           username: user.username
         },
-        stock: newStock,
+        stock: resetStock,
         newPromotion: true,
         refreshRequired: true,
         freeHookahCreated: true
@@ -128,7 +121,7 @@ export async function POST(request: NextRequest) {
     }
     
     // Заполняем следующий слот (увеличиваем прогресс на 20%)
-    const newProgress = Math.min(stock.progress + 20, 100)
+    const newProgress = stock.progress + 20
     const newSlotNumber = Math.floor(newProgress / 20)
     
     const updatedStock = await db.updateStockProgress(stock.id, newProgress)
