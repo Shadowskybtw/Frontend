@@ -39,7 +39,6 @@ export default function ProfilePage() {
     created_at: string
   }>>([])
   const [isAdmin, setIsAdmin] = useState(false)
-  const [qrScannerOpen, setQrScannerOpen] = useState(false)
   const [showQRScanner, setShowQRScanner] = useState(false)
   const [, setScanResult] = useState<{
     success: boolean
@@ -58,7 +57,6 @@ export default function ProfilePage() {
   const [newAdminTgId, setNewAdminTgId] = useState('')
   const [isGrantingAdmin, setIsGrantingAdmin] = useState(false)
   const [adminStatusChecked, setAdminStatusChecked] = useState(false)
-  const [phoneDigits, setPhoneDigits] = useState('')
   const [guestSearchTgId, setGuestSearchTgId] = useState('')
   const [foundGuest, setFoundGuest] = useState<any>(null)
   const [isSearchingGuest, setIsSearchingGuest] = useState(false)
@@ -392,7 +390,6 @@ export default function ProfilePage() {
       
       if (data.success) {
         alert(`QR код отсканирован! Пользователь: ${data.user.first_name} ${data.user.last_name}`)
-        setQrScannerOpen(false)
         
         // Принудительно обновляем статистику профиля
         if (user?.id) {
@@ -473,54 +470,6 @@ export default function ProfilePage() {
     }
   }
 
-  // Подтверждение по номеру телефона
-  const confirmByPhone = async () => {
-    if (!phoneDigits.trim()) {
-      alert('Введите последние 4 цифры номера телефона')
-      return
-    }
-
-    if (phoneDigits.length !== 4 || !/^\d{4}$/.test(phoneDigits)) {
-      alert('Введите ровно 4 цифры')
-      return
-    }
-
-    try {
-      const response = await fetch('/api/scan-qr', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          phone_digits: phoneDigits,
-          admin_key: 'admin123'
-        }),
-      })
-
-      const data = await response.json()
-      
-      if (data.success) {
-        alert(`✅ Кальян подтвержден! Пользователь: ${data.user.first_name} ${data.user.last_name}`)
-        setPhoneDigits('')
-        setQrScannerOpen(false)
-        
-        // Принудительно обновляем статистику профиля
-        if (user?.id) {
-          // Множественные обновления для надежности
-          loadProfileStats(user.id)
-          setTimeout(() => loadProfileStats(user.id), 500)
-          setTimeout(() => loadProfileStats(user.id), 1000)
-          setTimeout(() => loadProfileStats(user.id), 2000)
-          setTimeout(() => loadProfileStats(user.id), 5000)
-        }
-      } else {
-        alert('❌ Ошибка: ' + data.message)
-      }
-    } catch (error) {
-      console.error('Error confirming by phone:', error)
-      alert('❌ Ошибка при подтверждении по номеру телефона')
-    }
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black flex flex-col">
@@ -641,106 +590,6 @@ export default function ProfilePage() {
                   </div>
                 )}
               </div>
-              
-              {/* Админские функции */}
-              {isAdmin && (
-                <div className="bg-red-900/30 border border-red-500/50 rounded-lg p-4 backdrop-blur-sm">
-                  <h3 className="font-semibold text-red-300 mb-2">🔧 Админ панель</h3>
-                  <div className="space-y-3">
-                    <div className="grid grid-cols-2 gap-2">
-                      <button
-                        onClick={() => setShowQRScanner(true)}
-                        className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md text-sm font-medium"
-                      >
-                        📷 Камера
-                      </button>
-                      <button
-                        onClick={() => setQrScannerOpen(!qrScannerOpen)}
-                        className="bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-md text-sm font-medium"
-                      >
-                        {qrScannerOpen ? '❌ Закрыть' : '📝 Ввод'}
-                      </button>
-                    </div>
-                    
-                    <div className="pt-2 border-t border-red-200">
-                      <button
-                        onClick={() => setAdminPanelOpen(!adminPanelOpen)}
-                        className="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-md text-sm font-medium"
-                      >
-                        {adminPanelOpen ? '❌ Закрыть' : '👑 Назначить админа'}
-                      </button>
-                    </div>
-                    
-                    {qrScannerOpen && (
-                      <div className="space-y-3">
-                        {/* Кнопка сканирования QR кода через камеру */}
-                        <button
-                          onClick={() => setShowQRScanner(true)}
-                          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-md text-sm font-medium flex items-center justify-center space-x-2"
-                        >
-                          <span>📱</span>
-                          <span>Сканировать QR код камерой</span>
-                        </button>
-
-                        {/* Разделитель */}
-                        <div className="flex items-center">
-                          <div className="flex-1 border-t border-gray-300"></div>
-                          <span className="px-3 text-gray-500 text-sm">или</span>
-                          <div className="flex-1 border-t border-gray-300"></div>
-                        </div>
-
-                        {/* Ввод последних 4 цифр номера телефона */}
-                        <div className="space-y-2">
-                          <label className="block text-sm font-medium text-red-300">
-                            Последние 4 цифры номера телефона:
-                          </label>
-                          <input
-                            type="text"
-                            value={phoneDigits}
-                            onChange={(e) => {
-                              const value = e.target.value.replace(/\D/g, '').slice(0, 4)
-                              setPhoneDigits(value)
-                            }}
-                            placeholder="Например: 1234"
-                            className="w-full px-3 py-2 border-2 border-red-400 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 text-center text-xl font-bold text-black bg-white shadow-inner"
-                            maxLength={4}
-                          />
-                          <button
-                            onClick={confirmByPhone}
-                            className="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-md text-sm font-medium"
-                          >
-                            ✅ Подтвердить кальян
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                    
-                    {adminPanelOpen && (
-                      <div className="space-y-2 pt-2 border-t border-red-200">
-                        <div>
-                          <label className="block text-sm font-medium text-red-300 mb-1">
-                            Telegram ID пользователя:
-                          </label>
-                          <input
-                            type="number"
-                            value={newAdminTgId}
-                            onChange={(e) => setNewAdminTgId(e.target.value)}
-                            placeholder="Введите Telegram ID..."
-                            className="w-full px-3 py-2 border-2 border-red-400 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 text-sm text-black bg-white shadow-inner font-mono"
-                          />
-                        </div>
-                        <button
-                          onClick={grantAdminRights}
-                          disabled={isGrantingAdmin}
-                          className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 text-white py-2 px-4 rounded-md text-sm font-medium"
-                        >
-                          {isGrantingAdmin ? '⏳ Назначаем...' : '👑 Назначить админа'}
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
 
               <div className="bg-blue-900/30 border border-blue-500/50 rounded-lg p-4 backdrop-blur-sm">
                 <h3 className="font-semibold text-blue-300 mb-2">Статистика</h3>
