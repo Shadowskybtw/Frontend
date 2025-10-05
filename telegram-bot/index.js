@@ -106,7 +106,8 @@ class HookahNotificationBot {
     const hookahsToFree = this.calculateHookahsToFree(user.progress);
     const totalHookahs = user.total_hookahs;
     const usedHookahs = user.used_hookahs;
-    const availableHookahs = totalHookahs - usedHookahs;
+    const freeHookahsReceived = usedHookahs; // Использованные = полученные бесплатные
+    const regularHookahs = totalHookahs - usedHookahs; // Обычные кальяны (не бесплатные)
 
     let message = `🎯 <b>DUNGEONHOOKAH_BOT</b>\n\n`;
     message += `Привет, ${user.first_name}! 👋\n\n`;
@@ -114,14 +115,14 @@ class HookahNotificationBot {
     if (hookahsToFree === 0) {
       message += `🎉 <b>Поздравляем!</b> У вас есть бесплатный кальян!\n`;
       message += `📊 Всего кальянов: ${totalHookahs}\n`;
-      message += `✅ Использовано: ${usedHookahs}\n`;
-      message += `🎁 Доступно: ${availableHookahs}\n\n`;
+      message += `• Обычные кальяны: ${regularHookahs}\n`;
+      message += `• Получено бесплатных: ${freeHookahsReceived}\n\n`;
       message += `Приходите и забирайте свой бесплатный кальян! 🚀`;
     } else {
       message += `📊 <b>Ваш прогресс в акции:</b>\n`;
       message += `• Всего кальянов: ${totalHookahs}\n`;
-      message += `• Использовано: ${usedHookahs}\n`;
-      message += `• Доступно: ${availableHookahs}\n\n`;
+      message += `• Обычные кальяны: ${regularHookahs}\n`;
+      message += `• Получено бесплатных: ${freeHookahsReceived}\n\n`;
       message += `🎯 <b>До бесплатного кальяна осталось: ${hookahsToFree} кальянов</b>\n\n`;
       
       // Показываем прогресс-бар
