@@ -79,41 +79,57 @@ export async function POST(request: NextRequest) {
       }
 
       // Ищем пользователя по последним 4 цифрам номера телефона
+      console.log(`🔍 [${requestId}] Searching user by phone digits: ${phone_digits}`)
       const allUsers = await db.getAllUsers()
+      console.log(`📊 [${requestId}] Total users found: ${allUsers.length}`)
+      
       user = allUsers.find(u => {
         const phone = u.phone.replace(/\D/g, '') // Убираем все нецифровые символы
-        return phone.endsWith(phone_digits)
+        const matches = phone.endsWith(phone_digits)
+        console.log(`📞 [${requestId}] Checking user ${u.id}: phone=${u.phone}, clean=${phone}, endsWith=${phone_digits}? ${matches}`)
+        return matches
       })
 
       if (!user) {
+        console.log(`❌ [${requestId}] User not found for phone digits: ${phone_digits}`)
         return NextResponse.json({ success: false, message: 'Пользователь с такими последними цифрами номера не найден' }, { status: 404 })
       }
+      
+      console.log(`✅ [${requestId}] User found: ${user.id} (${user.first_name} ${user.last_name})`)
     }
     else {
       return NextResponse.json({ success: false, message: 'QR data or phone digits is required' }, { status: 400 })
     }
 
     // Получаем или создаем акцию "5+1 кальян"
+    console.log(`📊 [${requestId}] Getting stocks for user ${user.id}`)
     const userStocks = await db.getUserStocks(user.id)
+    console.log(`📊 [${requestId}] User stocks found: ${userStocks.length}`)
+    
     let stock = userStocks.find(s => s.stock_name === '5+1 кальян')
+    console.log(`📊 [${requestId}] Hookah stock found: ${stock ? `ID ${stock.id}, progress ${stock.progress}%` : 'None'}`)
     
     // Если есть несколько акций, берем самую последнюю (с наибольшим ID)
     if (!stock && userStocks.length > 0) {
       const hookahStocks = userStocks.filter(s => s.stock_name === '5+1 кальян')
+      console.log(`📊 [${requestId}] Filtered hookah stocks: ${hookahStocks.length}`)
       if (hookahStocks.length > 0) {
         stock = hookahStocks.reduce((latest, current) => 
           current.id > latest.id ? current : latest
         )
+        console.log(`📊 [${requestId}] Selected latest stock: ID ${stock.id}, progress ${stock.progress}%`)
       }
     }
 
     if (!stock) {
       // Создаем акцию если её нет
+      console.log(`📊 [${requestId}] Creating new stock for user ${user.id}`)
       stock = await db.createStock({
         user_id: user.id,
         stock_name: '5+1 кальян',
         progress: 0
       })
+      console.log(`✅ [${requestId}] Created new stock: ID ${stock.id}`)
     }
 
     // Проверяем, заполнены ли все слоты (100% прогресса)
