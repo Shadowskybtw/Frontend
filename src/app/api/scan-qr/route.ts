@@ -114,8 +114,11 @@ export async function POST(request: NextRequest) {
         message: 'Акция завершена! Получен бесплатный кальян! Начата новая акция.',
         user: {
           id: user.id,
+          tg_id: user.tg_id,
           first_name: user.first_name,
-          last_name: user.last_name
+          last_name: user.last_name,
+          phone: user.phone,
+          username: user.username
         },
         stock: newStock,
         newPromotion: true,
@@ -148,8 +151,11 @@ export async function POST(request: NextRequest) {
       message: `✅ Кальян добавлен! Слот ${newSlotNumber}/5 заполнен`,
       user: {
         id: user.id,
+        tg_id: user.tg_id,
         first_name: user.first_name,
-        last_name: user.last_name
+        last_name: user.last_name,
+        phone: user.phone,
+        username: user.username
       },
       stock: updatedStock,
       completed: newProgress >= 100,
