@@ -22,6 +22,12 @@ export default function Navigation({ className = "" }: NavigationProps) {
       label: 'Профиль',
       icon: '👤',
       active: pathname === '/profile'
+    },
+    {
+      href: '/history',
+      label: 'История',
+      icon: '📊',
+      active: pathname === '/history'
     }
   ]
 
@@ -37,13 +43,13 @@ export default function Navigation({ className = "" }: NavigationProps) {
         
         {/* Кнопки навигации под логотипом */}
         <div className="flex justify-center items-center pb-4">
-          <div className="flex space-x-1">
+          <div className="grid grid-cols-3 gap-2 w-full max-w-md">
             {navItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
                 className={`
-                  px-6 py-3 rounded-lg font-medium transition-all duration-300 flex items-center space-x-2
+                  px-4 py-3 rounded-lg font-medium transition-all duration-300 flex items-center justify-center space-x-2 text-center
                   ${item.active 
                     ? 'bg-red-600 text-white shadow-lg shadow-red-500/25' 
                     : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
@@ -51,7 +57,7 @@ export default function Navigation({ className = "" }: NavigationProps) {
                 `}
               >
                 <span className="text-lg">{item.icon}</span>
-                <span>{item.label}</span>
+                <span className="text-sm">{item.label}</span>
               </Link>
             ))}
           </div>
