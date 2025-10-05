@@ -57,7 +57,7 @@ export default function ProfilePage() {
   const [newAdminTgId, setNewAdminTgId] = useState('')
   const [isGrantingAdmin, setIsGrantingAdmin] = useState(false)
   const [adminStatusChecked, setAdminStatusChecked] = useState(false)
-  const [guestSearchTgId, setGuestSearchTgId] = useState('')
+  const [guestSearchPhone, setGuestSearchPhone] = useState('')
   const [foundGuest, setFoundGuest] = useState<any>(null)
   const [isSearchingGuest, setIsSearchingGuest] = useState(false)
 
@@ -218,13 +218,26 @@ export default function ProfilePage() {
     }
   }, [user?.id, user?.tg_id, user?.first_name, user?.last_name, getTgIdFromDb])
 
-  // Поиск гостя по Telegram ID
+  // Поиск гостя по последним 4 цифрам номера телефона
   const searchGuest = async () => {
-    if (!guestSearchTgId) return
+    if (!guestSearchPhone || guestSearchPhone.length !== 4) {
+      alert('Введите ровно 4 последние цифры номера телефона')
+      return
+    }
     
     setIsSearchingGuest(true)
     try {
-      const response = await fetch(`/api/profile/${guestSearchTgId}`)
+      const response = await fetch('/api/scan-qr', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          phone_digits: guestSearchPhone,
+          admin_key: 'admin123'
+        }),
+      })
+      
       const data = await response.json()
       
       if (data.success && data.user) {
@@ -648,19 +661,23 @@ export default function ProfilePage() {
                   <div className="space-y-3">
                     <div>
                       <label className="block text-sm font-medium text-green-300 mb-1">
-                        Telegram ID гостя:
+                        Последние 4 цифры номера телефона:
                       </label>
                       <input
-                        type="number"
-                        value={guestSearchTgId}
-                        onChange={(e) => setGuestSearchTgId(e.target.value)}
-                        placeholder="Введите Telegram ID..."
-                        className="w-full px-3 py-2 border-2 border-green-400 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 text-sm text-black bg-white shadow-inner font-mono"
+                        type="text"
+                        value={guestSearchPhone}
+                        onChange={(e) => {
+                          const value = e.target.value.replace(/\D/g, '').slice(0, 4)
+                          setGuestSearchPhone(value)
+                        }}
+                        placeholder="Например: 1234"
+                        className="w-full px-3 py-2 border-2 border-green-400 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 text-center text-xl font-bold text-black bg-white shadow-inner"
+                        maxLength={4}
                       />
                     </div>
                     <button
                       onClick={searchGuest}
-                      disabled={isSearchingGuest || !guestSearchTgId}
+                      disabled={isSearchingGuest || guestSearchPhone.length !== 4}
                       className="w-full bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white py-2 px-4 rounded-md text-sm font-medium"
                     >
                       {isSearchingGuest ? '⏳ Поиск...' : '🔍 Найти гостя'}
@@ -673,6 +690,7 @@ export default function ProfilePage() {
                       <h4 className="font-semibold text-green-300 mb-2">Найденный гость:</h4>
                       <div className="text-green-200 text-sm space-y-1">
                         <p><strong>Имя:</strong> {foundGuest.first_name} {foundGuest.last_name}</p>
+                        <p><strong>Телефон:</strong> {foundGuest.phone || 'Не указан'}</p>
                         <p><strong>Telegram ID:</strong> {foundGuest.tg_id}</p>
                         <p><strong>Username:</strong> @{foundGuest.username || 'Не указан'}</p>
                       </div>
