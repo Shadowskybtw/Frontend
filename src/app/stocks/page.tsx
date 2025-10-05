@@ -54,10 +54,24 @@ export default function StocksPage() {
           console.log('Telegram WebApp script loaded on stocks page')
           checkTelegramWebApp()
         }
+        script.onerror = () => {
+          console.log('Failed to load Telegram WebApp script, using fallback')
+          loadFallbackData()
+        }
         document.head.appendChild(script)
       } else {
         checkTelegramWebApp()
       }
+    }
+
+    const loadFallbackData = () => {
+      console.log('Using fallback data for testing')
+      const testUser = { id: 937011437, first_name: 'Николай', last_name: 'Шадовский', username: 'shadowskydie' }
+      setUser(testUser)
+      setIsInTelegram(false)
+      loadStocks(testUser.id)
+      loadQrCode(testUser.id)
+      loadFreeHookahs(testUser.id)
     }
 
     const checkTelegramWebApp = () => {
@@ -70,6 +84,7 @@ export default function StocksPage() {
           setIsInTelegram(true)
           const tgUser = (window as any).Telegram.WebApp.initDataUnsafe?.user as TgUser | undefined
           if (tgUser) {
+            console.log('User found in initDataUnsafe:', tgUser)
             setUser(tgUser)
             // Загружаем данные пользователя
             loadStocks(tgUser.id)
@@ -86,6 +101,7 @@ export default function StocksPage() {
                 try {
                   const userData = JSON.parse(decodeURIComponent(userParam))
                   if (userData.id) {
+                    console.log('User found in initData:', userData)
                     setUser({ id: userData.id, first_name: userData.first_name, last_name: userData.last_name, username: userData.username })
                     loadStocks(userData.id)
                     loadQrCode(userData.id)
@@ -93,42 +109,44 @@ export default function StocksPage() {
                   }
                 } catch (e) {
                   console.error('Error parsing user data:', e)
+                  loadFallbackData()
                 }
+              } else {
+                console.log('No user data in initData, using fallback')
+                loadFallbackData()
               }
+            } else {
+              console.log('No initData available, using fallback')
+              loadFallbackData()
             }
           }
         } else {
-          // Fallback для тестирования вне Telegram
-          console.log('Telegram WebApp not available, using test data')
-          const testUser = { id: 937011437, first_name: 'Test', last_name: 'User', username: 'testuser' }
-          setUser(testUser)
-          setIsInTelegram(false) // Устанавливаем false для показа тестовых данных
-          loadStocks(testUser.id)
-          loadQrCode(testUser.id)
-          loadFreeHookahs(testUser.id)
+          console.log('Telegram WebApp not available, using fallback')
+          loadFallbackData()
         }
       } catch (error) {
         console.error('Error checking Telegram WebApp on stocks page:', error)
-        // Fallback для тестирования
-        const testUser = { id: 937011437, first_name: 'Test', last_name: 'User', username: 'testuser' }
-        setUser(testUser)
-        setIsInTelegram(false)
-        loadStocks(testUser.id)
-        loadQrCode(testUser.id)
-        loadFreeHookahs(testUser.id)
+        loadFallbackData()
       }
     }
 
+    // Запускаем проверку сразу и через небольшую задержку
+    checkTelegramWebApp()
     setTimeout(loadTelegramScript, 100)
   }, [])
 
   // Загружаем акции пользователя
   const loadStocks = async (tgId: number) => {
     try {
+      console.log('Loading stocks for tgId:', tgId)
       const response = await fetch(`/api/stocks?tg_id=${tgId}`)
       const data = await response.json()
+      console.log('Stocks response:', data)
       if (data.success) {
         setStocks(data.stocks)
+        console.log('Stocks loaded:', data.stocks)
+      } else {
+        console.error('Failed to load stocks:', data.message)
       }
     } catch (error) {
       console.error('Error loading stocks:', error)
