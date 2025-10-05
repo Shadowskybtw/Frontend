@@ -1,9 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 
+// Простая система блокировки для предотвращения дублирования запросов
+const activeRequests = new Set<string>()
+
 export async function POST(request: NextRequest) {
+  const requestId = Math.random().toString(36).substr(2, 9)
+  console.log(`🚀 [${requestId}] QR scan request started`)
+  
   try {
     const { qr_data, phone_digits, admin_key } = await request.json()
+    console.log(`🔍 [${requestId}] Request data:`, { qr_data: qr_data ? 'provided' : 'missing', phone_digits, admin_key: admin_key ? 'provided' : 'missing' })
     
     // Проверяем админский ключ (более гибкая проверка)
     const expectedAdminKey = process.env.ADMIN_KEY || process.env.NEXT_PUBLIC_ADMIN_KEY || 'admin123'
@@ -11,6 +18,19 @@ export async function POST(request: NextRequest) {
     if (admin_key !== expectedAdminKey) {
       return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 })
     }
+
+    // Создаем уникальный ключ для запроса на основе данных пользователя
+    const requestKey = `${phone_digits || qr_data || 'unknown'}-${Date.now()}`
+    
+    // Проверяем, не выполняется ли уже такой запрос
+    if (activeRequests.has(requestKey)) {
+      console.log(`⚠️ [${requestId}] Duplicate request detected, ignoring`)
+      return NextResponse.json({ success: false, message: 'Request already in progress' }, { status: 429 })
+    }
+    
+    // Добавляем запрос в активные
+    activeRequests.add(requestKey)
+    console.log(`🔒 [${requestId}] Request locked: ${requestKey}`)
 
     let user
 
@@ -124,10 +144,24 @@ export async function POST(request: NextRequest) {
     const newProgress = stock.progress + 20
     const newSlotNumber = Math.floor(newProgress / 20)
     
+    console.log(`📊 [${requestId}] Updating stock progress:`, { 
+      stockId: stock.id, 
+      currentProgress: stock.progress, 
+      newProgress, 
+      newSlotNumber 
+    })
+    
     const updatedStock = await db.updateStockProgress(stock.id, newProgress)
 
     // Добавляем запись в историю кальянов
     try {
+      console.log(`📝 [${requestId}] Adding to history:`, { 
+        userId: user.id, 
+        hookahType: 'regular', 
+        slotNumber: newSlotNumber,
+        stockId: stock.id 
+      })
+      
       await db.addHookahToHistory(
         user.id, 
         'regular', 
@@ -136,9 +170,9 @@ export async function POST(request: NextRequest) {
         null, // adminId
         'admin_add' // scanMethod
       )
-      console.log('✅ Hookah added to history successfully')
+      console.log(`✅ [${requestId}] Hookah added to history successfully`)
     } catch (historyError) {
-      console.error('❌ Error adding to hookah history:', historyError)
+      console.error(`❌ [${requestId}] Error adding to hookah history:`, historyError)
       // Продолжаем выполнение, даже если не удалось добавить в историю
     }
 
@@ -160,7 +194,7 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Error scanning QR code:', error)
+    console.error(`❌ [${requestId}] Error scanning QR code:`, error)
     return NextResponse.json(
       { 
         success: false, 
@@ -168,5 +202,9 @@ export async function POST(request: NextRequest) {
       },
       { status: 500 }
     )
+  } finally {
+    // Освобождаем блокировку
+    activeRequests.clear() // Очищаем все активные запросы
+    console.log(`🔓 [${requestId}] Request unlocked`)
   }
 }

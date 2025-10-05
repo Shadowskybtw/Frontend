@@ -1,9 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 
+// Простая система блокировки для предотвращения дублирования запросов
+const activeRequests = new Set<string>()
+
 export async function POST(request: NextRequest) {
+  const requestId = Math.random().toString(36).substr(2, 9)
+  console.log(`🚀 [${requestId}] Remove hookah request started`)
+  
   try {
     const { phone_digits, admin_key } = await request.json()
+    console.log(`🔍 [${requestId}] Request data:`, { phone_digits, admin_key: admin_key ? 'provided' : 'missing' })
     
     // Проверяем админский ключ
     const expectedAdminKey = process.env.ADMIN_KEY || process.env.NEXT_PUBLIC_ADMIN_KEY || 'admin123'
@@ -11,6 +18,19 @@ export async function POST(request: NextRequest) {
     if (admin_key !== expectedAdminKey) {
       return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 })
     }
+
+    // Создаем уникальный ключ для запроса
+    const requestKey = `${phone_digits || 'unknown'}-${Date.now()}`
+    
+    // Проверяем, не выполняется ли уже такой запрос
+    if (activeRequests.has(requestKey)) {
+      console.log(`⚠️ [${requestId}] Duplicate request detected, ignoring`)
+      return NextResponse.json({ success: false, message: 'Request already in progress' }, { status: 429 })
+    }
+    
+    // Добавляем запрос в активные
+    activeRequests.add(requestKey)
+    console.log(`🔒 [${requestId}] Request locked: ${requestKey}`)
 
     if (!phone_digits || phone_digits.length !== 4 || !/^\d{4}$/.test(phone_digits)) {
       return NextResponse.json({ success: false, message: 'Phone digits must be exactly 4 digits' }, { status: 400 })
@@ -90,7 +110,7 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Error removing hookah:', error)
+    console.error(`❌ [${requestId}] Error removing hookah:`, error)
     return NextResponse.json(
       { 
         success: false, 
@@ -98,5 +118,9 @@ export async function POST(request: NextRequest) {
       },
       { status: 500 }
     )
+  } finally {
+    // Освобождаем блокировку
+    activeRequests.clear() // Очищаем все активные запросы
+    console.log(`🔓 [${requestId}] Request unlocked`)
   }
 }

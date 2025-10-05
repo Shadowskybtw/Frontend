@@ -276,8 +276,7 @@ export default function ProfilePage() {
       const data = await response.json()
       if (data.success) {
         alert('✅ Кальян добавлен гостю! Слот заполнен.')
-        // Обновляем данные гостя
-        searchGuest()
+        // Не вызываем searchGuest() чтобы избежать дублирования запросов
       } else {
         alert('Ошибка добавления кальяна: ' + data.message)
       }
@@ -309,8 +308,7 @@ export default function ProfilePage() {
       const data = await response.json()
       if (data.success) {
         alert('✅ Кальян убран у гостя! Слот освобожден.')
-        // Обновляем данные гостя
-        searchGuest()
+        // Не вызываем searchGuest() чтобы избежать дублирования запросов
       } else {
         alert('Ошибка удаления кальяна: ' + data.message)
       }
