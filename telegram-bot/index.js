@@ -118,7 +118,17 @@ class HookahNotificationBot {
       message += `🎯 <b>До бесплатного кальяна осталось: ${hookahsToFree} кальянов</b>`;
     }
 
-    return message;
+    // Создаем клавиатуру с кнопкой для открытия webapp
+    const keyboard = {
+      inline_keyboard: [[
+        {
+          text: '📱 Открыть приложение',
+          web_app: { url: 'https://frontend-phi-ivory.vercel.app' }
+        }
+      ]]
+    };
+
+    return { message, keyboard };
   }
 
   /**
@@ -144,11 +154,12 @@ class HookahNotificationBot {
    */
   async sendNotificationToUser(user) {
     try {
-      const message = this.createNotificationMessage(user);
+      const { message, keyboard } = this.createNotificationMessage(user);
       
       await this.bot.telegram.sendMessage(user.tg_id, message, {
         parse_mode: 'HTML',
-        disable_web_page_preview: true
+        disable_web_page_preview: true,
+        reply_markup: keyboard
       });
       
       console.log(`✅ Уведомление отправлено: ${user.first_name} ${user.last_name} (TG: ${user.tg_id})`);
@@ -194,6 +205,15 @@ class HookahNotificationBot {
   setupBotCommands() {
     // Команда /start
     this.bot.start((ctx) => {
+      const keyboard = {
+        inline_keyboard: [[
+          {
+            text: '📱 Открыть приложение',
+            web_app: { url: 'https://frontend-phi-ivory.vercel.app' }
+          }
+        ]]
+      };
+
       ctx.reply(
         '🎯 <b>DUNGEONHOOKAH_BOT</b>\n\n' +
         'Добро пожаловать! Я буду напоминать вам о прогрессе в акции кальянов.\n\n' +
@@ -201,7 +221,10 @@ class HookahNotificationBot {
         '/progress - узнать свой прогресс\n' +
         '/help - помощь\n\n' +
         '💡 <b>Для подробной информации о прогрессе используйте мини-приложение!</b>',
-        { parse_mode: 'HTML' }
+        { 
+          parse_mode: 'HTML',
+          reply_markup: keyboard
+        }
       );
     });
 
@@ -233,9 +256,12 @@ class HookahNotificationBot {
         }
 
         const userData = user[0];
-        const message = this.createNotificationMessage(userData);
+        const { message, keyboard } = this.createNotificationMessage(userData);
         
-        ctx.reply(message, { parse_mode: 'HTML' });
+        ctx.reply(message, { 
+          parse_mode: 'HTML',
+          reply_markup: keyboard
+        });
       } catch (error) {
         console.error('❌ Ошибка при получении прогресса:', error.message);
         ctx.reply('❌ Произошла ошибка. Попробуйте позже.');
