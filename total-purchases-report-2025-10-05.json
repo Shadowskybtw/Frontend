@@ -1,0 +1,1715 @@
+{
+  "metadata": {
+    "generated_at": "2025-10-05T13:53:16.069Z",
+    "total_users": 213,
+    "total_purchases": 2025,
+    "total_regular_purchases": 1689,
+    "total_free_purchases": 336
+  },
+  "users": [
+    {
+      "tg_id": 811996031,
+      "first_name": "Андрей",
+      "last_name": "Щебень",
+      "total_purchases": 100,
+      "free_purchases": 20,
+      "regular_purchases": 80
+    },
+    {
+      "tg_id": 323119247,
+      "first_name": "Анна",
+      "last_name": "Богомолова",
+      "total_purchases": 93,
+      "free_purchases": 18,
+      "regular_purchases": 75
+    },
+    {
+      "tg_id": 177892254,
+      "first_name": "Виталий",
+      "last_name": "Иванов",
+      "total_purchases": 85,
+      "free_purchases": 17,
+      "regular_purchases": 68
+    },
+    {
+      "tg_id": 434085685,
+      "first_name": "Сергей",
+      "last_name": "Васюткин",
+      "total_purchases": 84,
+      "free_purchases": 16,
+      "regular_purchases": 68
+    },
+    {
+      "tg_id": 185052285,
+      "first_name": "Тор",
+      "last_name": "Арсентьев",
+      "total_purchases": 81,
+      "free_purchases": 16,
+      "regular_purchases": 65
+    },
+    {
+      "tg_id": 170429155,
+      "first_name": "Алексей",
+      "last_name": "Хажаинов",
+      "total_purchases": 75,
+      "free_purchases": 15,
+      "regular_purchases": 60
+    },
+    {
+      "tg_id": 369762509,
+      "first_name": "Фаниль",
+      "last_name": "Динмухаметов",
+      "total_purchases": 66,
+      "free_purchases": 13,
+      "regular_purchases": 53
+    },
+    {
+      "tg_id": 472682134,
+      "first_name": "Ильдар",
+      "last_name": "Шакиров",
+      "total_purchases": 66,
+      "free_purchases": 13,
+      "regular_purchases": 53
+    },
+    {
+      "tg_id": 1620653512,
+      "first_name": "Иришка",
+      "last_name": "Мятная пастилка",
+      "total_purchases": 62,
+      "free_purchases": 12,
+      "regular_purchases": 50
+    },
+    {
+      "tg_id": 391557666,
+      "first_name": "Андрей",
+      "last_name": "Смирнов",
+      "total_purchases": 57,
+      "free_purchases": 11,
+      "regular_purchases": 46
+    },
+    {
+      "tg_id": 454922712,
+      "first_name": "Штрауш",
+      "last_name": "Штраус",
+      "total_purchases": 55,
+      "free_purchases": 11,
+      "regular_purchases": 44
+    },
+    {
+      "tg_id": 899138269,
+      "first_name": "Роман",
+      "last_name": "Лебедев",
+      "total_purchases": 48,
+      "free_purchases": 9,
+      "regular_purchases": 39
+    },
+    {
+      "tg_id": 493427643,
+      "first_name": "Дмитрий",
+      "last_name": "Иглин",
+      "total_purchases": 46,
+      "free_purchases": 9,
+      "regular_purchases": 37
+    },
+    {
+      "tg_id": 2048941947,
+      "first_name": "Усман",
+      "last_name": "Низаметдинов",
+      "total_purchases": 42,
+      "free_purchases": 8,
+      "regular_purchases": 34
+    },
+    {
+      "tg_id": 83349863,
+      "first_name": "Дмитрий",
+      "last_name": "Веселов",
+      "total_purchases": 40,
+      "free_purchases": 8,
+      "regular_purchases": 32
+    },
+    {
+      "tg_id": 667390895,
+      "first_name": "Агас",
+      "last_name": "Алекян",
+      "total_purchases": 36,
+      "free_purchases": 7,
+      "regular_purchases": 29
+    },
+    {
+      "tg_id": 497607867,
+      "first_name": "Олег",
+      "last_name": "Горбунов",
+      "total_purchases": 35,
+      "free_purchases": 7,
+      "regular_purchases": 28
+    },
+    {
+      "tg_id": 1493678447,
+      "first_name": "Александр",
+      "last_name": "Ткаченко",
+      "total_purchases": 35,
+      "free_purchases": 7,
+      "regular_purchases": 28
+    },
+    {
+      "tg_id": 1854293083,
+      "first_name": "Пётр",
+      "last_name": "Гудь",
+      "total_purchases": 35,
+      "free_purchases": 7,
+      "regular_purchases": 28
+    },
+    {
+      "tg_id": 357290846,
+      "first_name": "Ярослав",
+      "last_name": "Наумов",
+      "total_purchases": 26,
+      "free_purchases": 5,
+      "regular_purchases": 21
+    },
+    {
+      "tg_id": 189142562,
+      "first_name": "Данил",
+      "last_name": "Черкасов",
+      "total_purchases": 25,
+      "free_purchases": 5,
+      "regular_purchases": 20
+    },
+    {
+      "tg_id": 925726416,
+      "first_name": "Максим",
+      "last_name": "Першин",
+      "total_purchases": 23,
+      "free_purchases": 4,
+      "regular_purchases": 19
+    },
+    {
+      "tg_id": 1163791221,
+      "first_name": "Екатерина",
+      "last_name": "Выжленкова",
+      "total_purchases": 23,
+      "free_purchases": 4,
+      "regular_purchases": 19
+    },
+    {
+      "tg_id": 7847377542,
+      "first_name": "Виталий",
+      "last_name": "Маркушин",
+      "total_purchases": 23,
+      "free_purchases": 4,
+      "regular_purchases": 19
+    },
+    {
+      "tg_id": 6585577649,
+      "first_name": "макс",
+      "last_name": "макс",
+      "total_purchases": 22,
+      "free_purchases": 4,
+      "regular_purchases": 18
+    },
+    {
+      "tg_id": 5916603942,
+      "first_name": "Егор",
+      "last_name": "Кравченко",
+      "total_purchases": 20,
+      "free_purchases": 4,
+      "regular_purchases": 16
+    },
+    {
+      "tg_id": 5587882397,
+      "first_name": "Владислав Лукьянов",
+      "last_name": "Лукьянов",
+      "total_purchases": 19,
+      "free_purchases": 3,
+      "regular_purchases": 16
+    },
+    {
+      "tg_id": 566256174,
+      "first_name": "Станислав",
+      "last_name": "Шумячер",
+      "total_purchases": 17,
+      "free_purchases": 3,
+      "regular_purchases": 14
+    },
+    {
+      "tg_id": 796935263,
+      "first_name": "Андрей",
+      "last_name": "Шульц",
+      "total_purchases": 16,
+      "free_purchases": 3,
+      "regular_purchases": 13
+    },
+    {
+      "tg_id": 1096403808,
+      "first_name": "Павел",
+      "last_name": "Казаков",
+      "total_purchases": 15,
+      "free_purchases": 3,
+      "regular_purchases": 12
+    },
+    {
+      "tg_id": 1245792014,
+      "first_name": "Дарья",
+      "last_name": "Кузнецова",
+      "total_purchases": 14,
+      "free_purchases": 2,
+      "regular_purchases": 12
+    },
+    {
+      "tg_id": 404152711,
+      "first_name": "Максим",
+      "last_name": "Грек",
+      "total_purchases": 13,
+      "free_purchases": 2,
+      "regular_purchases": 11
+    },
+    {
+      "tg_id": 333648932,
+      "first_name": "Виталла",
+      "last_name": "Мальцева",
+      "total_purchases": 12,
+      "free_purchases": 2,
+      "regular_purchases": 10
+    },
+    {
+      "tg_id": 349706232,
+      "first_name": "Тамерлан",
+      "last_name": "Алиев",
+      "total_purchases": 12,
+      "free_purchases": 2,
+      "regular_purchases": 10
+    },
+    {
+      "tg_id": 937011437,
+      "first_name": "Николай",
+      "last_name": "Мишин",
+      "total_purchases": 11,
+      "free_purchases": 2,
+      "regular_purchases": 9
+    },
+    {
+      "tg_id": 7025972081,
+      "first_name": "Артем",
+      "last_name": "Московцев",
+      "total_purchases": 11,
+      "free_purchases": 2,
+      "regular_purchases": 9
+    },
+    {
+      "tg_id": 290377974,
+      "first_name": "Роман",
+      "last_name": "Каримов",
+      "total_purchases": 10,
+      "free_purchases": 2,
+      "regular_purchases": 8
+    },
+    {
+      "tg_id": 741571700,
+      "first_name": "Оля",
+      "last_name": "Никиточкина",
+      "total_purchases": 10,
+      "free_purchases": 2,
+      "regular_purchases": 8
+    },
+    {
+      "tg_id": 758565037,
+      "first_name": "Василий",
+      "last_name": "Корнеев",
+      "total_purchases": 10,
+      "free_purchases": 2,
+      "regular_purchases": 8
+    },
+    {
+      "tg_id": 1600474976,
+      "first_name": "Вячеслав",
+      "last_name": "Саламатин",
+      "total_purchases": 10,
+      "free_purchases": 2,
+      "regular_purchases": 8
+    },
+    {
+      "tg_id": 1962719148,
+      "first_name": "Иван",
+      "last_name": "Савватеев",
+      "total_purchases": 10,
+      "free_purchases": 2,
+      "regular_purchases": 8
+    },
+    {
+      "tg_id": 7186018671,
+      "first_name": "Данил",
+      "last_name": "Сюткин",
+      "total_purchases": 10,
+      "free_purchases": 2,
+      "regular_purchases": 8
+    },
+    {
+      "tg_id": 7905675282,
+      "first_name": "Геворг",
+      "last_name": "Боцинян",
+      "total_purchases": 10,
+      "free_purchases": 2,
+      "regular_purchases": 8
+    },
+    {
+      "tg_id": 508089672,
+      "first_name": "Артем",
+      "last_name": "Шикунов",
+      "total_purchases": 9,
+      "free_purchases": 1,
+      "regular_purchases": 8
+    },
+    {
+      "tg_id": 547686045,
+      "first_name": "Павел",
+      "last_name": "Волков",
+      "total_purchases": 9,
+      "free_purchases": 1,
+      "regular_purchases": 8
+    },
+    {
+      "tg_id": 1856552252,
+      "first_name": "Никита Жиганов",
+      "last_name": "Жиганов",
+      "total_purchases": 9,
+      "free_purchases": 1,
+      "regular_purchases": 8
+    },
+    {
+      "tg_id": 5104322827,
+      "first_name": "Рахим",
+      "last_name": "Рахмонов",
+      "total_purchases": 9,
+      "free_purchases": 1,
+      "regular_purchases": 8
+    },
+    {
+      "tg_id": 362177658,
+      "first_name": "Данила",
+      "last_name": "Левошин",
+      "total_purchases": 8,
+      "free_purchases": 1,
+      "regular_purchases": 7
+    },
+    {
+      "tg_id": 929560644,
+      "first_name": "Герман",
+      "last_name": "Ломоносов",
+      "total_purchases": 8,
+      "free_purchases": 1,
+      "regular_purchases": 7
+    },
+    {
+      "tg_id": 1055213676,
+      "first_name": "Саламу",
+      "last_name": "Гацаев",
+      "total_purchases": 8,
+      "free_purchases": 1,
+      "regular_purchases": 7
+    },
+    {
+      "tg_id": 5206834597,
+      "first_name": "Виктор",
+      "last_name": "Неп",
+      "total_purchases": 8,
+      "free_purchases": 1,
+      "regular_purchases": 7
+    },
+    {
+      "tg_id": 119322280,
+      "first_name": "Павел",
+      "last_name": "Куликов",
+      "total_purchases": 7,
+      "free_purchases": 1,
+      "regular_purchases": 6
+    },
+    {
+      "tg_id": 472572658,
+      "first_name": "Михаил",
+      "last_name": "Новиков",
+      "total_purchases": 7,
+      "free_purchases": 1,
+      "regular_purchases": 6
+    },
+    {
+      "tg_id": 716001548,
+      "first_name": "Анна",
+      "last_name": "Филиппова",
+      "total_purchases": 7,
+      "free_purchases": 1,
+      "regular_purchases": 6
+    },
+    {
+      "tg_id": 912760860,
+      "first_name": "Алексей",
+      "last_name": "Гребеньщиков",
+      "total_purchases": 7,
+      "free_purchases": 1,
+      "regular_purchases": 6
+    },
+    {
+      "tg_id": 6110195795,
+      "first_name": "Андрей",
+      "last_name": "Даричев",
+      "total_purchases": 7,
+      "free_purchases": 1,
+      "regular_purchases": 6
+    },
+    {
+      "tg_id": 244460952,
+      "first_name": "Александр",
+      "last_name": "Полянский",
+      "total_purchases": 6,
+      "free_purchases": 1,
+      "regular_purchases": 5
+    },
+    {
+      "tg_id": 416315065,
+      "first_name": "Анастасия",
+      "last_name": "Маргун",
+      "total_purchases": 6,
+      "free_purchases": 1,
+      "regular_purchases": 5
+    },
+    {
+      "tg_id": 595219785,
+      "first_name": "Никита",
+      "last_name": "Блинов",
+      "total_purchases": 6,
+      "free_purchases": 1,
+      "regular_purchases": 5
+    },
+    {
+      "tg_id": 643516711,
+      "first_name": "Денис",
+      "last_name": "Погодин",
+      "total_purchases": 6,
+      "free_purchases": 1,
+      "regular_purchases": 5
+    },
+    {
+      "tg_id": 983874452,
+      "first_name": "Богдан",
+      "last_name": "Пимашин",
+      "total_purchases": 6,
+      "free_purchases": 1,
+      "regular_purchases": 5
+    },
+    {
+      "tg_id": 1905378471,
+      "first_name": "Сергей",
+      "last_name": "Елизаров",
+      "total_purchases": 6,
+      "free_purchases": 1,
+      "regular_purchases": 5
+    },
+    {
+      "tg_id": 5569744105,
+      "first_name": "Алексей",
+      "last_name": "Петров",
+      "total_purchases": 6,
+      "free_purchases": 1,
+      "regular_purchases": 5
+    },
+    {
+      "tg_id": 137187828,
+      "first_name": "Губайдулина Айдар",
+      "last_name": "Губайдуллин",
+      "total_purchases": 5,
+      "free_purchases": 1,
+      "regular_purchases": 4
+    },
+    {
+      "tg_id": 278622925,
+      "first_name": "Алексей",
+      "last_name": "Кузнецов",
+      "total_purchases": 5,
+      "free_purchases": 1,
+      "regular_purchases": 4
+    },
+    {
+      "tg_id": 321552337,
+      "first_name": "Данил",
+      "last_name": "Павлов",
+      "total_purchases": 5,
+      "free_purchases": 1,
+      "regular_purchases": 4
+    },
+    {
+      "tg_id": 325856843,
+      "first_name": "Владимир",
+      "last_name": "Друзенко",
+      "total_purchases": 5,
+      "free_purchases": 1,
+      "regular_purchases": 4
+    },
+    {
+      "tg_id": 411688456,
+      "first_name": "Ильгам",
+      "last_name": "Ибрагимов",
+      "total_purchases": 5,
+      "free_purchases": 1,
+      "regular_purchases": 4
+    },
+    {
+      "tg_id": 513177696,
+      "first_name": "Алёна",
+      "last_name": "Игнатова",
+      "total_purchases": 5,
+      "free_purchases": 1,
+      "regular_purchases": 4
+    },
+    {
+      "tg_id": 531601156,
+      "first_name": "Олег",
+      "last_name": "Макаров",
+      "total_purchases": 5,
+      "free_purchases": 1,
+      "regular_purchases": 4
+    },
+    {
+      "tg_id": 532515390,
+      "first_name": "Надежда",
+      "last_name": "Куляс",
+      "total_purchases": 5,
+      "free_purchases": 1,
+      "regular_purchases": 4
+    },
+    {
+      "tg_id": 642604183,
+      "first_name": "Арсений",
+      "last_name": "Орехов",
+      "total_purchases": 5,
+      "free_purchases": 1,
+      "regular_purchases": 4
+    },
+    {
+      "tg_id": 702582171,
+      "first_name": "Иван Попов",
+      "last_name": "Попов",
+      "total_purchases": 5,
+      "free_purchases": 1,
+      "regular_purchases": 4
+    },
+    {
+      "tg_id": 710028356,
+      "first_name": "Антон",
+      "last_name": "Курзов",
+      "total_purchases": 5,
+      "free_purchases": 1,
+      "regular_purchases": 4
+    },
+    {
+      "tg_id": 742731038,
+      "first_name": "Кирилл",
+      "last_name": "Хайбулаев",
+      "total_purchases": 5,
+      "free_purchases": 1,
+      "regular_purchases": 4
+    },
+    {
+      "tg_id": 775161324,
+      "first_name": "Владислав Воробьев",
+      "last_name": "Воробьев",
+      "total_purchases": 5,
+      "free_purchases": 1,
+      "regular_purchases": 4
+    },
+    {
+      "tg_id": 883911484,
+      "first_name": "Илья",
+      "last_name": "Фролов",
+      "total_purchases": 5,
+      "free_purchases": 1,
+      "regular_purchases": 4
+    },
+    {
+      "tg_id": 900550278,
+      "first_name": "Владимир",
+      "last_name": "Семенов",
+      "total_purchases": 5,
+      "free_purchases": 1,
+      "regular_purchases": 4
+    },
+    {
+      "tg_id": 952957899,
+      "first_name": "Армат",
+      "last_name": "Капаев",
+      "total_purchases": 5,
+      "free_purchases": 1,
+      "regular_purchases": 4
+    },
+    {
+      "tg_id": 1047496963,
+      "first_name": "Давид",
+      "last_name": "М",
+      "total_purchases": 5,
+      "free_purchases": 1,
+      "regular_purchases": 4
+    },
+    {
+      "tg_id": 1065567148,
+      "first_name": "Александр",
+      "last_name": "Гусев",
+      "total_purchases": 5,
+      "free_purchases": 1,
+      "regular_purchases": 4
+    },
+    {
+      "tg_id": 1118172925,
+      "first_name": "Андрей",
+      "last_name": "Киселев",
+      "total_purchases": 5,
+      "free_purchases": 1,
+      "regular_purchases": 4
+    },
+    {
+      "tg_id": 1251199322,
+      "first_name": "Данила",
+      "last_name": "Степанов",
+      "total_purchases": 5,
+      "free_purchases": 1,
+      "regular_purchases": 4
+    },
+    {
+      "tg_id": 1365146383,
+      "first_name": "Денис",
+      "last_name": "Водопоев",
+      "total_purchases": 5,
+      "free_purchases": 1,
+      "regular_purchases": 4
+    },
+    {
+      "tg_id": 1380457095,
+      "first_name": "Хусейн",
+      "last_name": "Каюмов",
+      "total_purchases": 5,
+      "free_purchases": 1,
+      "regular_purchases": 4
+    },
+    {
+      "tg_id": 1522035595,
+      "first_name": "Алексей",
+      "last_name": "Агафонов",
+      "total_purchases": 5,
+      "free_purchases": 1,
+      "regular_purchases": 4
+    },
+    {
+      "tg_id": 2085260735,
+      "first_name": "Рауль",
+      "last_name": "Каримов",
+      "total_purchases": 5,
+      "free_purchases": 1,
+      "regular_purchases": 4
+    },
+    {
+      "tg_id": 97158263,
+      "first_name": "Эдгар",
+      "last_name": "Маркосян",
+      "total_purchases": 4,
+      "free_purchases": 0,
+      "regular_purchases": 4
+    },
+    {
+      "tg_id": 180147220,
+      "first_name": "Илья",
+      "last_name": "Лебедев",
+      "total_purchases": 4,
+      "free_purchases": 0,
+      "regular_purchases": 4
+    },
+    {
+      "tg_id": 399370051,
+      "first_name": "Кира",
+      "last_name": "Ворон",
+      "total_purchases": 4,
+      "free_purchases": 0,
+      "regular_purchases": 4
+    },
+    {
+      "tg_id": 459515344,
+      "first_name": "Александр",
+      "last_name": "Бузуев",
+      "total_purchases": 4,
+      "free_purchases": 0,
+      "regular_purchases": 4
+    },
+    {
+      "tg_id": 684521979,
+      "first_name": "Светлана",
+      "last_name": "Прокопова",
+      "total_purchases": 4,
+      "free_purchases": 0,
+      "regular_purchases": 4
+    },
+    {
+      "tg_id": 700322606,
+      "first_name": "Эмиль",
+      "last_name": "Алиев",
+      "total_purchases": 4,
+      "free_purchases": 0,
+      "regular_purchases": 4
+    },
+    {
+      "tg_id": 770669470,
+      "first_name": "Константин",
+      "last_name": "Иванов",
+      "total_purchases": 4,
+      "free_purchases": 0,
+      "regular_purchases": 4
+    },
+    {
+      "tg_id": 954701790,
+      "first_name": "Александр",
+      "last_name": "Кудряшов",
+      "total_purchases": 4,
+      "free_purchases": 0,
+      "regular_purchases": 4
+    },
+    {
+      "tg_id": 1331368509,
+      "first_name": "Дмитрий",
+      "last_name": "Синев",
+      "total_purchases": 4,
+      "free_purchases": 0,
+      "regular_purchases": 4
+    },
+    {
+      "tg_id": 1393703692,
+      "first_name": "Александр",
+      "last_name": "Привалов",
+      "total_purchases": 4,
+      "free_purchases": 0,
+      "regular_purchases": 4
+    },
+    {
+      "tg_id": 1431790202,
+      "first_name": "Нурлан",
+      "last_name": "Галиев",
+      "total_purchases": 4,
+      "free_purchases": 0,
+      "regular_purchases": 4
+    },
+    {
+      "tg_id": 1531992576,
+      "first_name": "Артём",
+      "last_name": "Белкин",
+      "total_purchases": 4,
+      "free_purchases": 0,
+      "regular_purchases": 4
+    },
+    {
+      "tg_id": 5633125594,
+      "first_name": "Иван",
+      "last_name": "Носов",
+      "total_purchases": 4,
+      "free_purchases": 0,
+      "regular_purchases": 4
+    },
+    {
+      "tg_id": 7142496325,
+      "first_name": "Асем шаалал",
+      "last_name": "Шаалал",
+      "total_purchases": 4,
+      "free_purchases": 0,
+      "regular_purchases": 4
+    },
+    {
+      "tg_id": 5532498439,
+      "first_name": "Анатолий",
+      "last_name": "Осипов",
+      "total_purchases": 4,
+      "free_purchases": 0,
+      "regular_purchases": 4
+    },
+    {
+      "tg_id": 5063637381,
+      "first_name": "Никита",
+      "last_name": "Володин",
+      "total_purchases": 4,
+      "free_purchases": 0,
+      "regular_purchases": 4
+    },
+    {
+      "tg_id": 295586770,
+      "first_name": "Максим",
+      "last_name": "Егоров",
+      "total_purchases": 3,
+      "free_purchases": 0,
+      "regular_purchases": 3
+    },
+    {
+      "tg_id": 341664436,
+      "first_name": "Александр",
+      "last_name": "Богдашкин",
+      "total_purchases": 3,
+      "free_purchases": 0,
+      "regular_purchases": 3
+    },
+    {
+      "tg_id": 407279911,
+      "first_name": "Дмитрий",
+      "last_name": "Левин",
+      "total_purchases": 3,
+      "free_purchases": 0,
+      "regular_purchases": 3
+    },
+    {
+      "tg_id": 419601655,
+      "first_name": "Тимур штрейфель",
+      "last_name": "Штрейфель",
+      "total_purchases": 3,
+      "free_purchases": 0,
+      "regular_purchases": 3
+    },
+    {
+      "tg_id": 623422750,
+      "first_name": "Ильгиз",
+      "last_name": "Диняев",
+      "total_purchases": 3,
+      "free_purchases": 0,
+      "regular_purchases": 3
+    },
+    {
+      "tg_id": 742460384,
+      "first_name": "Дмитрий",
+      "last_name": "Рунов",
+      "total_purchases": 3,
+      "free_purchases": 0,
+      "regular_purchases": 3
+    },
+    {
+      "tg_id": 769123900,
+      "first_name": "Арслан",
+      "last_name": "Салахов",
+      "total_purchases": 3,
+      "free_purchases": 0,
+      "regular_purchases": 3
+    },
+    {
+      "tg_id": 776260773,
+      "first_name": "Артём",
+      "last_name": "Ульянов",
+      "total_purchases": 3,
+      "free_purchases": 0,
+      "regular_purchases": 3
+    },
+    {
+      "tg_id": 806252989,
+      "first_name": "Сергей",
+      "last_name": "Володин",
+      "total_purchases": 3,
+      "free_purchases": 0,
+      "regular_purchases": 3
+    },
+    {
+      "tg_id": 844698651,
+      "first_name": "александр",
+      "last_name": "Кузнецов",
+      "total_purchases": 3,
+      "free_purchases": 0,
+      "regular_purchases": 3
+    },
+    {
+      "tg_id": 901713164,
+      "first_name": "Тимур",
+      "last_name": "Черчиев",
+      "total_purchases": 3,
+      "free_purchases": 0,
+      "regular_purchases": 3
+    },
+    {
+      "tg_id": 960631141,
+      "first_name": "Александр",
+      "last_name": "Дронин",
+      "total_purchases": 3,
+      "free_purchases": 0,
+      "regular_purchases": 3
+    },
+    {
+      "tg_id": 1015634156,
+      "first_name": "Артур",
+      "last_name": "Наумов",
+      "total_purchases": 3,
+      "free_purchases": 0,
+      "regular_purchases": 3
+    },
+    {
+      "tg_id": 1027325882,
+      "first_name": "Артем",
+      "last_name": "Краснов",
+      "total_purchases": 3,
+      "free_purchases": 0,
+      "regular_purchases": 3
+    },
+    {
+      "tg_id": 1058599686,
+      "first_name": "Иван",
+      "last_name": "Мичурин",
+      "total_purchases": 3,
+      "free_purchases": 0,
+      "regular_purchases": 3
+    },
+    {
+      "tg_id": 1072930648,
+      "first_name": "Амир",
+      "last_name": "Абдуллаев",
+      "total_purchases": 3,
+      "free_purchases": 0,
+      "regular_purchases": 3
+    },
+    {
+      "tg_id": 1224198436,
+      "first_name": "Даниил",
+      "last_name": "Волков",
+      "total_purchases": 3,
+      "free_purchases": 0,
+      "regular_purchases": 3
+    },
+    {
+      "tg_id": 1238065105,
+      "first_name": "Олег",
+      "last_name": "Степанников",
+      "total_purchases": 3,
+      "free_purchases": 0,
+      "regular_purchases": 3
+    },
+    {
+      "tg_id": 1352975970,
+      "first_name": "Алина",
+      "last_name": "Исаргакова",
+      "total_purchases": 3,
+      "free_purchases": 0,
+      "regular_purchases": 3
+    },
+    {
+      "tg_id": 1478342724,
+      "first_name": "Константин",
+      "last_name": "Иринков",
+      "total_purchases": 3,
+      "free_purchases": 0,
+      "regular_purchases": 3
+    },
+    {
+      "tg_id": 1482798591,
+      "first_name": "Данила",
+      "last_name": "Сныткин",
+      "total_purchases": 3,
+      "free_purchases": 0,
+      "regular_purchases": 3
+    },
+    {
+      "tg_id": 1493829891,
+      "first_name": "Руслан",
+      "last_name": "Бадриев",
+      "total_purchases": 3,
+      "free_purchases": 0,
+      "regular_purchases": 3
+    },
+    {
+      "tg_id": 5717110321,
+      "first_name": "Кристина",
+      "last_name": "Попова",
+      "total_purchases": 3,
+      "free_purchases": 0,
+      "regular_purchases": 3
+    },
+    {
+      "tg_id": 6459694320,
+      "first_name": "Дмитрий",
+      "last_name": "Шпортенко",
+      "total_purchases": 3,
+      "free_purchases": 0,
+      "regular_purchases": 3
+    },
+    {
+      "tg_id": 5946076822,
+      "first_name": "варвара",
+      "last_name": "тимофеева",
+      "total_purchases": 3,
+      "free_purchases": 0,
+      "regular_purchases": 3
+    },
+    {
+      "tg_id": 6033708460,
+      "first_name": "Милана",
+      "last_name": "Идзиева",
+      "total_purchases": 3,
+      "free_purchases": 0,
+      "regular_purchases": 3
+    },
+    {
+      "tg_id": 350060014,
+      "first_name": "Даниил",
+      "last_name": "Пивоваров",
+      "total_purchases": 2,
+      "free_purchases": 0,
+      "regular_purchases": 2
+    },
+    {
+      "tg_id": 412295268,
+      "first_name": "Егор",
+      "last_name": "Барсуков",
+      "total_purchases": 2,
+      "free_purchases": 0,
+      "regular_purchases": 2
+    },
+    {
+      "tg_id": 468548764,
+      "first_name": "Артём",
+      "last_name": "Клочков",
+      "total_purchases": 2,
+      "free_purchases": 0,
+      "regular_purchases": 2
+    },
+    {
+      "tg_id": 593041255,
+      "first_name": "Александра",
+      "last_name": "Вахт на",
+      "total_purchases": 2,
+      "free_purchases": 0,
+      "regular_purchases": 2
+    },
+    {
+      "tg_id": 630675105,
+      "first_name": "Миша Адыгея",
+      "last_name": "Адынец",
+      "total_purchases": 2,
+      "free_purchases": 0,
+      "regular_purchases": 2
+    },
+    {
+      "tg_id": 656873932,
+      "first_name": "Данил",
+      "last_name": "Фролов",
+      "total_purchases": 2,
+      "free_purchases": 0,
+      "regular_purchases": 2
+    },
+    {
+      "tg_id": 705301880,
+      "first_name": "Элина",
+      "last_name": "Кияткина",
+      "total_purchases": 2,
+      "free_purchases": 0,
+      "regular_purchases": 2
+    },
+    {
+      "tg_id": 737603341,
+      "first_name": "Алексей",
+      "last_name": "Семенов",
+      "total_purchases": 2,
+      "free_purchases": 0,
+      "regular_purchases": 2
+    },
+    {
+      "tg_id": 808698079,
+      "first_name": "Денис",
+      "last_name": "Габбасов",
+      "total_purchases": 2,
+      "free_purchases": 0,
+      "regular_purchases": 2
+    },
+    {
+      "tg_id": 852550157,
+      "first_name": "Владислав",
+      "last_name": "Белов",
+      "total_purchases": 2,
+      "free_purchases": 0,
+      "regular_purchases": 2
+    },
+    {
+      "tg_id": 884234560,
+      "first_name": "Ксения",
+      "last_name": "Нургатина",
+      "total_purchases": 2,
+      "free_purchases": 0,
+      "regular_purchases": 2
+    },
+    {
+      "tg_id": 892177232,
+      "first_name": "Эльвин",
+      "last_name": "Ибадуллаев",
+      "total_purchases": 2,
+      "free_purchases": 0,
+      "regular_purchases": 2
+    },
+    {
+      "tg_id": 943723474,
+      "first_name": "Богдан",
+      "last_name": "Шувакин",
+      "total_purchases": 2,
+      "free_purchases": 0,
+      "regular_purchases": 2
+    },
+    {
+      "tg_id": 972165486,
+      "first_name": "Анна",
+      "last_name": "Назарова",
+      "total_purchases": 2,
+      "free_purchases": 0,
+      "regular_purchases": 2
+    },
+    {
+      "tg_id": 1078586733,
+      "first_name": "Никита",
+      "last_name": "Клинг",
+      "total_purchases": 2,
+      "free_purchases": 0,
+      "regular_purchases": 2
+    },
+    {
+      "tg_id": 1129431567,
+      "first_name": "Артур",
+      "last_name": "Будаков",
+      "total_purchases": 2,
+      "free_purchases": 0,
+      "regular_purchases": 2
+    },
+    {
+      "tg_id": 1435703411,
+      "first_name": "Александра",
+      "last_name": "Подмаркова",
+      "total_purchases": 2,
+      "free_purchases": 0,
+      "regular_purchases": 2
+    },
+    {
+      "tg_id": 1974918198,
+      "first_name": "Наталья",
+      "last_name": "Федорина",
+      "total_purchases": 2,
+      "free_purchases": 0,
+      "regular_purchases": 2
+    },
+    {
+      "tg_id": 6424080706,
+      "first_name": "Andranik",
+      "last_name": "Arshakyan",
+      "total_purchases": 2,
+      "free_purchases": 0,
+      "regular_purchases": 2
+    },
+    {
+      "tg_id": 5039243064,
+      "first_name": "Никита",
+      "last_name": "Бакулов",
+      "total_purchases": 2,
+      "free_purchases": 0,
+      "regular_purchases": 2
+    },
+    {
+      "tg_id": 6616446606,
+      "first_name": "Алексей",
+      "last_name": "Сидоров",
+      "total_purchases": 2,
+      "free_purchases": 0,
+      "regular_purchases": 2
+    },
+    {
+      "tg_id": 125406656,
+      "first_name": "Роман",
+      "last_name": "Хабибуллин",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 165367049,
+      "first_name": "Arthur",
+      "last_name": "Artemov",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 220108509,
+      "first_name": "Аделя Любимая ❤️",
+      "last_name": "Гайнуллина",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 224033041,
+      "first_name": "Максим",
+      "last_name": "Пааличенко",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 269405287,
+      "first_name": "Екатерина",
+      "last_name": "О",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 275431424,
+      "first_name": "Данила",
+      "last_name": "Домбровский",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 283957204,
+      "first_name": "Владислав",
+      "last_name": "Нугис",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 289185653,
+      "first_name": "Никита",
+      "last_name": "Акимов",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 355663303,
+      "first_name": "Даниил",
+      "last_name": "Щетинин",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 360444798,
+      "first_name": "Иван",
+      "last_name": "Домницкий",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 371767629,
+      "first_name": "Мария",
+      "last_name": "Гаврилова",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 378358652,
+      "first_name": "Михаил",
+      "last_name": "Беспалов",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 390710465,
+      "first_name": "Vadim",
+      "last_name": "Chichkin",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 440949357,
+      "first_name": "Ильяс",
+      "last_name": "Чоноев",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 475675102,
+      "first_name": "Сайфулла",
+      "last_name": "Закиров",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 498995489,
+      "first_name": "Александр",
+      "last_name": "Житенев",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 502379721,
+      "first_name": "Нурлан",
+      "last_name": "Алиев",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 531009370,
+      "first_name": "Анастасия",
+      "last_name": "Крючкова",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 539404033,
+      "first_name": "Кирилл",
+      "last_name": "Андрюхин",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 584895675,
+      "first_name": "Валентина",
+      "last_name": "Анисимова",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 587325328,
+      "first_name": "Дарья",
+      "last_name": "Богаткина",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 608016579,
+      "first_name": "Алиса",
+      "last_name": "Чернов а",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 641276634,
+      "first_name": "Вероника",
+      "last_name": "Белякова",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 671435615,
+      "first_name": "Kate",
+      "last_name": "Miagkova",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 748966525,
+      "first_name": "Александр",
+      "last_name": "Петров",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 760604303,
+      "first_name": "Кирилл",
+      "last_name": "Крюков",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 772003695,
+      "first_name": "Алексей Панкрушин",
+      "last_name": "Панкрашин",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 772666772,
+      "first_name": "Артур",
+      "last_name": "Габрелян",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 872242442,
+      "first_name": "Екатерина Варлашина",
+      "last_name": "Варлашина",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 928773514,
+      "first_name": "Иван",
+      "last_name": "Тихонов",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 929750890,
+      "first_name": "Леонид",
+      "last_name": "Панцырев",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 944561139,
+      "first_name": "Полина",
+      "last_name": "Устенкова",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 948326160,
+      "first_name": "Яна",
+      "last_name": "Барцева",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 969653398,
+      "first_name": "Владислав",
+      "last_name": "Плященко",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 974172021,
+      "first_name": "Арсений",
+      "last_name": "Губарев",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 1016923611,
+      "first_name": "Ирина",
+      "last_name": "Быкова",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 1018467177,
+      "first_name": "Андрей",
+      "last_name": "Пушкарёв",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 1133475568,
+      "first_name": "Андрей",
+      "last_name": "Сидельников",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 1142161708,
+      "first_name": "Саша",
+      "last_name": "Асанбаева",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 1226525919,
+      "first_name": "Варис",
+      "last_name": "Гафоров",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 1249881406,
+      "first_name": "Егор",
+      "last_name": "Таланов",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 1273831819,
+      "first_name": "Евгений",
+      "last_name": "Осоргин",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 1288800265,
+      "first_name": "Олег",
+      "last_name": "Олегов",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 1352410412,
+      "first_name": "Дмитрий",
+      "last_name": "Малахов",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 1398190117,
+      "first_name": "Дмитрий",
+      "last_name": "Руц",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 1753016799,
+      "first_name": "Дмитрий",
+      "last_name": "Таликин",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 1815087120,
+      "first_name": "Родион",
+      "last_name": "Фомин",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 1878962281,
+      "first_name": "Анатолий",
+      "last_name": "Гузенко",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 1889065085,
+      "first_name": "Ульяна Боровских",
+      "last_name": "Боровских",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 2003165221,
+      "first_name": "Владимир",
+      "last_name": "Неретин",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 2112663326,
+      "first_name": "Даша",
+      "last_name": "Варлашина",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 2120103777,
+      "first_name": "Артем",
+      "last_name": "Маренков",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 5514107829,
+      "first_name": "Эдо",
+      "last_name": "Адамян",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 5827654616,
+      "first_name": "Александр",
+      "last_name": "Саранцев",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 6189859591,
+      "first_name": "Андрей",
+      "last_name": "Нуждов",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 5207494176,
+      "first_name": "Владимир",
+      "last_name": "Кириллов",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 6034752124,
+      "first_name": "Максим",
+      "last_name": "Лагущин",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 5284080054,
+      "first_name": "Ярослав",
+      "last_name": "Лукьянов",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 6912185083,
+      "first_name": "Михаил",
+      "last_name": "Клименко",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 6119146263,
+      "first_name": "Владимир",
+      "last_name": "Яшин",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 5223604730,
+      "first_name": "Илья",
+      "last_name": "Шувалов",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 6703211477,
+      "first_name": "Юрий",
+      "last_name": "Королев",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    },
+    {
+      "tg_id": 5102524290,
+      "first_name": "Мария",
+      "last_name": "Гордеева",
+      "total_purchases": 1,
+      "free_purchases": 0,
+      "regular_purchases": 1
+    }
+  ]
+}

@@ -65,14 +65,17 @@ class HookahNotificationBot {
           u.phone,
           s.progress,
           COUNT(fh.id) as total_hookahs,
-          COUNT(CASE WHEN fh.used = true THEN 1 END) as used_hookahs
+          COUNT(CASE WHEN fh.used = true THEN 1 END) as used_hookahs,
+          COALESCE(u.total_purchases, 0) as total_purchases,
+          COALESCE(u.total_regular_purchases, 0) as total_regular_purchases,
+          COALESCE(u.total_free_purchases, 0) as total_free_purchases
         FROM users u
         LEFT JOIN stocks s ON u.id = s.user_id
         LEFT JOIN free_hookahs fh ON u.id = fh.user_id
         WHERE u.tg_id IS NOT NULL 
           AND u.tg_id > 0
           AND s.progress IS NOT NULL
-        GROUP BY u.id, u.tg_id, u.first_name, u.last_name, u.phone, s.progress
+        GROUP BY u.id, u.tg_id, u.first_name, u.last_name, u.phone, s.progress, u.total_purchases, u.total_regular_purchases, u.total_free_purchases
         HAVING COUNT(fh.id) > 0
         ORDER BY s.progress DESC
       `;
@@ -108,6 +111,11 @@ class HookahNotificationBot {
     const usedHookahs = user.used_hookahs;
     const freeHookahsReceived = usedHookahs; // Использованные = полученные бесплатные
     const regularHookahs = totalHookahs - usedHookahs; // Обычные кальяны (не бесплатные)
+    
+    // Общее количество покупок за все время
+    const totalPurchases = user.total_purchases || 0;
+    const totalRegularPurchases = user.total_regular_purchases || 0;
+    const totalFreePurchases = user.total_free_purchases || 0;
 
     let message = `🎯 <b>DUNGEONHOOKAH_BOT</b>\n\n`;
     message += `Привет, ${user.first_name}! 👋\n\n`;
@@ -117,6 +125,10 @@ class HookahNotificationBot {
       message += `📊 Всего кальянов: ${totalHookahs}\n`;
       message += `• Обычные кальяны: ${regularHookahs}\n`;
       message += `• Получено бесплатных: ${freeHookahsReceived}\n\n`;
+      message += `📈 <b>За все время:</b>\n`;
+      message += `• Всего покупок: ${totalPurchases}\n`;
+      message += `• Обычных покупок: ${totalRegularPurchases}\n`;
+      message += `• Бесплатных покупок: ${totalFreePurchases}\n\n`;
       message += `Приходите и забирайте свой бесплатный кальян! 🚀`;
     } else {
       message += `📊 <b>Ваш прогресс в акции:</b>\n`;
@@ -128,6 +140,11 @@ class HookahNotificationBot {
       // Показываем прогресс-бар
       const progressBar = this.createProgressBar(user.progress);
       message += `📈 Прогресс: ${progressBar} ${user.progress}%\n\n`;
+      
+      message += `📈 <b>За все время:</b>\n`;
+      message += `• Всего покупок: ${totalPurchases}\n`;
+      message += `• Обычных покупок: ${totalRegularPurchases}\n`;
+      message += `• Бесплатных покупок: ${totalFreePurchases}\n\n`;
       
       if (hookahsToFree === 1) {
         message += `🔥 Остался всего 1 кальян до бесплатного! Почти у цели!`;
