@@ -2,11 +2,13 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 
 // Простая система блокировки для предотвращения дублирования запросов
-const activeRequests = new Set<string>()
+const activeRequests = new Map<string, number>()
 
 export async function POST(request: NextRequest) {
   const requestId = Math.random().toString(36).substr(2, 9)
   console.log(`🚀 [${requestId}] QR scan request started`)
+  
+  let userKey = 'unknown' // Инициализируем переменную
   
   try {
     const { qr_data, phone_digits, admin_key } = await request.json()
@@ -20,17 +22,17 @@ export async function POST(request: NextRequest) {
     }
 
     // Создаем уникальный ключ для запроса на основе данных пользователя
-    const requestKey = `${phone_digits || qr_data || 'unknown'}-${Date.now()}`
+    userKey = phone_digits || qr_data || 'unknown'
     
-    // Проверяем, не выполняется ли уже такой запрос
-    if (activeRequests.has(requestKey)) {
-      console.log(`⚠️ [${requestId}] Duplicate request detected, ignoring`)
-      return NextResponse.json({ success: false, message: 'Request already in progress' }, { status: 429 })
+    // Проверяем, не выполняется ли уже запрос для этого пользователя
+    if (activeRequests.has(userKey)) {
+      console.log(`⚠️ [${requestId}] Request already in progress for user ${userKey}, ignoring`)
+      return NextResponse.json({ success: false, message: 'Request already in progress for this user' }, { status: 429 })
     }
     
     // Добавляем запрос в активные
-    activeRequests.add(requestKey)
-    console.log(`🔒 [${requestId}] Request locked: ${requestKey}`)
+    activeRequests.set(userKey, Date.now())
+    console.log(`🔒 [${requestId}] Request locked for user: ${userKey}`)
 
     let user
 
@@ -203,8 +205,8 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     )
   } finally {
-    // Освобождаем блокировку
-    activeRequests.clear() // Очищаем все активные запросы
-    console.log(`🔓 [${requestId}] Request unlocked`)
+    // Освобождаем блокировку для этого пользователя
+    activeRequests.delete(userKey)
+    console.log(`🔓 [${requestId}] Request unlocked for user: ${userKey}`)
   }
 }

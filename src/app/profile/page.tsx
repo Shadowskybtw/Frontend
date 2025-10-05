@@ -62,6 +62,7 @@ export default function ProfilePage() {
   const [isSearchingGuest, setIsSearchingGuest] = useState(false)
   const [isAddingHookah, setIsAddingHookah] = useState(false)
   const [isRemovingHookah, setIsRemovingHookah] = useState(false)
+  const [lastActionTime, setLastActionTime] = useState(0)
 
   useEffect(() => {
     if (isInitialized && user?.id) {
@@ -258,10 +259,21 @@ export default function ProfilePage() {
 
   // Добавить кальян гостю (заполняет слот)
   const addHookahToGuest = async () => {
-    if (!foundGuest || isAddingHookah) return
+    if (!foundGuest || isAddingHookah || isRemovingHookah) return
+    
+    // Дополнительная защита от множественных нажатий
+    const now = Date.now()
+    if (now - lastActionTime < 2000) { // 2 секунды между действиями
+      console.log('⏰ Too soon after last action, ignoring')
+      return
+    }
     
     setIsAddingHookah(true)
+    setLastActionTime(now)
+    
     try {
+      console.log('🚀 Adding hookah to guest:', guestSearchPhone)
+      
       const response = await fetch('/api/scan-qr', {
         method: 'POST',
         headers: {
@@ -274,6 +286,8 @@ export default function ProfilePage() {
       })
       
       const data = await response.json()
+      console.log('📊 Add hookah response:', data)
+      
       if (data.success) {
         alert('✅ Кальян добавлен гостю! Слот заполнен.')
         // Не вызываем searchGuest() чтобы избежать дублирования запросов
@@ -290,10 +304,21 @@ export default function ProfilePage() {
 
   // Убрать кальян у гостя (освобождает слот)
   const removeHookahFromGuest = async () => {
-    if (!foundGuest || isRemovingHookah) return
+    if (!foundGuest || isRemovingHookah || isAddingHookah) return
+    
+    // Дополнительная защита от множественных нажатий
+    const now = Date.now()
+    if (now - lastActionTime < 2000) { // 2 секунды между действиями
+      console.log('⏰ Too soon after last action, ignoring')
+      return
+    }
     
     setIsRemovingHookah(true)
+    setLastActionTime(now)
+    
     try {
+      console.log('🚀 Removing hookah from guest:', guestSearchPhone)
+      
       const response = await fetch('/api/remove-hookah', {
         method: 'POST',
         headers: {
@@ -306,6 +331,8 @@ export default function ProfilePage() {
       })
       
       const data = await response.json()
+      console.log('📊 Remove hookah response:', data)
+      
       if (data.success) {
         alert('✅ Кальян убран у гостя! Слот освобожден.')
         // Не вызываем searchGuest() чтобы избежать дублирования запросов
