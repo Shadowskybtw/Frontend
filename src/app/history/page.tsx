@@ -13,18 +13,11 @@ interface PurchaseHistory {
 
 export default function HistoryPage() {
   const [history, setHistory] = useState<PurchaseHistory[]>([])
-  const [historyLoading, setHistoryLoading] = useState(false)
+  const [, setHistoryLoading] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
 
   const { user, loading, error, isInitialized } = useUser()
-
-  useEffect(() => {
-    if (isInitialized && user?.tg_id) {
-      console.log('📊 Loading history for user:', user.tg_id, 'page:', currentPage)
-      fetchHistory(user.tg_id, currentPage)
-    }
-  }, [isInitialized, user, currentPage, fetchHistory])
 
   const fetchHistory = useCallback(async (tgId: number, page: number = 1) => {
     setHistoryLoading(true)
@@ -51,6 +44,13 @@ export default function HistoryPage() {
       setHistoryLoading(false)
     }
   }, [])
+
+  useEffect(() => {
+    if (isInitialized && user?.tg_id) {
+      console.log('📊 Loading history for user:', user.tg_id, 'page:', currentPage)
+      fetchHistory(user.tg_id, currentPage)
+    }
+  }, [isInitialized, user, currentPage, fetchHistory])
 
   if (loading || !isInitialized) {
     return (

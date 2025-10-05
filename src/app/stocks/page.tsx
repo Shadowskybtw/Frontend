@@ -6,7 +6,7 @@ import Navigation from '@/components/Navigation'
 import { useUser } from '@/contexts/UserContext'
 
 export default function StocksPage() {
-  const { user, isInTelegram, loading, error, isInitialized } = useUser()
+  const { user, isInTelegram, loading, isInitialized } = useUser()
   const [stocks, setStocks] = useState<{
     id: number
     user_id: number

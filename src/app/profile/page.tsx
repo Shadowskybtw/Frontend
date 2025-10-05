@@ -6,7 +6,7 @@ import Navigation from '@/components/Navigation'
 import { useUser } from '@/contexts/UserContext'
 
 export default function ProfilePage() {
-  const { user, isInTelegram, loading, error, isInitialized } = useUser()
+  const { user, isInTelegram, isInitialized } = useUser()
   const [isEditing, setIsEditing] = useState(false)
   const [editForm, setEditForm] = useState({ first_name: '', last_name: '' })
   const [isSaving, setIsSaving] = useState(false)
