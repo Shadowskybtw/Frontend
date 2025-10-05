@@ -5,10 +5,13 @@ import { useUser } from '@/contexts/UserContext'
 
 interface PurchaseHistory {
   id: number
+  user_id: number
+  hookah_type: 'regular' | 'free' | 'removed'
+  slot_number?: number | null
+  stock_id?: number | null
+  admin_id?: number | null
+  scan_method?: string | null
   created_at: string
-  is_free: boolean
-  rating?: number
-  rating_comment?: string
 }
 
 export default function HistoryPage() {
@@ -108,52 +111,85 @@ export default function HistoryPage() {
               </div>
             ) : (
               <div className="space-y-4">
-                {history.map((item) => (
-                  <div
-                    key={item.id}
-                    className={`p-4 rounded-lg border ${
-                      item.is_free 
-                        ? 'bg-green-900/30 border-green-500/50' 
-                        : 'bg-gray-700/50 border-gray-600'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3">
-                        <span className="text-2xl">
-                          {item.is_free ? '🎁' : '🛒'}
-                        </span>
-                        <div>
-                          <h3 className="font-semibold text-white">
-                            {item.is_free ? 'Бесплатный кальян' : 'Обычная покупка'}
-                          </h3>
-                          <p className="text-gray-400 text-sm">
-                            {new Date(item.created_at).toLocaleDateString('ru-RU', {
-                              year: 'numeric',
-                              month: 'long',
-                              day: 'numeric',
-                              hour: '2-digit',
-                              minute: '2-digit'
-                            })}
-                          </p>
+                {history.map((item) => {
+                  const getItemInfo = () => {
+                    switch (item.hookah_type) {
+                      case 'free':
+                        return {
+                          icon: '🎁',
+                          title: 'Бесплатный кальян',
+                          bgColor: 'bg-green-900/30 border-green-500/50',
+                          description: 'Получен за завершение акции 5+1'
+                        }
+                      case 'regular':
+                        return {
+                          icon: '🛒',
+                          title: 'Обычная покупка',
+                          bgColor: 'bg-gray-700/50 border-gray-600',
+                          description: item.slot_number ? `Слот ${item.slot_number}/5` : 'Кальян добавлен'
+                        }
+                      case 'removed':
+                        return {
+                          icon: '➖',
+                          title: 'Кальян убран',
+                          bgColor: 'bg-red-900/30 border-red-500/50',
+                          description: item.slot_number ? `Слот ${item.slot_number}/5 освобожден` : 'Кальян удален'
+                        }
+                      default:
+                        return {
+                          icon: '❓',
+                          title: 'Неизвестно',
+                          bgColor: 'bg-gray-700/50 border-gray-600',
+                          description: 'Неизвестное действие'
+                        }
+                    }
+                  }
+
+                  const itemInfo = getItemInfo()
+
+                  return (
+                    <div
+                      key={item.id}
+                      className={`p-4 rounded-lg border ${itemInfo.bgColor}`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <span className="text-2xl">
+                            {itemInfo.icon}
+                          </span>
+                          <div>
+                            <h3 className="font-semibold text-white">
+                              {itemInfo.title}
+                            </h3>
+                            <p className="text-gray-400 text-sm">
+                              {itemInfo.description}
+                            </p>
+                            <p className="text-gray-500 text-xs">
+                              {new Date(item.created_at).toLocaleDateString('ru-RU', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                              })}
+                            </p>
+                          </div>
+                        </div>
+                        
+                        <div className="text-right">
+                          {item.scan_method && (
+                            <div className="text-gray-400 text-xs">
+                              {item.scan_method === 'admin_add' && '👑 Админ добавил'}
+                              {item.scan_method === 'admin_remove' && '👑 Админ убрал'}
+                              {item.scan_method === 'promotion_complete' && '🎯 Акция завершена'}
+                              {item.scan_method === 'qr_scan' && '📷 QR код'}
+                            </div>
+                          )}
                         </div>
                       </div>
-                      
-                      <div className="text-right">
-                        {item.rating && (
-                          <div className="flex items-center space-x-1">
-                            <span className="text-yellow-400">⭐</span>
-                            <span className="text-white font-semibold">{item.rating}</span>
-                          </div>
-                        )}
-                        {item.rating_comment && (
-                          <p className="text-gray-400 text-sm mt-1 max-w-xs">
-                            &ldquo;{item.rating_comment}&rdquo;
-                          </p>
-                        )}
-                      </div>
                     </div>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             )}
 
@@ -184,18 +220,24 @@ export default function HistoryPage() {
 
             {/* Статистика */}
             <div className="mt-8 pt-6 border-t border-gray-600">
-              <div className="grid grid-cols-2 gap-4 text-center">
+              <div className="grid grid-cols-3 gap-4 text-center">
                 <div className="bg-gray-700/50 rounded-lg p-4">
                   <div className="text-2xl font-bold text-white">
-                    {history.filter(item => !item.is_free).length}
+                    {history.filter(item => item.hookah_type === 'regular').length}
                   </div>
                   <div className="text-gray-400 text-sm">Обычных покупок</div>
                 </div>
                 <div className="bg-green-900/30 rounded-lg p-4">
                   <div className="text-2xl font-bold text-green-400">
-                    {history.filter(item => item.is_free).length}
+                    {history.filter(item => item.hookah_type === 'free').length}
                   </div>
                   <div className="text-gray-400 text-sm">Бесплатных кальянов</div>
+                </div>
+                <div className="bg-red-900/30 rounded-lg p-4">
+                  <div className="text-2xl font-bold text-red-400">
+                    {history.filter(item => item.hookah_type === 'removed').length}
+                  </div>
+                  <div className="text-gray-400 text-sm">Убрано кальянов</div>
                 </div>
               </div>
             </div>
