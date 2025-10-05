@@ -1,7 +1,7 @@
 "use client"
 import React, { useEffect, useState, useCallback } from 'react'
 import Navigation from '@/components/Navigation'
-import { useTelegramUser } from '@/hooks/useTelegramUser'
+import { useUser } from '@/contexts/UserContext'
 
 interface PurchaseHistory {
   id: number
@@ -17,22 +17,14 @@ export default function HistoryPage() {
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
 
-  const { user, loading, error } = useTelegramUser({
-    onUserLoaded: (user) => {
-      if (user?.tg_id) {
-        fetchHistory(user.tg_id, currentPage)
-      }
-    },
-    onError: (error) => {
-      console.error('Telegram user error:', error)
-    }
-  })
+  const { user, loading, error, isInitialized } = useUser()
 
   useEffect(() => {
-    if (user?.tg_id) {
+    if (isInitialized && user?.tg_id) {
+      console.log('📊 Loading history for user:', user.tg_id, 'page:', currentPage)
       fetchHistory(user.tg_id, currentPage)
     }
-  }, [user, currentPage])
+  }, [isInitialized, user, currentPage, fetchHistory])
 
   const fetchHistory = useCallback(async (tgId: number, page: number = 1) => {
     setHistoryLoading(true)
@@ -60,14 +52,14 @@ export default function HistoryPage() {
     }
   }, [])
 
-  if (loading) {
+  if (loading || !isInitialized) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
         <Navigation />
         <main className="flex-1 flex items-center justify-center p-4">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500 mx-auto mb-4"></div>
-            <p className="text-gray-300">Загрузка истории...</p>
+            <p className="text-gray-300">Загрузка пользователя...</p>
           </div>
         </main>
       </div>

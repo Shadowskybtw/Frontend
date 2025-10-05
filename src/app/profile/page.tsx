@@ -3,29 +3,10 @@ import React, { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
 import QRScanner from '@/components/QRScanner'
 import Navigation from '@/components/Navigation'
-
-type TgUser = {
-  id: number
-  tg_id: number
-  username?: string
-  first_name?: string
-  last_name?: string
-}
-
-type TelegramWebApp = {
-  initData: string
-  initDataUnsafe?: { user?: TgUser }
-}
-
-type TelegramWindow = {
-  Telegram?: { WebApp?: TelegramWebApp }
-}
-
-declare const window: TelegramWindow & Window
+import { useUser } from '@/contexts/UserContext'
 
 export default function ProfilePage() {
-  const [user, setUser] = useState<TgUser | null>(null)
-  const [isInTelegram, setIsInTelegram] = useState(false)
+  const { user, isInTelegram, loading, error, isInitialized } = useUser()
   const [isEditing, setIsEditing] = useState(false)
   const [editForm, setEditForm] = useState({ first_name: '', last_name: '' })
   const [isSaving, setIsSaving] = useState(false)
@@ -81,108 +62,14 @@ export default function ProfilePage() {
   const [phoneDigits, setPhoneDigits] = useState('')
 
   useEffect(() => {
-    // Load Telegram WebApp script
-    const loadTelegramScript = () => {
-      if (typeof window !== 'undefined' && !(window as any).Telegram) {
-        const script = document.createElement('script')
-        script.src = 'https://telegram.org/js/telegram-web-app.js'
-        script.async = true
-        script.onload = () => {
-          console.log('Telegram WebApp script loaded on profile page')
-          checkTelegramWebApp()
-        }
-        document.head.appendChild(script)
-      } else {
-        checkTelegramWebApp()
-      }
+    if (isInitialized && user?.id) {
+      console.log('👤 Loading profile data for user:', user.id)
+      loadProfileData(user.id)
+      loadProfileStats(user.id)
+      checkAdminRights(user.id)
+      checkAdminStatus()
     }
-
-    const checkOrRegisterUser = async (tgUser: TgUser) => {
-      try {
-        console.log('Checking or registering user for profile:', tgUser)
-        
-        const response = await fetch('/api/check-or-register', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-telegram-init-data': (window as any).Telegram?.WebApp?.initData || ''
-          },
-          body: JSON.stringify({
-            tg_id: tgUser.id,
-            firstName: tgUser.first_name || 'Unknown',
-            lastName: tgUser.last_name || 'User',
-            username: tgUser.username
-          })
-        })
-
-        const data = await response.json()
-        console.log('Profile check/register response:', data)
-
-        if (data.success) {
-          setUser(data.user)
-          // Загружаем данные профиля
-          if (data.user.id) {
-            loadProfileData(data.user.id)
-            loadProfileStats(data.user.id)
-            checkAdminRights(data.user.id)
-            checkAdminStatus()
-          }
-        } else {
-          console.error('Failed to check/register user for profile:', data.message)
-        }
-      } catch (error) {
-        console.error('Error checking/registering user for profile:', error)
-      }
-    }
-
-    const checkTelegramWebApp = () => {
-      try {
-        if (typeof window !== 'undefined' && (window as any).Telegram?.WebApp) {
-          // Инициализируем WebApp
-          (window as any).Telegram.WebApp.ready()
-          ;(window as any).Telegram.WebApp.expand()
-          
-          setIsInTelegram(true)
-          const tgUser = (window as any).Telegram.WebApp.initDataUnsafe?.user as TgUser | undefined
-          if (tgUser) {
-            // Проверяем или регистрируем пользователя
-            checkOrRegisterUser(tgUser)
-          } else {
-            // Получаем tg_id из initData, так как он не всегда доступен в initDataUnsafe
-            const initData = (window as any).Telegram.WebApp.initData
-            let tgId: number | undefined
-            
-            if (!tgId && initData) {
-              // Парсим tg_id из initData
-              const urlParams = new URLSearchParams(initData)
-              const userParam = urlParams.get('user')
-              if (userParam) {
-                try {
-                  const userData = JSON.parse(decodeURIComponent(userParam))
-                  tgId = userData.id
-                  
-                  // Проверяем или регистрируем пользователя
-                  checkOrRegisterUser({ 
-                    id: userData.id,
-                    tg_id: userData.id,
-                    first_name: userData.first_name, 
-                    last_name: userData.last_name, 
-                    username: userData.username 
-                  })
-                } catch (e) {
-                  console.error('Error parsing user data from initData:', e)
-                }
-              }
-            }
-          }
-        }
-      } catch (error) {
-        console.error('Error checking Telegram WebApp on profile page:', error)
-      }
-    }
-
-    setTimeout(loadTelegramScript, 100)
-  }, [])
+  }, [isInitialized, user])
 
   // Загружаем данные профиля
   const loadProfileData = async (tgId: number) => {
@@ -280,9 +167,6 @@ export default function ProfilePage() {
     // Если tg_id не получен из Telegram, получаем из базы данных
     if (!tgId || tgId === 0) {
       tgId = await getTgIdFromDb(user.id)
-      if (tgId) {
-        setUser(prev => prev ? { ...prev, tg_id: tgId } : null)
-      }
     }
     
     if (!tgId) {
@@ -471,9 +355,6 @@ export default function ProfilePage() {
     let currentTgId = user.tg_id
     if (!currentTgId || currentTgId === 0) {
       currentTgId = await getTgIdFromDb(user.id)
-      if (currentTgId) {
-        setUser(prev => prev ? { ...prev, tg_id: currentTgId } : null)
-      }
     }
 
     if (!currentTgId) {

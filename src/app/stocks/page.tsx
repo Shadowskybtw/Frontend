@@ -3,28 +3,10 @@ import React, { useEffect, useState, useCallback } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import Navigation from '@/components/Navigation'
-
-type TgUser = {
-  id: number
-  username?: string
-  first_name?: string
-  last_name?: string
-}
-
-type TelegramWebApp = {
-  initData: string
-  initDataUnsafe?: { user?: TgUser }
-}
-
-type TelegramWindow = {
-  Telegram?: { WebApp?: TelegramWebApp }
-}
-
-declare const window: TelegramWindow & Window
+import { useUser } from '@/contexts/UserContext'
 
 export default function StocksPage() {
-  const [user, setUser] = useState<TgUser | null>(null)
-  const [isInTelegram, setIsInTelegram] = useState(false)
+  const { user, isInTelegram, loading, error, isInitialized } = useUser()
   const [stocks, setStocks] = useState<{
     id: number
     user_id: number
@@ -44,181 +26,13 @@ export default function StocksPage() {
   const [isUsingHookah, setIsUsingHookah] = useState(false)
 
   useEffect(() => {
-    // Load Telegram WebApp script
-    const loadTelegramScript = () => {
-      if (typeof window !== 'undefined' && !(window as any).Telegram) {
-        const script = document.createElement('script')
-        script.src = 'https://telegram.org/js/telegram-web-app.js'
-        script.async = true
-        script.onload = () => {
-          console.log('Telegram WebApp script loaded on stocks page')
-          checkTelegramWebApp()
-        }
-        script.onerror = () => {
-          console.log('Failed to load Telegram WebApp script, using fallback')
-          loadFallbackData()
-        }
-        document.head.appendChild(script)
-      } else {
-        checkTelegramWebApp()
-      }
+    if (isInitialized && user?.tg_id) {
+      console.log('📊 Loading stocks data for user:', user.tg_id)
+      loadStocks(user.tg_id)
+      loadQrCode(user.tg_id)
+      loadFreeHookahs(user.tg_id)
     }
-
-    const loadFallbackData = () => {
-      console.log('Using fallback data for testing')
-      const testUser = { id: 937011437, first_name: 'Николай', last_name: 'Шадовский', username: 'shadowskydie' }
-      setUser(testUser)
-      setIsInTelegram(false)
-      loadStocks(testUser.id)
-      loadQrCode(testUser.id)
-      loadFreeHookahs(testUser.id)
-    }
-
-    const createTestUser = async (tgUser: TgUser) => {
-      try {
-        console.log('Creating test user directly in database...')
-        
-        // Создаем пользователя напрямую в базе данных
-        const response = await fetch('/api/check-or-register', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            tg_id: tgUser.id,
-            firstName: tgUser.first_name || 'Unknown',
-            lastName: tgUser.last_name || 'User',
-            username: tgUser.username
-          })
-        })
-
-        const data = await response.json()
-        console.log('Direct user creation response:', data)
-
-        if (data.success) {
-          setUser(data.user)
-          loadStocks(data.user.tg_id)
-          loadQrCode(data.user.tg_id)
-          loadFreeHookahs(data.user.tg_id)
-          console.log('✅ Test user created successfully!')
-        } else {
-          console.error('❌ Failed to create test user:', data.message)
-          loadFallbackData()
-        }
-      } catch (error) {
-        console.error('❌ Error creating test user:', error)
-        loadFallbackData()
-      }
-    }
-
-    const checkOrRegisterUser = async (tgUser: TgUser) => {
-      try {
-        console.log('Checking or registering user:', tgUser)
-        
-        const response = await fetch('/api/check-or-register', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-telegram-init-data': (window as any).Telegram?.WebApp?.initData || ''
-          },
-          body: JSON.stringify({
-            tg_id: tgUser.id,
-            firstName: tgUser.first_name || 'Unknown',
-            lastName: tgUser.last_name || 'User',
-            username: tgUser.username
-          })
-        })
-
-        const data = await response.json()
-        console.log('Check/register response:', data)
-
-        if (data.success) {
-          console.log('User check/register successful:', data)
-          setUser(data.user)
-          loadStocks(data.user.tg_id)
-          loadQrCode(data.user.tg_id)
-          loadFreeHookahs(data.user.tg_id)
-          
-          if (data.isNewUser) {
-            console.log('✅ New user registered successfully!')
-          } else {
-            console.log('✅ Existing user loaded successfully!')
-          }
-        } else {
-          console.error('❌ Failed to check/register user:', data.message)
-          console.error('❌ Full error response:', data)
-          // Fallback to test data
-          loadFallbackData()
-        }
-      } catch (error) {
-        console.error('Error checking/registering user:', error)
-        // Fallback to test data
-        loadFallbackData()
-      }
-    }
-
-    const checkTelegramWebApp = () => {
-      try {
-        if (typeof window !== 'undefined' && (window as any).Telegram?.WebApp) {
-          // Инициализируем WebApp
-          (window as any).Telegram.WebApp.ready()
-          ;(window as any).Telegram.WebApp.expand()
-          
-          setIsInTelegram(true)
-          const tgUser = (window as any).Telegram.WebApp.initDataUnsafe?.user as TgUser | undefined
-          if (tgUser) {
-            console.log('User found in initDataUnsafe:', tgUser)
-            // Проверяем или регистрируем пользователя
-            checkOrRegisterUser(tgUser)
-          } else {
-            console.log('No user data in initDataUnsafe, trying to get from initData')
-            // Пытаемся получить tg_id из initData
-            const initData = (window as any).Telegram.WebApp.initData
-            if (initData) {
-              const urlParams = new URLSearchParams(initData)
-              const userParam = urlParams.get('user')
-              if (userParam) {
-                try {
-                  const userData = JSON.parse(decodeURIComponent(userParam))
-                  if (userData.id) {
-                    console.log('User found in initData:', userData)
-                    // Проверяем или регистрируем пользователя
-                    checkOrRegisterUser({ 
-                      id: userData.id, 
-                      first_name: userData.first_name, 
-                      last_name: userData.last_name, 
-                      username: userData.username 
-                    })
-                  }
-                } catch (e) {
-                  console.error('Error parsing user data:', e)
-                  loadFallbackData()
-                }
-              } else {
-                console.log('No user data in initData, using fallback')
-                loadFallbackData()
-              }
-            } else {
-              console.log('No initData available, using fallback')
-              loadFallbackData()
-            }
-          }
-        } else {
-          console.log('Telegram WebApp not available, trying to create test user')
-          // Пытаемся создать тестового пользователя
-          const testUser = { id: 123456789, first_name: 'Test', last_name: 'User', username: 'testuser' }
-          createTestUser(testUser)
-        }
-      } catch (error) {
-        console.error('Error checking Telegram WebApp on stocks page:', error)
-        loadFallbackData()
-      }
-    }
-
-    // Запускаем проверку сразу и через небольшую задержку
-    checkTelegramWebApp()
-    setTimeout(loadTelegramScript, 100)
-  }, [])
+  }, [isInitialized, user])
 
   // Загружаем акции пользователя
   const loadStocks = async (tgId: number) => {
@@ -401,7 +215,13 @@ export default function StocksPage() {
               Отслеживайте прогресс ваших акций
             </p>
 
-          {user ? (
+          {loading || !isInitialized ? (
+            <div className="bg-yellow-900/30 border border-yellow-500/50 rounded-lg p-4 backdrop-blur-sm">
+              <p className="text-yellow-300 text-sm">
+                ⏳ Загрузка пользователя...
+              </p>
+            </div>
+          ) : user ? (
             <div className="space-y-4">
               <div className="bg-green-900/30 border border-green-500/50 rounded-lg p-4 mb-4 backdrop-blur-sm">
                 <p className="text-green-300 text-sm">
