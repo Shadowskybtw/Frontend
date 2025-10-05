@@ -22,23 +22,21 @@ export default function Navigation({ className = "" }: NavigationProps) {
       label: 'Профиль',
       icon: '👤',
       active: pathname === '/profile'
-    },
-    {
-      href: '/history',
-      label: 'История',
-      icon: '📊',
-      active: pathname === '/history'
     }
   ]
 
   return (
     <nav className={`bg-black/50 backdrop-blur-sm border-b border-gray-700 ${className}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-center items-center h-20">
-          <h1 className="text-3xl font-bold text-white tracking-wider mr-8">
+        {/* Логотип по центру */}
+        <div className="flex justify-center items-center h-16">
+          <h1 className="text-3xl font-bold text-white tracking-wider">
             <span className="text-red-500">D</span>UNGEON
           </h1>
-          
+        </div>
+        
+        {/* Кнопки навигации под логотипом */}
+        <div className="flex justify-center items-center pb-4">
           <div className="flex space-x-1">
             {navItems.map((item) => (
               <Link
