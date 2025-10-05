@@ -1,6 +1,5 @@
 "use client"
 import React, { useEffect, useState, useCallback } from 'react'
-import Link from 'next/link'
 import QRScanner from '@/components/QRScanner'
 import Navigation from '@/components/Navigation'
 import { useUser } from '@/contexts/UserContext'
@@ -60,6 +59,9 @@ export default function ProfilePage() {
   const [isGrantingAdmin, setIsGrantingAdmin] = useState(false)
   const [adminStatusChecked, setAdminStatusChecked] = useState(false)
   const [phoneDigits, setPhoneDigits] = useState('')
+  const [guestSearchTgId, setGuestSearchTgId] = useState('')
+  const [foundGuest, setFoundGuest] = useState<any>(null)
+  const [isSearchingGuest, setIsSearchingGuest] = useState(false)
 
   useEffect(() => {
     if (isInitialized && user?.id) {
@@ -217,6 +219,83 @@ export default function ProfilePage() {
       }
     }
   }, [user?.id, user?.tg_id, user?.first_name, user?.last_name, getTgIdFromDb])
+
+  // Поиск гостя по Telegram ID
+  const searchGuest = async () => {
+    if (!guestSearchTgId) return
+    
+    setIsSearchingGuest(true)
+    try {
+      const response = await fetch(`/api/profile/${guestSearchTgId}`)
+      const data = await response.json()
+      
+      if (data.success && data.user) {
+        setFoundGuest(data.user)
+      } else {
+        setFoundGuest(null)
+        alert('Гость не найден')
+      }
+    } catch (error) {
+      console.error('Error searching guest:', error)
+      alert('Ошибка поиска гостя')
+    } finally {
+      setIsSearchingGuest(false)
+    }
+  }
+
+  // Добавить кальян гостю
+  const addHookahToGuest = async () => {
+    if (!foundGuest) return
+    
+    try {
+      const response = await fetch(`/api/free-hookahs/${foundGuest.tg_id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ action: 'add' }),
+      })
+      
+      const data = await response.json()
+      if (data.success) {
+        alert('Кальян добавлен гостю!')
+        // Обновляем данные гостя
+        searchGuest()
+      } else {
+        alert('Ошибка добавления кальяна: ' + data.message)
+      }
+    } catch (error) {
+      console.error('Error adding hookah to guest:', error)
+      alert('Ошибка добавления кальяна')
+    }
+  }
+
+  // Убрать кальян у гостя
+  const removeHookahFromGuest = async () => {
+    if (!foundGuest) return
+    
+    try {
+      const response = await fetch(`/api/free-hookahs/${foundGuest.tg_id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ action: 'remove' }),
+      })
+      
+      const data = await response.json()
+      if (data.success) {
+        alert('Кальян убран у гостя!')
+        // Обновляем данные гостя
+        searchGuest()
+      } else {
+        alert('Ошибка удаления кальяна: ' + data.message)
+      }
+    } catch (error) {
+      console.error('Error removing hookah from guest:', error)
+      alert('Ошибка удаления кальяна')
+    }
+  }
 
   // Загружаем данные профиля когда получаем пользователя
   useEffect(() => {
@@ -452,20 +531,10 @@ export default function ProfilePage() {
       <main className="flex-1 flex items-center justify-center p-4">
         <div className="max-w-md w-full bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-700 p-8">
           <div className="text-center">
-            <div className="flex items-start justify-between mb-2">
-              <Link 
-                href="/"
-                className="text-white hover:text-gray-300 transition-colors flex items-center font-bold -mt-2 -ml-2"
-              >
-                <svg className="w-6 h-6 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
-                <span className="text-base font-bold">Назад</span>
-              </Link>
+            <div className="text-center mb-2">
               <h1 className="text-3xl font-bold text-white">
                 👤 Профиль
               </h1>
-              <div className="w-16"></div> {/* Spacer for centering */}
             </div>
             <p className="text-gray-300 mb-8">
               Управляйте своим профилем
@@ -479,6 +548,19 @@ export default function ProfilePage() {
             </div>
           ) : user ? (
             <div className="space-y-4">
+              {/* Кнопка админа */}
+              {isAdmin && (
+                <div className="bg-red-900/30 border border-red-500/50 rounded-lg p-4 mb-4 backdrop-blur-sm">
+                  <button
+                    onClick={() => setAdminPanelOpen(true)}
+                    className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2"
+                  >
+                    <span className="text-xl">👑</span>
+                    <span>Админ панель</span>
+                  </button>
+                </div>
+              )}
+
               <div className="bg-purple-900/30 border border-purple-500/50 rounded-lg p-4 mb-4 backdrop-blur-sm">
                 <div className="flex justify-between items-center mb-2">
                   <h3 className="font-semibold text-purple-300">Информация о пользователе</h3>
@@ -667,30 +749,6 @@ export default function ProfilePage() {
                   <p>Выкурено всего кальянов: {profileStats?.totalSmokedHookahs || 0}</p>
                   <p>Получено бесплатных: {profileStats?.freeHookahsReceived || 0}</p>
                 </div>
-                
-                {/* История всех выкуренных кальянов */}
-                {hookahHistory.length > 0 && (
-                  <div className="mt-3 pt-3 border-t border-blue-200">
-                    <h4 className="font-medium text-blue-300 mb-2">История получения кальянов:</h4>
-                    <div className="space-y-2 max-h-40 overflow-y-auto">
-                      {hookahHistory.map((hookah) => (
-                        <div key={hookah.id} className="text-xs text-blue-200 bg-blue-800/50 rounded px-3 py-2 flex justify-between items-center backdrop-blur-sm">
-                          <div className="flex items-center space-x-2">
-                            <span>
-                              {hookah.hookah_type === 'regular' 
-                                ? '🚬 Кальян' 
-                                : '🎁 Бесплатный кальян'
-                              }
-                            </span>
-                          </div>
-                          <span className="text-blue-300 text-xs">
-                            {new Date(hookah.created_at).toLocaleDateString('ru-RU')} в {new Date(hookah.created_at).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
           ) : (
@@ -704,6 +762,121 @@ export default function ProfilePage() {
         </div>
       </div>
       
+      {/* Admin Panel Modal */}
+      {adminPanelOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-800 rounded-2xl shadow-2xl border border-gray-700 max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-white flex items-center">
+                  <span className="text-3xl mr-3">👑</span>
+                  Админ панель
+                </h2>
+                <button
+                  onClick={() => setAdminPanelOpen(false)}
+                  className="text-gray-400 hover:text-white text-2xl"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="space-y-6">
+                {/* QR Scanner */}
+                <div className="bg-blue-900/30 border border-blue-500/50 rounded-lg p-4">
+                  <h3 className="font-semibold text-blue-300 mb-3">QR Сканер</h3>
+                  <button
+                    onClick={() => setShowQRScanner(true)}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2"
+                  >
+                    <span className="text-xl">📷</span>
+                    <span>Открыть сканер</span>
+                  </button>
+                </div>
+
+                {/* Поиск гостя */}
+                <div className="bg-green-900/30 border border-green-500/50 rounded-lg p-4">
+                  <h3 className="font-semibold text-green-300 mb-3">Поиск гостя</h3>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-sm font-medium text-green-300 mb-1">
+                        Telegram ID гостя:
+                      </label>
+                      <input
+                        type="number"
+                        value={guestSearchTgId}
+                        onChange={(e) => setGuestSearchTgId(e.target.value)}
+                        placeholder="Введите Telegram ID..."
+                        className="w-full px-3 py-2 border-2 border-green-400 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 text-sm text-black bg-white shadow-inner font-mono"
+                      />
+                    </div>
+                    <button
+                      onClick={searchGuest}
+                      disabled={isSearchingGuest || !guestSearchTgId}
+                      className="w-full bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white py-2 px-4 rounded-md text-sm font-medium"
+                    >
+                      {isSearchingGuest ? '⏳ Поиск...' : '🔍 Найти гостя'}
+                    </button>
+                  </div>
+
+                  {/* Результат поиска */}
+                  {foundGuest && (
+                    <div className="mt-4 p-3 bg-green-800/50 rounded-lg border border-green-400">
+                      <h4 className="font-semibold text-green-300 mb-2">Найденный гость:</h4>
+                      <div className="text-green-200 text-sm space-y-1">
+                        <p><strong>Имя:</strong> {foundGuest.first_name} {foundGuest.last_name}</p>
+                        <p><strong>Telegram ID:</strong> {foundGuest.tg_id}</p>
+                        <p><strong>Username:</strong> @{foundGuest.username || 'Не указан'}</p>
+                      </div>
+                      
+                      <div className="mt-4 flex space-x-2">
+                        <button
+                          onClick={addHookahToGuest}
+                          className="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 px-3 rounded-md text-sm font-medium"
+                        >
+                          ➕ Добавить кальян
+                        </button>
+                        <button
+                          onClick={removeHookahFromGuest}
+                          className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 px-3 rounded-md text-sm font-medium"
+                        >
+                          ➖ Убрать кальян
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Назначение админа */}
+                <div className="bg-purple-900/30 border border-purple-500/50 rounded-lg p-4">
+                  <h3 className="font-semibold text-purple-300 mb-3">Назначить админа</h3>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-sm font-medium text-purple-300 mb-1">
+                        Telegram ID пользователя:
+                      </label>
+                      <input
+                        type="number"
+                        value={newAdminTgId}
+                        onChange={(e) => setNewAdminTgId(e.target.value)}
+                        placeholder="Введите Telegram ID..."
+                        className="w-full px-3 py-2 border-2 border-purple-400 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm text-black bg-white shadow-inner font-mono"
+                      />
+                    </div>
+                    <button
+                      onClick={grantAdminRights}
+                      disabled={isGrantingAdmin || !newAdminTgId}
+                      className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 text-white py-2 px-4 rounded-md text-sm font-medium"
+                    >
+                      {isGrantingAdmin ? '⏳ Назначаем...' : '👑 Назначить админа'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* QR Scanner Modal */}
       {showQRScanner && (
         <QRScanner
