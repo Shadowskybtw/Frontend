@@ -58,11 +58,8 @@ export default function ProfilePage() {
   const [isGrantingAdmin, setIsGrantingAdmin] = useState(false)
   const [adminStatusChecked, setAdminStatusChecked] = useState(false)
   const [guestSearchPhone, setGuestSearchPhone] = useState('')
-  const [foundGuest, setFoundGuest] = useState<any>(null)
-  const [isSearchingGuest, setIsSearchingGuest] = useState(false)
   const [isAddingHookah, setIsAddingHookah] = useState(false)
   const [isRemovingHookah, setIsRemovingHookah] = useState(false)
-  const [lastActionTime, setLastActionTime] = useState(0)
 
   useEffect(() => {
     if (isInitialized && user?.id) {
@@ -221,58 +218,19 @@ export default function ProfilePage() {
     }
   }, [user?.id, user?.tg_id, user?.first_name, user?.last_name, getTgIdFromDb])
 
-  // Поиск гостя по последним 4 цифрам номера телефона
-  const searchGuest = async () => {
+  // Прямое добавление кальяна по номеру телефона (как в старой админ панели)
+  const addHookahDirectly = async () => {
     if (!guestSearchPhone || guestSearchPhone.length !== 4) {
       alert('Введите ровно 4 последние цифры номера телефона')
       return
     }
     
-    setIsSearchingGuest(true)
-    try {
-      const response = await fetch('/api/scan-qr', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          phone_digits: guestSearchPhone,
-          admin_key: 'admin123'
-        }),
-      })
-      
-      const data = await response.json()
-      
-      if (data.success && data.user) {
-        setFoundGuest(data.user)
-      } else {
-        setFoundGuest(null)
-        alert('Гость не найден')
-      }
-    } catch (error) {
-      console.error('Error searching guest:', error)
-      alert('Ошибка поиска гостя')
-    } finally {
-      setIsSearchingGuest(false)
-    }
-  }
-
-  // Добавить кальян гостю (заполняет слот)
-  const addHookahToGuest = async () => {
-    if (!foundGuest || isAddingHookah || isRemovingHookah) return
-    
-    // Временно отключаем cooldown для отладки
-    // const now = Date.now()
-    // if (now - lastActionTime < 2000) { // 2 секунды между действиями
-    //   console.log('⏰ Too soon after last action, ignoring')
-    //   return
-    // }
+    if (isAddingHookah || isRemovingHookah) return
     
     setIsAddingHookah(true)
-    // setLastActionTime(now)
     
     try {
-      console.log('🚀 Adding hookah to guest:', guestSearchPhone)
+      console.log('🚀 Adding hookah directly for phone:', guestSearchPhone)
       
       const response = await fetch('/api/scan-qr', {
         method: 'POST',
@@ -289,35 +247,31 @@ export default function ProfilePage() {
       console.log('📊 Add hookah response:', data)
       
       if (data.success) {
-        alert('✅ Кальян добавлен гостю! Слот заполнен.')
-        // Не вызываем searchGuest() чтобы избежать дублирования запросов
+        alert('✅ Кальян добавлен! Слот заполнен.')
       } else {
         alert('Ошибка добавления кальяна: ' + data.message)
       }
     } catch (error) {
-      console.error('Error adding hookah to guest:', error)
+      console.error('Error adding hookah:', error)
       alert('Ошибка добавления кальяна')
     } finally {
       setIsAddingHookah(false)
     }
   }
 
-  // Убрать кальян у гостя (освобождает слот)
-  const removeHookahFromGuest = async () => {
-    if (!foundGuest || isRemovingHookah || isAddingHookah) return
+  // Прямое удаление кальяна по номеру телефона
+  const removeHookahDirectly = async () => {
+    if (!guestSearchPhone || guestSearchPhone.length !== 4) {
+      alert('Введите ровно 4 последние цифры номера телефона')
+      return
+    }
     
-    // Временно отключаем cooldown для отладки
-    // const now = Date.now()
-    // if (now - lastActionTime < 2000) { // 2 секунды между действиями
-    //   console.log('⏰ Too soon after last action, ignoring')
-    //   return
-    // }
+    if (isAddingHookah || isRemovingHookah) return
     
     setIsRemovingHookah(true)
-    // setLastActionTime(now)
     
     try {
-      console.log('🚀 Removing hookah from guest:', guestSearchPhone)
+      console.log('🚀 Removing hookah directly for phone:', guestSearchPhone)
       
       const response = await fetch('/api/remove-hookah', {
         method: 'POST',
@@ -334,18 +288,18 @@ export default function ProfilePage() {
       console.log('📊 Remove hookah response:', data)
       
       if (data.success) {
-        alert('✅ Кальян убран у гостя! Слот освобожден.')
-        // Не вызываем searchGuest() чтобы избежать дублирования запросов
+        alert('✅ Кальян убран! Слот освобожден.')
       } else {
         alert('Ошибка удаления кальяна: ' + data.message)
       }
     } catch (error) {
-      console.error('Error removing hookah from guest:', error)
+      console.error('Error removing hookah:', error)
       alert('Ошибка удаления кальяна')
     } finally {
       setIsRemovingHookah(false)
     }
   }
+
 
   // Загружаем данные профиля когда получаем пользователя
   useEffect(() => {
@@ -694,9 +648,9 @@ export default function ProfilePage() {
                   </button>
                 </div>
 
-                {/* Поиск гостя */}
+                {/* Управление кальянами (как в старой админ панели) */}
                 <div className="bg-green-900/30 border border-green-500/50 rounded-lg p-4">
-                  <h3 className="font-semibold text-green-300 mb-3">Поиск гостя</h3>
+                  <h3 className="font-semibold text-green-300 mb-3">Управление кальянами</h3>
                   <div className="space-y-3">
                     <div>
                       <label className="block text-sm font-medium text-green-300 mb-1">
@@ -714,44 +668,24 @@ export default function ProfilePage() {
                         maxLength={4}
                       />
                     </div>
-                    <button
-                      onClick={searchGuest}
-                      disabled={isSearchingGuest || guestSearchPhone.length !== 4}
-                      className="w-full bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white py-2 px-4 rounded-md text-sm font-medium"
-                    >
-                      {isSearchingGuest ? '⏳ Поиск...' : '🔍 Найти гостя'}
-                    </button>
-                  </div>
-
-                  {/* Результат поиска */}
-                  {foundGuest && (
-                    <div className="mt-4 p-3 bg-green-800/50 rounded-lg border border-green-400">
-                      <h4 className="font-semibold text-green-300 mb-2">Найденный гость:</h4>
-                      <div className="text-green-200 text-sm space-y-1">
-                        <p><strong>Имя:</strong> {foundGuest.first_name} {foundGuest.last_name}</p>
-                        <p><strong>Телефон:</strong> {foundGuest.phone || 'Не указан'}</p>
-                        <p><strong>Telegram ID:</strong> {foundGuest.tg_id}</p>
-                        <p><strong>Username:</strong> @{foundGuest.username || 'Не указан'}</p>
-                      </div>
-                      
-                      <div className="mt-4 flex space-x-2">
-                        <button
-                          onClick={addHookahToGuest}
-                          disabled={isAddingHookah || isRemovingHookah}
-                          className="flex-1 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white py-2 px-3 rounded-md text-sm font-medium"
-                        >
-                          {isAddingHookah ? '⏳ Добавляем...' : '➕ Добавить кальян'}
-                        </button>
-                        <button
-                          onClick={removeHookahFromGuest}
-                          disabled={isRemovingHookah || isAddingHookah}
-                          className="flex-1 bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white py-2 px-3 rounded-md text-sm font-medium"
-                        >
-                          {isRemovingHookah ? '⏳ Убираем...' : '➖ Убрать кальян'}
-                        </button>
-                      </div>
+                    
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={addHookahDirectly}
+                        disabled={isAddingHookah || isRemovingHookah || guestSearchPhone.length !== 4}
+                        className="flex-1 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white py-2 px-3 rounded-md text-sm font-medium"
+                      >
+                        {isAddingHookah ? '⏳ Добавляем...' : '➕ Добавить кальян'}
+                      </button>
+                      <button
+                        onClick={removeHookahDirectly}
+                        disabled={isRemovingHookah || isAddingHookah || guestSearchPhone.length !== 4}
+                        className="flex-1 bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white py-2 px-3 rounded-md text-sm font-medium"
+                      >
+                        {isRemovingHookah ? '⏳ Убираем...' : '➖ Убрать кальян'}
+                      </button>
                     </div>
-                  )}
+                  </div>
                 </div>
 
                 {/* Назначение админа */}
