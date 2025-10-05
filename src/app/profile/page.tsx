@@ -6,7 +6,7 @@ import Navigation from '@/components/Navigation'
 import { useUser } from '@/contexts/UserContext'
 
 export default function ProfilePage() {
-  const { user, isInTelegram, isInitialized } = useUser()
+  const { user, isInTelegram, loading, isInitialized } = useUser()
   const [isEditing, setIsEditing] = useState(false)
   const [editForm, setEditForm] = useState({ first_name: '', last_name: '' })
   const [isSaving, setIsSaving] = useState(false)
@@ -471,7 +471,13 @@ export default function ProfilePage() {
               Управляйте своим профилем
             </p>
 
-          {isInTelegram && user ? (
+          {loading || !isInitialized ? (
+            <div className="bg-yellow-900/30 border border-yellow-500/50 rounded-lg p-4 backdrop-blur-sm">
+              <p className="text-yellow-300 text-sm">
+                ⏳ Загрузка пользователя...
+              </p>
+            </div>
+          ) : user ? (
             <div className="space-y-4">
               <div className="bg-purple-900/30 border border-purple-500/50 rounded-lg p-4 mb-4 backdrop-blur-sm">
                 <div className="flex justify-between items-center mb-2">
