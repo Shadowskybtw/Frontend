@@ -63,14 +63,59 @@ export default function StocksPage() {
     const checkTelegramWebApp = () => {
       try {
         if (typeof window !== 'undefined' && (window as any).Telegram?.WebApp) {
+          // Инициализируем WebApp
+          (window as any).Telegram.WebApp.ready()
+          ;(window as any).Telegram.WebApp.expand()
+          
           setIsInTelegram(true)
           const tgUser = (window as any).Telegram.WebApp.initDataUnsafe?.user as TgUser | undefined
           if (tgUser) {
             setUser(tgUser)
+            // Загружаем данные пользователя
+            loadStocks(tgUser.id)
+            loadQrCode(tgUser.id)
+            loadFreeHookahs(tgUser.id)
+          } else {
+            console.log('No user data in initDataUnsafe, trying to get from initData')
+            // Пытаемся получить tg_id из initData
+            const initData = (window as any).Telegram.WebApp.initData
+            if (initData) {
+              const urlParams = new URLSearchParams(initData)
+              const userParam = urlParams.get('user')
+              if (userParam) {
+                try {
+                  const userData = JSON.parse(decodeURIComponent(userParam))
+                  if (userData.id) {
+                    setUser({ id: userData.id, first_name: userData.first_name, last_name: userData.last_name, username: userData.username })
+                    loadStocks(userData.id)
+                    loadQrCode(userData.id)
+                    loadFreeHookahs(userData.id)
+                  }
+                } catch (e) {
+                  console.error('Error parsing user data:', e)
+                }
+              }
+            }
           }
+        } else {
+          // Fallback для тестирования вне Telegram
+          console.log('Telegram WebApp not available, using test data')
+          const testUser = { id: 937011437, first_name: 'Test', last_name: 'User', username: 'testuser' }
+          setUser(testUser)
+          setIsInTelegram(false) // Устанавливаем false для показа тестовых данных
+          loadStocks(testUser.id)
+          loadQrCode(testUser.id)
+          loadFreeHookahs(testUser.id)
         }
       } catch (error) {
         console.error('Error checking Telegram WebApp on stocks page:', error)
+        // Fallback для тестирования
+        const testUser = { id: 937011437, first_name: 'Test', last_name: 'User', username: 'testuser' }
+        setUser(testUser)
+        setIsInTelegram(false)
+        loadStocks(testUser.id)
+        loadQrCode(testUser.id)
+        loadFreeHookahs(testUser.id)
       }
     }
 
@@ -253,7 +298,7 @@ export default function StocksPage() {
               Отслеживайте прогресс ваших акций
             </p>
 
-          {isInTelegram && user ? (
+          {user ? (
             <div className="space-y-4">
               <div className="bg-green-900/30 border border-green-500/50 rounded-lg p-4 mb-4 backdrop-blur-sm">
                 <p className="text-green-300 text-sm">
@@ -382,7 +427,7 @@ export default function StocksPage() {
           ) : (
             <div className="bg-red-900/30 border border-red-500/50 rounded-lg p-4 backdrop-blur-sm">
               <p className="text-red-300 text-sm">
-                ❌ Откройте приложение в Telegram для просмотра акций
+                ❌ Загрузка данных пользователя...
               </p>
             </div>
           )}
