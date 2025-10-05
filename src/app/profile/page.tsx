@@ -97,15 +97,60 @@ export default function ProfilePage() {
       }
     }
 
+    const checkOrRegisterUser = async (tgUser: TgUser) => {
+      try {
+        console.log('Checking or registering user for profile:', tgUser)
+        
+        const response = await fetch('/api/check-or-register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-telegram-init-data': (window as any).Telegram?.WebApp?.initData || ''
+          },
+          body: JSON.stringify({
+            tg_id: tgUser.id,
+            firstName: tgUser.first_name || 'Unknown',
+            lastName: tgUser.last_name || 'User',
+            username: tgUser.username
+          })
+        })
+
+        const data = await response.json()
+        console.log('Profile check/register response:', data)
+
+        if (data.success) {
+          setUser(data.user)
+          // Загружаем данные профиля
+          if (data.user.id) {
+            loadProfileData(data.user.id)
+            loadProfileStats(data.user.id)
+            checkAdminRights(data.user.id)
+            checkAdminStatus()
+          }
+        } else {
+          console.error('Failed to check/register user for profile:', data.message)
+        }
+      } catch (error) {
+        console.error('Error checking/registering user for profile:', error)
+      }
+    }
+
     const checkTelegramWebApp = () => {
       try {
         if (typeof window !== 'undefined' && (window as any).Telegram?.WebApp) {
+          // Инициализируем WebApp
+          (window as any).Telegram.WebApp.ready()
+          ;(window as any).Telegram.WebApp.expand()
+          
           setIsInTelegram(true)
           const tgUser = (window as any).Telegram.WebApp.initDataUnsafe?.user as TgUser | undefined
           if (tgUser) {
+            // Проверяем или регистрируем пользователя
+            checkOrRegisterUser(tgUser)
+          } else {
             // Получаем tg_id из initData, так как он не всегда доступен в initDataUnsafe
             const initData = (window as any).Telegram.WebApp.initData
-            let tgId = tgUser.tg_id
+            let tgId: number | undefined
             
             if (!tgId && initData) {
               // Парсим tg_id из initData
@@ -115,16 +160,20 @@ export default function ProfilePage() {
                 try {
                   const userData = JSON.parse(decodeURIComponent(userParam))
                   tgId = userData.id
+                  
+                  // Проверяем или регистрируем пользователя
+                  checkOrRegisterUser({ 
+                    id: userData.id,
+                    tg_id: userData.id,
+                    first_name: userData.first_name, 
+                    last_name: userData.last_name, 
+                    username: userData.username 
+                  })
                 } catch (e) {
                   console.error('Error parsing user data from initData:', e)
                 }
               }
             }
-            
-            setUser({
-              ...tgUser,
-              tg_id: tgId || 0 // Используем 0 как fallback
-            })
           }
         }
       } catch (error) {

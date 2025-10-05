@@ -74,6 +74,50 @@ export default function StocksPage() {
       loadFreeHookahs(testUser.id)
     }
 
+    const checkOrRegisterUser = async (tgUser: TgUser) => {
+      try {
+        console.log('Checking or registering user:', tgUser)
+        
+        const response = await fetch('/api/check-or-register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-telegram-init-data': (window as any).Telegram?.WebApp?.initData || ''
+          },
+          body: JSON.stringify({
+            tg_id: tgUser.id,
+            firstName: tgUser.first_name || 'Unknown',
+            lastName: tgUser.last_name || 'User',
+            username: tgUser.username
+          })
+        })
+
+        const data = await response.json()
+        console.log('Check/register response:', data)
+
+        if (data.success) {
+          setUser(data.user)
+          loadStocks(data.user.tg_id)
+          loadQrCode(data.user.tg_id)
+          loadFreeHookahs(data.user.tg_id)
+          
+          if (data.isNewUser) {
+            console.log('New user registered successfully!')
+          } else {
+            console.log('Existing user loaded successfully!')
+          }
+        } else {
+          console.error('Failed to check/register user:', data.message)
+          // Fallback to test data
+          loadFallbackData()
+        }
+      } catch (error) {
+        console.error('Error checking/registering user:', error)
+        // Fallback to test data
+        loadFallbackData()
+      }
+    }
+
     const checkTelegramWebApp = () => {
       try {
         if (typeof window !== 'undefined' && (window as any).Telegram?.WebApp) {
@@ -85,11 +129,8 @@ export default function StocksPage() {
           const tgUser = (window as any).Telegram.WebApp.initDataUnsafe?.user as TgUser | undefined
           if (tgUser) {
             console.log('User found in initDataUnsafe:', tgUser)
-            setUser(tgUser)
-            // Загружаем данные пользователя
-            loadStocks(tgUser.id)
-            loadQrCode(tgUser.id)
-            loadFreeHookahs(tgUser.id)
+            // Проверяем или регистрируем пользователя
+            checkOrRegisterUser(tgUser)
           } else {
             console.log('No user data in initDataUnsafe, trying to get from initData')
             // Пытаемся получить tg_id из initData
@@ -102,10 +143,13 @@ export default function StocksPage() {
                   const userData = JSON.parse(decodeURIComponent(userParam))
                   if (userData.id) {
                     console.log('User found in initData:', userData)
-                    setUser({ id: userData.id, first_name: userData.first_name, last_name: userData.last_name, username: userData.username })
-                    loadStocks(userData.id)
-                    loadQrCode(userData.id)
-                    loadFreeHookahs(userData.id)
+                    // Проверяем или регистрируем пользователя
+                    checkOrRegisterUser({ 
+                      id: userData.id, 
+                      first_name: userData.first_name, 
+                      last_name: userData.last_name, 
+                      username: userData.username 
+                    })
                   }
                 } catch (e) {
                   console.error('Error parsing user data:', e)
