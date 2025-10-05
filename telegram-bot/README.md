@@ -1,4 +1,4 @@
-# 🎯 КальянБот Dungeon - Уведомления о прогрессе
+# 🎯 DUNGEONHOOKAH_BOT - Уведомления о прогрессе
 
 Telegram бот для отправки ежедневных уведомлений пользователям о прогрессе в акции кальянов.
 
@@ -30,7 +30,7 @@ cp env.example .env
 
 3. **Отредактируйте `.env` файл:**
 ```env
-BOT_TOKEN=your_telegram_bot_token_here
+BOT_TOKEN=8242076298:AAGnHplpi7Ad4hOo9z4zTugjqcCEXLJt9to
 DATABASE_URL=your_postgresql_database_url
 NOTIFICATION_TIME=18:00
 TIMEZONE=Europe/Moscow
@@ -76,7 +76,7 @@ node index.js test
 
 ### Готов к бесплатному:
 ```
-🎯 КальянБот Dungeon
+🎯 DUNGEONHOOKAH_BOT
 
 Привет, Иван! 👋
 
@@ -90,7 +90,7 @@ node index.js test
 
 ### В процессе:
 ```
-🎯 КальянБот Dungeon
+🎯 DUNGEONHOOKAH_BOT
 
 Привет, Петр! 👋
 

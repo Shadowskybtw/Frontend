@@ -108,7 +108,7 @@ class HookahNotificationBot {
     const usedHookahs = user.used_hookahs;
     const availableHookahs = totalHookahs - usedHookahs;
 
-    let message = `🎯 <b>КальянБот Dungeon</b>\n\n`;
+    let message = `🎯 <b>DUNGEONHOOKAH_BOT</b>\n\n`;
     message += `Привет, ${user.first_name}! 👋\n\n`;
     
     if (hookahsToFree === 0) {
@@ -214,7 +214,7 @@ class HookahNotificationBot {
     // Команда /start
     this.bot.start((ctx) => {
       ctx.reply(
-        '🎯 <b>КальянБот Dungeon</b>\n\n' +
+        '🎯 <b>DUNGEONHOOKAH_BOT</b>\n\n' +
         'Добро пожаловать! Я буду напоминать вам о прогрессе в акции кальянов.\n\n' +
         '📊 <b>Доступные команды:</b>\n' +
         '/progress - узнать свой прогресс\n' +

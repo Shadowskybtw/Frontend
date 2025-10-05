@@ -4,8 +4,8 @@
 
 1. Откройте [@BotFather](https://t.me/BotFather)
 2. Отправьте `/newbot`
-3. Введите имя: `КальянБот Dungeon`
-4. Введите username: `your_hookah_bot`
+3. Введите имя: `DUNGEONHOOKAH_BOT`
+4. Введите username: `DUNGEONHOOKAH_BOT`
 5. **Скопируйте токен!**
 
 ## 2. Настройте бота
@@ -26,7 +26,7 @@ nano .env
 
 **Вставьте в .env:**
 ```env
-BOT_TOKEN=ваш_токен_от_BotFather
+BOT_TOKEN=8242076298:AAGnHplpi7Ad4hOo9z4zTugjqcCEXLJt9to
 DATABASE_URL=postgresql://neondb_owner:npg_Z9sDKnLjrX4l@ep-odd-surf-a2btswct-pooler.eu-central-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
 NOTIFICATION_TIME=18:00
 TIMEZONE=Europe/Moscow
