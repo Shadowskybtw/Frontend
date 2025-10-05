@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  dungeonhookah-bot:
+    build: .
+    container_name: dungeonhookah-bot
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=${DATABASE_URL}
+      - BOT_TOKEN=${BOT_TOKEN}
+      - NOTIFICATION_TIME=${NOTIFICATION_TIME:-18:00}
+      - TIMEZONE=${TIMEZONE:-Europe/Moscow}
+      - BOT_NAME=${BOT_NAME:-DUNGEONHOOKAH_BOT}
+      - BOT_USERNAME=${BOT_USERNAME:-DUNGEONHOOKAH_BOT}
+    volumes:
+      - ./logs:/app/logs
+    env_file:
+      - .env
+    networks:
+      - bot-network
+
+networks:
+  bot-network:
+    driver: bridge

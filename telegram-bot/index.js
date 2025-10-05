@@ -107,52 +107,15 @@ class HookahNotificationBot {
    */
   createNotificationMessage(user) {
     const hookahsToFree = this.calculateHookahsToFree(user.progress);
-    const totalHookahs = user.total_hookahs;
-    const usedHookahs = user.used_hookahs;
-    const freeHookahsReceived = usedHookahs; // Использованные = полученные бесплатные
-    const regularHookahs = totalHookahs - usedHookahs; // Обычные кальяны (не бесплатные)
-    
-    // Общее количество покупок за все время
-    const totalPurchases = user.total_purchases || 0;
-    const totalRegularPurchases = user.total_regular_purchases || 0;
-    const totalFreePurchases = user.total_free_purchases || 0;
 
     let message = `🎯 <b>DUNGEONHOOKAH_BOT</b>\n\n`;
     message += `Привет, ${user.first_name}! 👋\n\n`;
     
     if (hookahsToFree === 0) {
-      message += `🎉 <b>Поздравляем!</b> У вас есть бесплатный кальян!\n`;
-      message += `📊 Всего кальянов: ${totalHookahs}\n`;
-      message += `• Обычные кальяны: ${regularHookahs}\n`;
-      message += `• Получено бесплатных: ${freeHookahsReceived}\n\n`;
-      message += `📈 <b>За все время:</b>\n`;
-      message += `• Всего покупок: ${totalPurchases}\n`;
-      message += `• Обычных покупок: ${totalRegularPurchases}\n`;
-      message += `• Бесплатных покупок: ${totalFreePurchases}\n\n`;
-      message += `Приходите и забирайте свой бесплатный кальян! 🚀`;
+      message += `🎉 <b>У вас доступен бесплатный кальян!</b>\n\n`;
+      message += `Приходите и забирайте его скорее! 🚀`;
     } else {
-      message += `📊 <b>Ваш прогресс в акции:</b>\n`;
-      message += `• Всего кальянов: ${totalHookahs}\n`;
-      message += `• Обычные кальяны: ${regularHookahs}\n`;
-      message += `• Получено бесплатных: ${freeHookahsReceived}\n\n`;
-      message += `🎯 <b>До бесплатного кальяна осталось: ${hookahsToFree} кальянов</b>\n\n`;
-      
-      // Показываем прогресс-бар
-      const progressBar = this.createProgressBar(user.progress);
-      message += `📈 Прогресс: ${progressBar} ${user.progress}%\n\n`;
-      
-      message += `📈 <b>За все время:</b>\n`;
-      message += `• Всего покупок: ${totalPurchases}\n`;
-      message += `• Обычных покупок: ${totalRegularPurchases}\n`;
-      message += `• Бесплатных покупок: ${totalFreePurchases}\n\n`;
-      
-      if (hookahsToFree === 1) {
-        message += `🔥 Остался всего 1 кальян до бесплатного! Почти у цели!`;
-      } else if (hookahsToFree <= 3) {
-        message += `💪 Еще немного и у вас будет бесплатный кальян!`;
-      } else {
-        message += `🚀 Продолжайте в том же духе! Каждый кальян приближает вас к цели!`;
-      }
+      message += `🎯 <b>До бесплатного кальяна осталось: ${hookahsToFree} кальянов</b>`;
     }
 
     return message;
@@ -237,7 +200,7 @@ class HookahNotificationBot {
         '📊 <b>Доступные команды:</b>\n' +
         '/progress - узнать свой прогресс\n' +
         '/help - помощь\n\n' +
-        'Уведомления приходят ежедневно в 18:00! 🕕',
+        '💡 <b>Для подробной информации о прогрессе используйте мини-приложение!</b>',
         { parse_mode: 'HTML' }
       );
     });

@@ -1,0 +1,21 @@
+[Unit]
+Description=DUNGEONHOOKAH_BOT - Telegram Bot for Hookah Progress Notifications
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/path/to/your/telegram-bot
+ExecStart=/usr/bin/node index.js start
+Restart=always
+RestartSec=10
+Environment=NODE_ENV=production
+EnvironmentFile=/path/to/your/telegram-bot/.env
+
+# Логирование
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=dungeonhookah-bot
+
+[Install]
+WantedBy=multi-user.target
