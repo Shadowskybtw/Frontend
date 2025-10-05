@@ -1,24 +1,7 @@
 "use client"
 import React, { useEffect, useState, useCallback } from 'react'
 import Navigation from '@/components/Navigation'
-
-type TgUser = {
-  id: number
-  username?: string
-  first_name?: string
-  last_name?: string
-}
-
-type TelegramWebApp = {
-  initData: string
-  initDataUnsafe?: { user?: TgUser }
-}
-
-type TelegramWindow = {
-  Telegram?: { WebApp?: TelegramWebApp }
-}
-
-declare const window: TelegramWindow & Window
+import { useTelegramUser } from '@/hooks/useTelegramUser'
 
 interface PurchaseHistory {
   id: number
@@ -29,44 +12,30 @@ interface PurchaseHistory {
 }
 
 export default function HistoryPage() {
-  const [user, setUser] = useState<TgUser | null>(null)
   const [history, setHistory] = useState<PurchaseHistory[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [historyLoading, setHistoryLoading] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
 
-  useEffect(() => {
-    const checkTelegramWebApp = () => {
-      try {
-        if (typeof window !== 'undefined' && (window as any).Telegram?.WebApp) {
-          (window as any).Telegram.WebApp.ready()
-          ;(window as any).Telegram.WebApp.expand()
-          
-          const tgUser = (window as any).Telegram.WebApp.initDataUnsafe?.user as TgUser | undefined
-          if (tgUser) {
-            setUser(tgUser)
-            fetchHistory(tgUser.id, currentPage)
-          } else {
-            setError('Пользователь не найден')
-            setLoading(false)
-          }
-        } else {
-          setError('Приложение должно быть открыто в Telegram')
-          setLoading(false)
-        }
-      } catch (error) {
-        console.error('Error checking Telegram WebApp:', error)
-        setError('Ошибка инициализации')
-        setLoading(false)
+  const { user, loading, error } = useTelegramUser({
+    onUserLoaded: (user) => {
+      if (user?.tg_id) {
+        fetchHistory(user.tg_id, currentPage)
       }
+    },
+    onError: (error) => {
+      console.error('Telegram user error:', error)
     }
+  })
 
-    checkTelegramWebApp()
-  }, [currentPage])
+  useEffect(() => {
+    if (user?.tg_id) {
+      fetchHistory(user.tg_id, currentPage)
+    }
+  }, [user, currentPage])
 
   const fetchHistory = useCallback(async (tgId: number, page: number = 1) => {
-    setLoading(true)
+    setHistoryLoading(true)
     try {
       const response = await fetch('/api/history', {
         method: 'POST',
@@ -82,13 +51,12 @@ export default function HistoryPage() {
         setHistory(data.history || [])
         setTotalPages(data.totalPages || 1)
       } else {
-        setError(data.message || 'Ошибка загрузки истории')
+        console.error('Failed to fetch history:', data.message)
       }
     } catch (error) {
       console.error('Error fetching history:', error)
-      setError('Ошибка загрузки истории')
     } finally {
-      setLoading(false)
+      setHistoryLoading(false)
     }
   }, [])
 
