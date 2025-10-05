@@ -123,7 +123,7 @@ class HookahNotificationBot {
       inline_keyboard: [[
         {
           text: '📱 Открыть приложение',
-          web_app: { url: 'https://frontend-phi-ivory.vercel.app' }
+          web_app: { url: 'https://frontend-delta-sandy-58.vercel.app' }
         }
       ]]
     };
@@ -209,7 +209,7 @@ class HookahNotificationBot {
         inline_keyboard: [[
           {
             text: '📱 Открыть приложение',
-            web_app: { url: 'https://frontend-phi-ivory.vercel.app' }
+            web_app: { url: 'https://frontend-delta-sandy-58.vercel.app' }
           }
         ]]
       };
