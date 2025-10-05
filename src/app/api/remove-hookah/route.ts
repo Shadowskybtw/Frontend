@@ -79,20 +79,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, message: 'Ошибка при обновлении прогресса' }, { status: 500 })
     }
 
-    // Добавляем запись в историю кальянов (удаление)
+    // Удаляем последнюю запись 'regular' из истории кальянов
     try {
-      await db.addHookahToHistory(
-        user.id, 
-        'removed', 
-        Math.floor(updatedStock.progress / 20),
-        stock.id,
-        null, // adminId
-        'admin_remove' // scanMethod
-      )
-      console.log('✅ Hookah removal added to history successfully')
+      const removed = await db.removeLastRegularHookahFromHistory(user.id)
+      if (removed) {
+        console.log('✅ Last regular hookah removed from history successfully')
+      } else {
+        console.log('⚠️ No regular hookah found in history to remove')
+      }
     } catch (historyError) {
-      console.error('❌ Error adding hookah removal to history:', historyError)
-      // Продолжаем выполнение, даже если не удалось добавить в историю
+      console.error('❌ Error removing hookah from history:', historyError)
+      // Продолжаем выполнение, даже если не удалось удалить из истории
     }
 
     return NextResponse.json({ 

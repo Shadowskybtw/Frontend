@@ -60,6 +60,9 @@ export default function ProfilePage() {
   const [guestSearchPhone, setGuestSearchPhone] = useState('')
   const [isAddingHookah, setIsAddingHookah] = useState(false)
   const [isRemovingHookah, setIsRemovingHookah] = useState(false)
+  const [searchPhone, setSearchPhone] = useState('')
+  const [searchedUser, setSearchedUser] = useState<any>(null)
+  const [isSearchingUser, setIsSearchingUser] = useState(false)
 
   useEffect(() => {
     if (isInitialized && user?.id) {
@@ -297,6 +300,47 @@ export default function ProfilePage() {
       alert('Ошибка удаления кальяна')
     } finally {
       setIsRemovingHookah(false)
+    }
+  }
+
+  // Поиск пользователя для просмотра информации
+  const searchUser = async () => {
+    if (!searchPhone || searchPhone.length !== 4) {
+      alert('Введите ровно 4 последние цифры номера телефона')
+      return
+    }
+    
+    setIsSearchingUser(true)
+    
+    try {
+      console.log('🔍 Searching user for phone:', searchPhone)
+      
+      const response = await fetch('/api/search-user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          phone_digits: searchPhone,
+          admin_key: 'admin123'
+        }),
+      })
+      
+      const data = await response.json()
+      console.log('📊 Search user response:', data)
+      
+      if (data.success) {
+        setSearchedUser(data)
+      } else {
+        setSearchedUser(null)
+        alert('Пользователь не найден: ' + data.message)
+      }
+    } catch (error) {
+      console.error('Error searching user:', error)
+      alert('Ошибка поиска пользователя')
+      setSearchedUser(null)
+    } finally {
+      setIsSearchingUser(false)
     }
   }
 
@@ -646,6 +690,78 @@ export default function ProfilePage() {
                     <span className="text-xl">📷</span>
                     <span>Открыть сканер</span>
                   </button>
+                </div>
+
+                {/* Поиск пользователя */}
+                <div className="bg-blue-900/30 border border-blue-500/50 rounded-lg p-4">
+                  <h3 className="font-semibold text-blue-300 mb-3">Поиск пользователя</h3>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-sm font-medium text-blue-300 mb-1">
+                        Последние 4 цифры номера телефона:
+                      </label>
+                      <input
+                        type="text"
+                        value={searchPhone}
+                        onChange={(e) => {
+                          const value = e.target.value.replace(/\D/g, '').slice(0, 4)
+                          setSearchPhone(value)
+                        }}
+                        placeholder="Например: 1234"
+                        className="w-full px-3 py-2 border-2 border-blue-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-center text-xl font-bold text-black bg-white shadow-inner"
+                        maxLength={4}
+                      />
+                    </div>
+                    
+                    <button
+                      onClick={searchUser}
+                      disabled={isSearchingUser || searchPhone.length !== 4}
+                      className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white py-2 px-4 rounded-md text-sm font-medium"
+                    >
+                      {isSearchingUser ? '⏳ Поиск...' : '🔍 Найти пользователя'}
+                    </button>
+
+                    {/* Результат поиска */}
+                    {searchedUser && (
+                      <div className="mt-4 p-3 bg-blue-800/50 rounded-lg border border-blue-400">
+                        <h4 className="font-semibold text-blue-300 mb-2">Информация о пользователе:</h4>
+                        <div className="text-blue-200 text-sm space-y-1">
+                          <p><strong>Имя:</strong> {searchedUser.user.first_name} {searchedUser.user.last_name}</p>
+                          <p><strong>Телефон:</strong> {searchedUser.user.phone}</p>
+                          <p><strong>Username:</strong> @{searchedUser.user.username || 'Не указан'}</p>
+                          <p><strong>Telegram ID:</strong> {searchedUser.user.tg_id}</p>
+                        </div>
+                        
+                        <div className="mt-3 pt-3 border-t border-blue-400">
+                          <h5 className="font-semibold text-blue-300 mb-2">Статистика кальянов:</h5>
+                          <div className="grid grid-cols-2 gap-2 text-sm">
+                            <div className="bg-blue-700/50 rounded p-2">
+                              <div className="text-blue-200">Заполнено слотов:</div>
+                              <div className="text-white font-bold text-lg">{searchedUser.stats.slotsFilled}/5</div>
+                            </div>
+                            <div className="bg-blue-700/50 rounded p-2">
+                              <div className="text-blue-200">Осталось до бесплатного:</div>
+                              <div className="text-white font-bold text-lg">{searchedUser.stats.slotsRemaining}</div>
+                            </div>
+                          </div>
+                          <div className="mt-2">
+                            <div className="text-blue-200 text-sm">Прогресс: {searchedUser.stats.progress}%</div>
+                            <div className="w-full bg-blue-600 rounded-full h-2 mt-1">
+                              <div 
+                                className="bg-blue-300 h-2 rounded-full transition-all duration-300" 
+                                style={{ width: `${searchedUser.stats.progress}%` }}
+                              ></div>
+                            </div>
+                          </div>
+                          {searchedUser.stats.hasFreeHookah && (
+                            <div className="mt-2 text-green-400 font-semibold">
+                              🎁 Есть бесплатный кальян!
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 {/* Управление кальянами (как в старой админ панели) */}

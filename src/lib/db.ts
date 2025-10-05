@@ -106,6 +106,22 @@ export const db = {
     }
   },
 
+  async getUserByPhoneDigits(phoneDigits: string): Promise<User | null> {
+    try {
+      console.log('Searching user by phone digits:', phoneDigits)
+      const allUsers = await this.getAllUsers()
+      const user = allUsers.find(u => {
+        const phone = u.phone.replace(/\D/g, '') // Убираем все нецифровые символы
+        return phone.endsWith(phoneDigits)
+      })
+      console.log('User found by phone digits:', user ? `${user.first_name} ${user.last_name}` : 'None')
+      return user || null
+    } catch (error) {
+      console.error('Error searching user by phone digits:', error)
+      return null
+    }
+  },
+
   async createUser(userData: {
     tg_id: number
     first_name: string
@@ -349,6 +365,37 @@ export const db = {
     })
     console.log(`✅ [${historyId}] Hookah added to history:`, history)
     return history
+  },
+
+  async removeLastRegularHookahFromHistory(userId: number): Promise<boolean> {
+    try {
+      console.log(`🗑️ Removing last regular hookah from history for user:`, userId)
+      
+      // Находим последнюю запись типа 'regular' для пользователя
+      const lastRegularHookah = await prisma.hookahHistory.findFirst({
+        where: { 
+          user_id: userId,
+          hookah_type: 'regular'
+        },
+        orderBy: { created_at: 'desc' }
+      })
+      
+      if (!lastRegularHookah) {
+        console.log(`❌ No regular hookah found in history for user ${userId}`)
+        return false
+      }
+      
+      // Удаляем найденную запись
+      await prisma.hookahHistory.delete({
+        where: { id: lastRegularHookah.id }
+      })
+      
+      console.log(`✅ Removed last regular hookah from history:`, lastRegularHookah)
+      return true
+    } catch (error) {
+      console.error('❌ Error removing last regular hookah from history:', error)
+      return false
+    }
   },
 
   // Admin operations - используем поле is_admin в таблице users как основной метод

@@ -128,13 +128,6 @@ export default function HistoryPage() {
                           bgColor: 'bg-gray-700/50 border-gray-600',
                           description: item.slot_number ? `Слот ${item.slot_number}/5` : 'Кальян добавлен'
                         }
-                      case 'removed':
-                        return {
-                          icon: '➖',
-                          title: 'Кальян убран',
-                          bgColor: 'bg-red-900/30 border-red-500/50',
-                          description: item.slot_number ? `Слот ${item.slot_number}/5 освобожден` : 'Кальян удален'
-                        }
                       default:
                         return {
                           icon: '❓',
@@ -220,7 +213,7 @@ export default function HistoryPage() {
 
             {/* Статистика */}
             <div className="mt-8 pt-6 border-t border-gray-600">
-              <div className="grid grid-cols-3 gap-4 text-center">
+              <div className="grid grid-cols-2 gap-4 text-center">
                 <div className="bg-gray-700/50 rounded-lg p-4">
                   <div className="text-2xl font-bold text-white">
                     {history.filter(item => item.hookah_type === 'regular').length}
@@ -232,12 +225,6 @@ export default function HistoryPage() {
                     {history.filter(item => item.hookah_type === 'free').length}
                   </div>
                   <div className="text-gray-400 text-sm">Бесплатных кальянов</div>
-                </div>
-                <div className="bg-red-900/30 rounded-lg p-4">
-                  <div className="text-2xl font-bold text-red-400">
-                    {history.filter(item => item.hookah_type === 'removed').length}
-                  </div>
-                  <div className="text-gray-400 text-sm">Убрано кальянов</div>
                 </div>
               </div>
             </div>
