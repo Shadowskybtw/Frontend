@@ -254,22 +254,25 @@ export default function ProfilePage() {
     }
   }
 
-  // Добавить кальян гостю
+  // Добавить кальян гостю (заполняет слот)
   const addHookahToGuest = async () => {
     if (!foundGuest) return
     
     try {
-      const response = await fetch(`/api/free-hookahs/${foundGuest.tg_id}`, {
+      const response = await fetch('/api/scan-qr', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ action: 'add' }),
+        body: JSON.stringify({
+          phone_digits: guestSearchPhone,
+          admin_key: 'admin123'
+        }),
       })
       
       const data = await response.json()
       if (data.success) {
-        alert('Кальян добавлен гостю!')
+        alert('✅ Кальян добавлен гостю! Слот заполнен.')
         // Обновляем данные гостя
         searchGuest()
       } else {
@@ -281,22 +284,25 @@ export default function ProfilePage() {
     }
   }
 
-  // Убрать кальян у гостя
+  // Убрать кальян у гостя (освобождает слот)
   const removeHookahFromGuest = async () => {
     if (!foundGuest) return
     
     try {
-      const response = await fetch(`/api/free-hookahs/${foundGuest.tg_id}`, {
+      const response = await fetch('/api/remove-hookah', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ action: 'remove' }),
+        body: JSON.stringify({
+          phone_digits: guestSearchPhone,
+          admin_key: 'admin123'
+        }),
       })
       
       const data = await response.json()
       if (data.success) {
-        alert('Кальян убран у гостя!')
+        alert('✅ Кальян убран у гостя! Слот освобожден.')
         // Обновляем данные гостя
         searchGuest()
       } else {

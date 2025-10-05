@@ -217,6 +217,36 @@ export const db = {
     }
   },
 
+  async decreaseStockProgress(stockId: number): Promise<Stock | null> {
+    try {
+      console.log('Decreasing stock progress for stock:', stockId)
+      
+      // Получаем текущий прогресс
+      const currentStock = await prisma.stock.findUnique({
+        where: { id: stockId }
+      })
+      
+      if (!currentStock) {
+        console.error('Stock not found:', stockId)
+        return null
+      }
+      
+      // Уменьшаем прогресс на 20% (один слот)
+      const newProgress = Math.max(0, currentStock.progress - 20)
+      
+      const stock = await prisma.stock.update({
+        where: { id: stockId },
+        data: { progress: newProgress }
+      })
+      
+      console.log('Stock progress decreased:', { from: currentStock.progress, to: newProgress })
+      return stock as Stock
+    } catch (error) {
+      console.error('Error decreasing stock progress:', error)
+      return null
+    }
+  },
+
   // Free hookah operations
   async getFreeHookahs(userId: number): Promise<FreeHookah[]> {
     try {
@@ -299,7 +329,7 @@ export const db = {
 
   async addHookahToHistory(
     userId: number, 
-    hookahType: 'regular' | 'free', 
+    hookahType: 'regular' | 'free' | 'removed', 
     slotNumber?: number,
     stockId?: number,
     adminId?: number,
