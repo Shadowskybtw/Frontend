@@ -112,10 +112,24 @@ class DUNGEONBot:
             if response.status_code == 200:
                 data = response.json()
                 if data.get('success') and data.get('stocks'):
-                    progress_text = "📊 <b>Ваш прогресс в акции:</b>\n\n"
+                    # Find the main promotion stock (5+1 кальян)
+                    main_stock = None
                     for stock in data['stocks']:
-                        progress_bar = "█" * (stock['progress'] // 10) + "░" * (10 - stock['progress'] // 10)
-                        progress_text += f"• {stock['stock_name']}: {stock['progress']}%\n{progress_bar}\n\n"
+                        if '5+1' in stock['stock_name'] or 'кальян' in stock['stock_name'].lower():
+                            main_stock = stock
+                            break
+                    
+                    if main_stock:
+                        progress = main_stock['progress']
+                        slots_filled = progress // 20  # Each slot is 20%
+                        slots_remaining = 5 - slots_filled
+                        
+                        if progress >= 100:
+                            progress_text = "🎉 Поздравляем! У вас есть бесплатный кальян! 🎁"
+                        else:
+                            progress_text = f"📊 До бесплатного кальяна осталось: {slots_remaining} кальянов"
+                    else:
+                        progress_text = "📊 У вас пока нет акций. Зарегистрируйтесь в WebApp!"
                 else:
                     progress_text = "📊 У вас пока нет акций. Зарегистрируйтесь в WebApp!"
             else:
@@ -125,19 +139,7 @@ class DUNGEONBot:
             logger.error(f"Error fetching progress: {e}")
             progress_text = "📊 Для просмотра прогресса зарегистрируйтесь в WebApp!"
         
-        keyboard = [
-            [InlineKeyboardButton(
-                "📊 Открыть приложение", 
-                web_app=WebAppInfo(url=f"{WEBAPP_URL}/register")
-            )]
-        ]
-        reply_markup = InlineKeyboardMarkup(keyboard)
-        
-        await update.message.reply_text(
-            progress_text,
-            reply_markup=reply_markup,
-            parse_mode=ParseMode.HTML
-        )
+        await update.message.reply_text(progress_text)
     
     async def register_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Handle /register command"""
