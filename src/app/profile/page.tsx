@@ -9,7 +9,7 @@ export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false)
   const [editForm, setEditForm] = useState({ first_name: '', last_name: '' })
   const [isSaving, setIsSaving] = useState(false)
-  const [profileData, setProfileData] = useState<{
+  const [userData, setUserData] = useState<{
     id: number
     first_name: string
     last_name: string
@@ -132,18 +132,8 @@ export default function ProfilePage() {
     }
   }, [user?.id, user?.tg_id, user?.first_name, user?.last_name, getTgIdFromDb])
 
-  useEffect(() => {
-    if (isInitialized && user?.id) {
-      console.log('👤 Loading profile data for user:', user.id)
-      loadProfileData(user.id)
-      loadProfileStats(user.id)
-      checkAdminRights(user.id)
-      checkAdminStatus()
-    }
-  }, [isInitialized, user, checkAdminStatus])
-
-  // Загружаем данные профиля
-  const loadProfileData = async (tgId: number) => {
+  // Загружаем данные пользователя из базы данных
+  const loadUserData = async (tgId: number) => {
     try {
       const response = await fetch('/api/check-registration', {
         method: 'POST',
@@ -154,19 +144,29 @@ export default function ProfilePage() {
       })
 
       const data = await response.json()
-      console.log('📱 Profile data loaded:', data)
+      console.log('📱 User data loaded from DB:', data)
       if (data.success && data.registered && data.user) {
-        console.log('📱 User phone from API:', data.user.phone)
-        setProfileData(data.user)
+        setUserData(data.user)
         setEditForm({
           first_name: data.user.first_name || '',
           last_name: data.user.last_name || ''
         })
       }
     } catch (error) {
-      console.error('Error loading profile data:', error)
+      console.error('Error loading user data:', error)
     }
   }
+
+  useEffect(() => {
+    if (isInitialized && user?.id) {
+      console.log('👤 Loading profile data and stats for user:', user.id)
+      loadUserData(user.tg_id)
+      loadProfileStats(user.id)
+      checkAdminRights(user.id)
+      checkAdminStatus()
+    }
+  }, [isInitialized, user, checkAdminStatus])
+
 
   // Загружаем статистику профиля
   const loadProfileStats = async (tgId: number) => {
@@ -202,7 +202,6 @@ export default function ProfilePage() {
 
       const data = await response.json()
       if (data.success) {
-        setProfileData(data.user)
         setIsEditing(false)
         alert('Профиль успешно обновлен!')
       } else {
@@ -343,7 +342,7 @@ export default function ProfilePage() {
   // Загружаем данные профиля когда получаем пользователя
   useEffect(() => {
     if (user?.id && isInTelegram) {
-      loadProfileData(user.id)
+      loadUserData(user.tg_id)
       loadProfileStats(user.id)
       checkAdminRights(user.id)
       checkAdminStatus()
@@ -626,8 +625,8 @@ export default function ProfilePage() {
                         onClick={() => {
                           setIsEditing(false)
                           setEditForm({
-                            first_name: profileData?.first_name || '',
-                            last_name: profileData?.last_name || ''
+                            first_name: userData?.first_name || user.first_name || '',
+                            last_name: userData?.last_name || user.last_name || ''
                           })
                         }}
                         className="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded-md text-sm font-medium"
@@ -640,9 +639,9 @@ export default function ProfilePage() {
                   <div className="text-left space-y-2 text-purple-800 text-sm">
                     <p><strong>ID:</strong> {user.id}</p>
                     <p><strong>Telegram ID:</strong> {user.tg_id}</p>
-                    <p><strong>Имя:</strong> {profileData?.first_name || user.first_name || 'Не указано'}</p>
-                    <p><strong>Фамилия:</strong> {profileData?.last_name || user.last_name || 'Не указано'}</p>
-                    <p><strong>Телефон:</strong> {profileData?.phone || 'Не указано'}</p>
+                    <p><strong>Имя:</strong> {userData?.first_name || user.first_name || 'Не указано'}</p>
+                    <p><strong>Фамилия:</strong> {userData?.last_name || user.last_name || 'Не указано'}</p>
+                    <p><strong>Телефон:</strong> {userData?.phone || 'Не указано'}</p>
                     <p><strong>Username:</strong> @{user.username || 'Не указано'}</p>
                   </div>
                 )}
@@ -651,7 +650,7 @@ export default function ProfilePage() {
               <div className="bg-blue-900/30 border border-blue-500/50 rounded-lg p-4 backdrop-blur-sm">
                 <h3 className="font-semibold text-blue-300 mb-2">Статистика</h3>
                 <div className="text-left space-y-2 text-blue-200 text-sm">
-                  <p>Дата регистрации: {profileData?.created_at ? new Date(profileData.created_at).toLocaleDateString('ru-RU') : 'Сегодня'}</p>
+                  <p>Дата регистрации: {userData?.created_at ? new Date(userData.created_at).toLocaleDateString('ru-RU') : 'Сегодня'}</p>
                   <p>Выкурено всего кальянов: {profileStats?.totalSmokedHookahs || 0}</p>
                   <p>Получено бесплатных: {profileStats?.freeHookahsReceived || 0}</p>
                 </div>
@@ -859,3 +858,4 @@ export default function ProfilePage() {
     </div>
   )
 }
+
