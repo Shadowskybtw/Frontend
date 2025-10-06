@@ -46,7 +46,7 @@ export interface HookahHistory {
   stock_id?: number | null
   admin_id?: number | null
   scan_method?: string | null
-  created_at: Date
+  created_at: Date | null
 }
 
 // Database queries
