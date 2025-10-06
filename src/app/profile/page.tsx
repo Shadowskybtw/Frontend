@@ -128,8 +128,8 @@ export default function ProfilePage() {
   useEffect(() => {
     if (isInitialized && user?.id) {
       console.log('👤 Loading profile stats for user:', user.id)
-      loadProfileStats(user.id)
-      checkAdminRights(user.id)
+      loadProfileStats(user.tg_id)
+      checkAdminRights(user.tg_id)
       checkAdminStatus()
     }
   }, [isInitialized, user, checkAdminStatus])
@@ -309,8 +309,8 @@ export default function ProfilePage() {
   // Загружаем данные профиля когда получаем пользователя
   useEffect(() => {
     if (user?.id && isInTelegram) {
-      loadProfileStats(user.id)
-      checkAdminRights(user.id)
+      loadProfileStats(user.tg_id)
+      checkAdminRights(user.tg_id)
       checkAdminStatus()
     }
   }, [user, isInTelegram, checkAdminStatus])
@@ -320,7 +320,7 @@ export default function ProfilePage() {
     if (!user?.id || !isInTelegram) return
 
     const interval = setInterval(() => {
-      loadProfileStats(user.id)
+      loadProfileStats(user.tg_id)
     }, 5000) // Обновляем каждые 5 секунд
 
     return () => clearInterval(interval)
@@ -330,7 +330,7 @@ export default function ProfilePage() {
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible' && user?.id && isInTelegram) {
-        loadProfileStats(user.id)
+        loadProfileStats(user.tg_id)
       }
     }
 
@@ -404,7 +404,7 @@ export default function ProfilePage() {
         // Принудительно обновляем статистику профиля
         if (user?.id) {
           // Множественные обновления для надежности
-          loadProfileStats(user.id)
+          loadProfileStats(user.tg_id)
           setTimeout(() => loadProfileStats(user.id), 500)
           setTimeout(() => loadProfileStats(user.id), 1000)
           setTimeout(() => loadProfileStats(user.id), 2000)

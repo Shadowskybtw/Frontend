@@ -89,20 +89,18 @@ export default function StocksPage() {
     
     setIsUsingHookah(true)
     try {
-      const initData = typeof window !== 'undefined' ? (window as any).Telegram?.WebApp?.initData || '' : ''
-      const response = await fetch(`/api/free-hookahs/${user.id}`, {
+      const response = await fetch(`/api/free-hookahs/${user.tg_id}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-telegram-init-data': initData
         },
       })
       
       const data = await response.json()
       if (data.success) {
         alert('🎉 Бесплатный кальян успешно получен!')
-        await loadFreeHookahs(user.id) // Перезагружаем бесплатные кальяны
-        await loadStocks(user.id) // Перезагружаем акции
+        await loadFreeHookahs(user.tg_id) // Перезагружаем бесплатные кальяны
+        await loadStocks(user.tg_id) // Перезагружаем акции
       } else {
         alert('❌ Ошибка: ' + data.message)
       }
@@ -157,9 +155,9 @@ export default function StocksPage() {
   useEffect(() => {
     if (user?.id && isInTelegram) {
       ensureStockExists(user.id) // Создаем акцию если её нет
-      loadStocks(user.id)
-      loadQrCode(user.id)
-      loadFreeHookahs(user.id) // Загружаем бесплатные кальяны
+      loadStocks(user.tg_id)
+      loadQrCode(user.tg_id)
+      loadFreeHookahs(user.tg_id) // Загружаем бесплатные кальяны
     }
   }, [user, isInTelegram, ensureStockExists])
 
@@ -168,8 +166,8 @@ export default function StocksPage() {
     if (!user?.id || !isInTelegram) return
 
     const interval = setInterval(() => {
-      loadStocks(user.id)
-      loadFreeHookahs(user.id)
+      loadStocks(user.tg_id)
+      loadFreeHookahs(user.tg_id)
     }, 2000) // Обновляем каждые 2 секунды
 
     return () => clearInterval(interval)
@@ -179,8 +177,8 @@ export default function StocksPage() {
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible' && user?.id && isInTelegram) {
-        loadStocks(user.id)
-        loadFreeHookahs(user.id)
+        loadStocks(user.tg_id)
+        loadFreeHookahs(user.tg_id)
       }
     }
 
