@@ -126,7 +126,7 @@ class DUNGEONBot:
         try:
             cursor = conn.cursor()
             cursor.execute(
-                "SELECT id, user_id, is_used, created_at FROM free_hookahs WHERE user_id = %s",
+                "SELECT id, user_id, used, created_at FROM free_hookahs WHERE user_id = %s",
                 (user_id,)
             )
             hookahs = cursor.fetchall()
@@ -136,7 +136,7 @@ class DUNGEONBot:
             return [{
                 'id': hookah[0],
                 'user_id': hookah[1],
-                'is_used': hookah[2],
+                'used': hookah[2],
                 'created_at': hookah[3]
             } for hookah in hookahs]
         except Exception as e:
@@ -219,7 +219,7 @@ class DUNGEONBot:
                 
                 # Check for free hookahs
                 free_hookahs = self.get_user_free_hookahs(user_id)
-                unused_free_hookahs = [h for h in free_hookahs if not h['is_used']]
+                unused_free_hookahs = [h for h in free_hookahs if not h['used']]
                 has_free_hookah = len(unused_free_hookahs) > 0
                 
                 return {
@@ -294,10 +294,12 @@ class DUNGEONBot:
     
     async def start_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Handle /start command"""
+        logger.info("🚀 START COMMAND CALLED!")
         user = update.effective_user
         chat_id = update.effective_chat.id
         
         logger.info(f"User {user.id} ({user.username}) started the bot in chat {chat_id}")
+        logger.info(f"🔍 Bot: Update object: {update}")
         
         # Create WebApp button
         keyboard = [
@@ -345,10 +347,12 @@ class DUNGEONBot:
     
     async def progress_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Handle /progress command"""
+        logger.info("🚀 PROGRESS COMMAND CALLED!")
         user = update.effective_user
         
         logger.info(f"🔍 Bot: User {user.id} ({user.username}) requested /progress")
         logger.info(f"🔍 Bot: Telegram user data: {user}")
+        logger.info(f"🔍 Bot: Update object: {update}")
         
         # Get user from database
         db_user = self.get_user_by_tg_id(user.id)
@@ -380,7 +384,7 @@ class DUNGEONBot:
                 
                 # Check for free hookahs
                 free_hookahs = self.get_user_free_hookahs(db_user['id'])
-                unused_free_hookahs = [h for h in free_hookahs if not h['is_used']]
+                unused_free_hookahs = [h for h in free_hookahs if not h['used']]
                 
                 if unused_free_hookahs:
                     progress_message = f"Привет, {db_user['first_name']}! 👋\n\n🎯 У вас есть бесплатный кальян! 🎁\n\nПриходите скорее забирать его!"
@@ -580,7 +584,15 @@ class DUNGEONBot:
     
     def run_polling(self):
         """Run bot in polling mode (for development/testing)"""
-        logger.info("Starting bot in polling mode...")
+        logger.info("🚀 Starting bot in polling mode...")
+        logger.info("🚀 Bot handlers registered:")
+        logger.info("🚀 - start_command")
+        logger.info("🚀 - help_command") 
+        logger.info("🚀 - progress_command")
+        logger.info("🚀 - register_command")
+        logger.info("🚀 - stocks_command")
+        logger.info("🚀 - hookahs_command")
+        
         # Start notification scheduler
         self.run_notification_scheduler()
         self.application.run_polling(
