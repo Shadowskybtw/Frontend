@@ -15,7 +15,7 @@ import json
 
 # Configuration
 BOT_TOKEN = "8242076298:AAGnHplpi7Ad4hOo9z4zTugjqcCEXLJt9to"
-WEBAPP_URL = "https://next-5th7g9hii-shadowskys-projects.vercel.app"
+WEBAPP_URL = "https://frontend-delta-sandy-58.vercel.app"
 WEBHOOK_URL = f"{WEBAPP_URL}/api/telegram/webhook"
 WEBHOOK_SECRET = "78256ad5d219d6c4851b24d7c386bc05bbe2456d3e3b965557cb25294a6e49f9"
 
@@ -36,6 +36,7 @@ class DUNGEONBot:
         # Command handlers
         self.application.add_handler(CommandHandler("start", self.start_command))
         self.application.add_handler(CommandHandler("help", self.help_command))
+        self.application.add_handler(CommandHandler("progress", self.progress_command))
         self.application.add_handler(CommandHandler("register", self.register_command))
         self.application.add_handler(CommandHandler("stocks", self.stocks_command))
         self.application.add_handler(CommandHandler("hookahs", self.hookahs_command))
@@ -62,16 +63,13 @@ class DUNGEONBot:
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
         
-        welcome_text = f"""
-🎉 Добро пожаловать в DUNGEON, {user.first_name}!
+        welcome_text = f"""Добро пожаловать! Я буду напоминать вам о прогрессе в акции кальянов.
 
-Здесь вы можете:
-• 📊 Отслеживать прогресс акций
-• 🎯 Получать бесплатные кальяны  
-• 💎 Персональные предложения
+📊 Доступные команды:
+/progress - узнать свой прогресс
+/help - помощь
 
-Нажмите кнопку ниже, чтобы открыть приложение:
-        """.strip()
+💡 Для подробной информации о прогрессе используйте мини-приложение!"""
         
         await update.message.reply_text(
             welcome_text,
@@ -81,27 +79,65 @@ class DUNGEONBot:
     
     async def help_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Handle /help command"""
-        help_text = """
-🤖 <b>DUNGEON Bot - Справка</b>
+        help_text = """SOS Помощь
 
-<b>Команды:</b>
-/start - Открыть WebApp
-/register - Регистрация
-/stocks - Ваши акции
-/hookahs - Бесплатные кальяны
-/help - Эта справка
+📊 Команды:
+/start - начать работу с ботом
+/progress - узнать свой прогресс в акции
+/help - показать эту справку
 
-<b>WebApp функции:</b>
-• Регистрация пользователя
-• Отслеживание прогресса
-• Управление кальянами
-• Персональные предложения
+🔔 Уведомления:
+Бот отправляет ежедневные уведомления в 18:00 о вашем прогрессе в акции кальянов.
 
-<b>Поддержка:</b>
-По всем вопросам обращайтесь к администрации.
-        """.strip()
+🎯 Как работает акция:
+• Каждые 5 покупок = 1 бесплатный кальян
+• После получения бесплатного счетчик сбрасывается
+• Прогресс отображается в процентах
+
+Если у вас есть вопросы, обратитесь к администратору!"""
         
         await update.message.reply_text(help_text, parse_mode=ParseMode.HTML)
+    
+    async def progress_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """Handle /progress command"""
+        user = update.effective_user
+        
+        # Try to get user stocks from API
+        try:
+            response = requests.get(
+                f"{WEBAPP_URL}/api/stocks/{user.id}",
+                headers={'x-telegram-init-data': 'test'}  # Placeholder
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('success') and data.get('stocks'):
+                    progress_text = "📊 <b>Ваш прогресс в акции:</b>\n\n"
+                    for stock in data['stocks']:
+                        progress_bar = "█" * (stock['progress'] // 10) + "░" * (10 - stock['progress'] // 10)
+                        progress_text += f"• {stock['stock_name']}: {stock['progress']}%\n{progress_bar}\n\n"
+                else:
+                    progress_text = "📊 У вас пока нет акций. Зарегистрируйтесь в WebApp!"
+            else:
+                progress_text = "📊 Для просмотра прогресса зарегистрируйтесь в WebApp!"
+                
+        except Exception as e:
+            logger.error(f"Error fetching progress: {e}")
+            progress_text = "📊 Для просмотра прогресса зарегистрируйтесь в WebApp!"
+        
+        keyboard = [
+            [InlineKeyboardButton(
+                "📊 Открыть приложение", 
+                web_app=WebAppInfo(url=f"{WEBAPP_URL}/register")
+            )]
+        ]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        
+        await update.message.reply_text(
+            progress_text,
+            reply_markup=reply_markup,
+            parse_mode=ParseMode.HTML
+        )
     
     async def register_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Handle /register command"""
