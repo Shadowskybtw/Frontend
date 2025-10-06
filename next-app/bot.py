@@ -14,7 +14,7 @@ import requests
 import json
 
 # Configuration
-BOT_TOKEN = "7829386579:AAGAUFZdd6PbuDtdEI1zxAkfY1vlj0Mu0WE"
+BOT_TOKEN = "8242076298:AAGnHplpi7Ad4hOo9z4zTugjqcCEXLJt9to"
 WEBAPP_URL = "https://next-5th7g9hii-shadowskys-projects.vercel.app"
 WEBHOOK_URL = f"{WEBAPP_URL}/api/telegram/webhook"
 WEBHOOK_SECRET = "78256ad5d219d6c4851b24d7c386bc05bbe2456d3e3b965557cb25294a6e49f9"
