@@ -50,8 +50,11 @@ class DUNGEONBot:
     
     def get_user_by_tg_id(self, tg_id):
         """Get user by Telegram ID from database"""
+        logger.info(f"🔍 Bot: Getting user by TG ID: {tg_id}")
+        
         conn = self.get_db_connection()
         if not conn:
+            logger.error("❌ Bot: Database connection failed")
             return None
         
         try:
@@ -64,8 +67,10 @@ class DUNGEONBot:
             cursor.close()
             conn.close()
             
+            logger.info(f"🔍 Bot: Raw user from database: {user}")
+            
             if user:
-                return {
+                user_data = {
                     'id': user[0],
                     'tg_id': user[1],
                     'first_name': user[2],
@@ -73,7 +78,11 @@ class DUNGEONBot:
                     'phone': user[4],
                     'username': user[5]
                 }
-            return None
+                logger.info(f"✅ Bot: Converted user data: {user_data}")
+                return user_data
+            else:
+                logger.info(f"❌ Bot: No user found for tg_id: {tg_id}")
+                return None
         except Exception as e:
             logger.error(f"Error getting user by tg_id {tg_id}: {e}")
             if conn:
@@ -338,10 +347,13 @@ class DUNGEONBot:
         """Handle /progress command"""
         user = update.effective_user
         
-        logger.info(f"User {user.id} ({user.username}) requested /progress")
+        logger.info(f"🔍 Bot: User {user.id} ({user.username}) requested /progress")
+        logger.info(f"🔍 Bot: Telegram user data: {user}")
         
         # Get user from database
         db_user = self.get_user_by_tg_id(user.id)
+        logger.info(f"🔍 Bot: Database user lookup result: {db_user}")
+        
         if not db_user:
             progress_message = "📊 Для просмотра прогресса зарегистрируйтесь в WebApp!"
             keyboard = [
