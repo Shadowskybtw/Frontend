@@ -1,20 +1,31 @@
 "use client"
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useUser } from '@/contexts/UserContext'
 
 export default function HomePage() {
   const router = useRouter()
+  const { user, loading, isInitialized } = useUser()
 
   useEffect(() => {
-    // Перенаправляем на страницу акций
-    router.push('/stocks')
-  }, [router])
+    if (isInitialized && !loading) {
+      if (user) {
+        // Пользователь авторизован - перенаправляем на акции
+        router.push('/stocks')
+      } else {
+        // Пользователь не авторизован - перенаправляем на регистрацию
+        router.push('/register')
+      }
+    }
+  }, [user, loading, isInitialized, router])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black flex items-center justify-center">
       <div className="text-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500 mx-auto mb-4"></div>
-        <p className="text-gray-300">Перенаправление на акции...</p>
+        <p className="text-gray-300">
+          {loading ? 'Загрузка...' : 'Перенаправление...'}
+        </p>
       </div>
     </div>
   )

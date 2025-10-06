@@ -100,15 +100,8 @@ export function UserProvider({ children }: UserProviderProps) {
   }
 
   const loadFallbackData = () => {
-    console.log('🔄 Using fallback data globally')
-    const testUser = { 
-      id: 937011437, 
-      tg_id: 937011437, 
-      first_name: 'Николай', 
-      last_name: 'Шадовский', 
-      username: 'shadowskydie' 
-    }
-    setUser(testUser)
+    console.log('🔄 No Telegram user data available - redirecting to register')
+    setUser(null)
     setLoading(false)
     setIsInitialized(true)
   }
