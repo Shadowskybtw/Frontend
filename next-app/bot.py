@@ -301,11 +301,24 @@ class DUNGEONBot:
         logger.info(f"User {user.id} ({user.username}) started the bot in chat {chat_id}")
         logger.info(f"🔍 Bot: Update object: {update}")
         
+        # Check if user is registered
+        db_user = self.get_user_by_tg_id(user.id)
+        logger.info(f"🔍 Bot: User registration check result: {db_user}")
+        
+        if db_user:
+            # User is registered - send to stocks page
+            webapp_url = f"{WEBAPP_URL}/stocks?tg_id={user.id}&first_name={user.first_name}&last_name={user.last_name}&username={user.username or ''}"
+            button_text = "📱 Открыть приложение"
+        else:
+            # User is not registered - send to register page
+            webapp_url = f"{WEBAPP_URL}/register?tg_id={user.id}&first_name={user.first_name}&last_name={user.last_name}&username={user.username or ''}"
+            button_text = "🚀 Зарегистрироваться"
+        
         # Create WebApp button
         keyboard = [
             [InlineKeyboardButton(
-                "🚀 Открыть приложение", 
-                web_app=WebAppInfo(url=f"{WEBAPP_URL}/register")
+                button_text, 
+                web_app=WebAppInfo(url=webapp_url)
             )]
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
@@ -366,10 +379,11 @@ class DUNGEONBot:
         
         if not db_user:
             progress_message = "📊 Для просмотра прогресса зарегистрируйтесь в WebApp!"
+            webapp_url = f"{WEBAPP_URL}/register?tg_id={user.id}&first_name={user.first_name}&last_name={user.last_name}&username={user.username or ''}"
             keyboard = [
                 [InlineKeyboardButton(
-                    "🚀 Открыть приложение", 
-                    web_app=WebAppInfo(url=f"{WEBAPP_URL}/register")
+                    "🚀 Зарегистрироваться", 
+                    web_app=WebAppInfo(url=webapp_url)
                 )]
             ]
             reply_markup = InlineKeyboardMarkup(keyboard)
@@ -399,19 +413,21 @@ class DUNGEONBot:
                 else:
                     progress_message = f"Привет, {db_user['first_name']}! 👋\n\n🎯 До бесплатного кальяна осталось: {slots_remaining} кальянов"
                 
+                webapp_url = f"{WEBAPP_URL}/stocks?tg_id={user.id}&first_name={user.first_name}&last_name={user.last_name}&username={user.username or ''}"
                 keyboard = [
                     [InlineKeyboardButton(
                         "📱 Открыть приложение", 
-                        web_app=WebAppInfo(url=f"{WEBAPP_URL}/stocks")
+                        web_app=WebAppInfo(url=webapp_url)
                     )]
                 ]
                 reply_markup = InlineKeyboardMarkup(keyboard)
             else:
                 progress_message = f"Привет, {db_user['first_name']}! 👋\n\n📊 У вас пока нет акций. Зарегистрируйтесь в WebApp!"
+                webapp_url = f"{WEBAPP_URL}/register?tg_id={user.id}&first_name={user.first_name}&last_name={user.last_name}&username={user.username or ''}"
                 keyboard = [
                     [InlineKeyboardButton(
-                        "🚀 Открыть приложение", 
-                        web_app=WebAppInfo(url=f"{WEBAPP_URL}/register")
+                        "🚀 Зарегистрироваться", 
+                        web_app=WebAppInfo(url=webapp_url)
                     )]
                 ]
                 reply_markup = InlineKeyboardMarkup(keyboard)

@@ -109,6 +109,31 @@ export function UserProvider({ children }: UserProviderProps) {
     setIsInitialized(true)
   }
 
+  const tryToGetUserFromUrl = () => {
+    console.log('🔍 Trying to get user data from URL parameters')
+    const urlParams = new URLSearchParams(window.location.search)
+    const tgId = urlParams.get('tg_id')
+    const firstName = urlParams.get('first_name')
+    const lastName = urlParams.get('last_name')
+    const username = urlParams.get('username')
+    
+    console.log('🔍 URL parameters:', { tgId, firstName, lastName, username })
+    
+    if (tgId) {
+      console.log('👤 User data found in URL parameters, attempting registration')
+      checkOrRegisterUser({
+        id: parseInt(tgId),
+        tg_id: parseInt(tgId),
+        first_name: firstName || 'Unknown',
+        last_name: lastName || 'User',
+        username: username || undefined
+      })
+    } else {
+      console.log('❌ No user data in URL parameters')
+      loadFallbackData()
+    }
+  }
+
   useEffect(() => {
     const checkTelegramWebApp = () => {
       try {
@@ -167,39 +192,17 @@ export function UserProvider({ children }: UserProviderProps) {
                   loadFallbackData()
                 }
               } else {
-                console.log('❌ No user data in initData globally')
-                loadFallbackData()
+                console.log('❌ No user data in initData globally, trying URL parameters')
+                tryToGetUserFromUrl()
               }
             } else {
-              console.log('❌ No initData available globally')
-              loadFallbackData()
+              console.log('❌ No initData available globally, trying URL parameters')
+              tryToGetUserFromUrl()
             }
           }
         } else {
-          console.log('❌ Telegram WebApp not available globally, checking if we can get user data from URL')
-          // Проверяем, есть ли данные пользователя в URL параметрах
-          const urlParams = new URLSearchParams(window.location.search)
-          const tgId = urlParams.get('tg_id')
-          const firstName = urlParams.get('first_name')
-          const lastName = urlParams.get('last_name')
-          const username = urlParams.get('username')
-          
-          console.log('🔍 URL parameters:', { tgId, firstName, lastName, username })
-          console.log('🔍 Current URL:', window.location.href)
-          
-          if (tgId) {
-            console.log('👤 User data found in URL parameters:', { tgId, firstName, lastName, username })
-            checkOrRegisterUser({
-              id: parseInt(tgId),
-              tg_id: parseInt(tgId),
-              first_name: firstName || 'Unknown',
-              last_name: lastName || 'User',
-              username: username || undefined
-            })
-          } else {
-            console.log('🔄 No user data in URL, using fallback')
-            loadFallbackData()
-          }
+          console.log('❌ Telegram WebApp not available globally, trying URL parameters')
+          tryToGetUserFromUrl()
         }
       } catch (error) {
         console.error('❌ Error checking Telegram WebApp globally:', error)
