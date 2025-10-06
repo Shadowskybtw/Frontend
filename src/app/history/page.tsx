@@ -53,7 +53,7 @@ export default function HistoryPage() {
       console.log('📊 Loading history for user:', user.tg_id, 'page:', currentPage)
       fetchHistory(user.tg_id, currentPage)
     }
-  }, [isInitialized, user?.tg_id, currentPage])
+  }, [isInitialized, user?.tg_id, currentPage, fetchHistory])
 
   if (loading || !isInitialized) {
     return (

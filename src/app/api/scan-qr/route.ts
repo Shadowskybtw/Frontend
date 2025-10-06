@@ -145,6 +145,10 @@ export async function POST(request: NextRequest) {
     
     const updatedStock = await db.updateStockProgress(stock.id, newProgress)
     
+    if (!updatedStock) {
+      return NextResponse.json({ success: false, message: 'Ошибка при обновлении прогресса' }, { status: 500 })
+    }
+    
     // Проверяем, заполнены ли все слоты ПОСЛЕ добавления (100% прогресса)
     if (updatedStock.progress >= 100) {
       // Если все слоты заполнены, сбрасываем прогресс на 0

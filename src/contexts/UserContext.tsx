@@ -1,5 +1,5 @@
 "use client"
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react'
 
 type TgUser = {
   id: number
@@ -57,7 +57,7 @@ export function UserProvider({ children }: UserProviderProps) {
   const [isInitializing, setIsInitializing] = useState(false)
   const [hasTriedInitialization, setHasTriedInitialization] = useState(false)
 
-  const checkOrRegisterUser = async (tgUser: TgUser) => {
+  const checkOrRegisterUser = useCallback(async (tgUser: TgUser) => {
     // Защита от повторных вызовов
     if (isInitializing) {
       console.log('⚠️ Already initializing, skipping duplicate call')
@@ -125,7 +125,7 @@ export function UserProvider({ children }: UserProviderProps) {
     } finally {
       setIsInitializing(false)
     }
-  }
+  }, [isInitializing, isInitialized, user, hasTriedInitialization])
 
   const loadFallbackData = () => {
     console.log('🔄 No Telegram user data available - redirecting to register')
@@ -137,7 +137,7 @@ export function UserProvider({ children }: UserProviderProps) {
     setHasTriedInitialization(true)
   }
 
-  const tryToGetUserFromUrl = () => {
+  const tryToGetUserFromUrl = useCallback(() => {
     console.log('🔍 Trying to get user data from URL parameters')
     const urlParams = new URLSearchParams(window.location.search)
     const tgId = urlParams.get('tg_id')
@@ -160,7 +160,7 @@ export function UserProvider({ children }: UserProviderProps) {
       console.log('❌ No user data in URL parameters')
       loadFallbackData()
     }
-  }
+  }, [checkOrRegisterUser])
 
   useEffect(() => {
     const checkTelegramWebApp = () => {
@@ -248,7 +248,7 @@ export function UserProvider({ children }: UserProviderProps) {
 
         // Запускаем проверку сразу
         checkTelegramWebApp()
-      }, [])
+      }, [checkOrRegisterUser, tryToGetUserFromUrl, hasTriedInitialization])
 
   const value = {
     user,
