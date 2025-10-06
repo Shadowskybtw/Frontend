@@ -55,6 +55,7 @@ export function UserProvider({ children }: UserProviderProps) {
   const [error, setError] = useState<string | null>(null)
   const [isInitialized, setIsInitialized] = useState(false)
   const [isInitializing, setIsInitializing] = useState(false)
+  const [hasTriedInitialization, setHasTriedInitialization] = useState(false)
 
   const checkOrRegisterUser = async (tgUser: TgUser) => {
     // Защита от повторных вызовов
@@ -65,6 +66,11 @@ export function UserProvider({ children }: UserProviderProps) {
     
     if (isInitialized && user) {
       console.log('⚠️ User already initialized, skipping duplicate call')
+      return
+    }
+    
+    if (hasTriedInitialization && !isInitialized) {
+      console.log('⚠️ Initialization already attempted and failed, skipping duplicate call')
       return
     }
     
@@ -128,6 +134,7 @@ export function UserProvider({ children }: UserProviderProps) {
     setLoading(false)
     setIsInitialized(true)
     setIsInitializing(false)
+    setHasTriedInitialization(true)
   }
 
   const tryToGetUserFromUrl = () => {
@@ -157,6 +164,14 @@ export function UserProvider({ children }: UserProviderProps) {
 
   useEffect(() => {
     const checkTelegramWebApp = () => {
+      // Защита от повторной инициализации
+      if (hasTriedInitialization) {
+        console.log('⚠️ Initialization already attempted, skipping')
+        return
+      }
+      
+      setHasTriedInitialization(true)
+      
       try {
         console.log('🔍 Checking Telegram WebApp availability...')
         console.log('🔍 Window object:', typeof window)
@@ -233,7 +248,7 @@ export function UserProvider({ children }: UserProviderProps) {
 
         // Запускаем проверку сразу
         checkTelegramWebApp()
-      }, [checkOrRegisterUser, tryToGetUserFromUrl])
+      }, [])
 
   const value = {
     user,

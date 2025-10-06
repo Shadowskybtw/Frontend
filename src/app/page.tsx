@@ -8,6 +8,7 @@ export default function HomePage() {
   const { user, loading, isInitialized } = useUser()
 
   useEffect(() => {
+    console.log('🏠 HomePage useEffect triggered:', { isInitialized, loading, user: !!user })
     if (isInitialized && !loading) {
       if (user) {
         // Пользователь авторизован - перенаправляем на акции
