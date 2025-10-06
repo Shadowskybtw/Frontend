@@ -89,10 +89,12 @@ export default function StocksPage() {
     
     setIsUsingHookah(true)
     try {
+      const initData = typeof window !== 'undefined' ? (window as any).Telegram?.WebApp?.initData || '' : ''
       const response = await fetch(`/api/free-hookahs/${user.id}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'x-telegram-init-data': initData
         },
       })
       
