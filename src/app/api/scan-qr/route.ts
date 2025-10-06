@@ -154,35 +154,12 @@ export async function POST(request: NextRequest) {
       // Если все слоты заполнены, сбрасываем прогресс на 0
       const resetStock = await db.updateStockProgress(stock.id, 0)
       
-      // Создаем бесплатный кальян для завершенной акции
-      await db.createFreeHookah(user.id)
-      
-      // Добавляем запись в историю о получении бесплатного кальяна
-      try {
-        console.log(`📝 [${requestId}] Adding free hookah to history:`, { 
-          userId: user.id, 
-          hookahType: 'free', 
-          slotNumber: 5, // 5-й слот завершил акцию
-          stockId: stock.id 
-        })
-        
-        await db.addHookahToHistory(
-          user.id, 
-          'free', 
-          5, // 5-й слот завершил акцию
-          stock.id,
-          null, // adminId
-          'promotion_complete' // scanMethod
-        )
-        console.log(`✅ [${requestId}] Free hookah added to history successfully`)
-      } catch (historyError) {
-        console.error(`❌ [${requestId}] Error adding free hookah to history:`, historyError)
-        // Продолжаем выполнение, даже если не удалось добавить в историю
-      }
+      // НЕ создаем бесплатный кальян автоматически - только показываем, что он доступен
+      // Бесплатный кальян будет создан только когда пользователь нажмет кнопку
       
       return NextResponse.json({ 
         success: true, 
-        message: 'Акция завершена! Получен бесплатный кальян! Прогресс сброшен.',
+        message: 'Акция завершена! Бесплатный кальян доступен! Нажмите кнопку для получения.',
         user: {
           id: user.id,
           tg_id: user.tg_id,
@@ -194,7 +171,7 @@ export async function POST(request: NextRequest) {
         stock: resetStock,
         newPromotion: true,
         refreshRequired: true,
-        freeHookahCreated: true
+        freeHookahAvailable: true // Показываем, что бесплатный кальян доступен
       })
     }
 

@@ -112,6 +112,38 @@ export default function StocksPage() {
     }
   }
 
+  // Получаем бесплатный кальян (создаем его в БД)
+  const claimFreeHookah = async () => {
+    if (!user?.tg_id || isUsingHookah) return
+    
+    setIsUsingHookah(true)
+    try {
+      const response = await fetch('/api/claim-free-hookah', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          tg_id: user.tg_id
+        })
+      })
+      
+      const data = await response.json()
+      if (data.success) {
+        alert('🎉 Бесплатный кальян успешно получен!')
+        await loadFreeHookahs(user.tg_id) // Перезагружаем бесплатные кальяны
+        await loadStocks(user.tg_id) // Перезагружаем акции
+      } else {
+        alert('❌ Ошибка: ' + data.message)
+      }
+    } catch (error) {
+      console.error('Error claiming free hookah:', error)
+      alert('❌ Произошла ошибка при получении бесплатного кальяна')
+    } finally {
+      setIsUsingHookah(false)
+    }
+  }
+
   // Создаем акцию "5+1 кальян" автоматически при первом заходе
   const ensureStockExists = useCallback(async (tgId: number) => {
     try {
@@ -274,6 +306,31 @@ export default function StocksPage() {
                 <p className="text-red-300 text-xs mt-2 text-center">
                   Покажите QR код администратору для активации слотов
                 </p>
+                
+                {/* Кнопка получения бесплатного кальяна */}
+                {(() => {
+                  const stock = stocks.find(s => s.stock_name === '5+1 кальян')
+                  const progress = stock ? stock.progress : 0
+                  const hasUnusedFreeHookah = freeHookahs.some(h => !h.used)
+                  
+                  if (progress >= 100 && !hasUnusedFreeHookah) {
+                    return (
+                      <div className="mt-4 p-3 bg-yellow-900/30 border border-yellow-500/50 rounded-lg">
+                        <p className="text-yellow-200 text-sm mb-3 text-center">
+                          🎉 Все слоты заполнены! Бесплатный кальян доступен!
+                        </p>
+                        <button
+                          onClick={claimFreeHookah}
+                          disabled={isUsingHookah}
+                          className="w-full bg-yellow-600 hover:bg-yellow-700 disabled:bg-yellow-400 text-white py-2 px-4 rounded-md text-sm font-medium transition-colors"
+                        >
+                          {isUsingHookah ? '⏳ Получаем...' : '🎁 Получить бесплатный кальян'}
+                        </button>
+                      </div>
+                    )
+                  }
+                  return null
+                })()}
               </div>
 
               
