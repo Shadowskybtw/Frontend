@@ -57,7 +57,7 @@ export function UserProvider({ children }: UserProviderProps) {
       console.log('🔍 Checking or registering user globally:', tgUser)
       console.log('🔍 Current user state before API call:', user)
       
-      const initData = (window as any).Telegram?.WebApp?.initData || ''
+      const initData = typeof window !== 'undefined' ? (window as any).Telegram?.WebApp?.initData || '' : ''
       console.log('📡 Init data available:', !!initData)
       
       const response = await fetch('/api/check-or-register', {
@@ -120,13 +120,14 @@ export function UserProvider({ children }: UserProviderProps) {
         if (typeof window !== 'undefined' && (window as any).Telegram?.WebApp) {
           console.log('✅ Telegram WebApp is available')
           // Инициализируем WebApp
-          (window as any).Telegram.WebApp.ready()
-          ;(window as any).Telegram.WebApp.expand()
+          const telegramWebApp = (window as any).Telegram.WebApp
+          telegramWebApp.ready()
+          telegramWebApp.expand()
           
           setIsInTelegram(true)
-          const tgUser = (window as any).Telegram.WebApp.initDataUnsafe?.user as TgUser | undefined
+          const tgUser = telegramWebApp.initDataUnsafe?.user as TgUser | undefined
           
-          console.log('🔍 initDataUnsafe:', (window as any).Telegram.WebApp.initDataUnsafe)
+          console.log('🔍 initDataUnsafe:', telegramWebApp.initDataUnsafe)
           console.log('🔍 tgUser from initDataUnsafe:', tgUser)
           
           if (tgUser) {
@@ -135,7 +136,7 @@ export function UserProvider({ children }: UserProviderProps) {
           } else {
             console.log('🔍 No user data in initDataUnsafe, trying to get from initData')
             // Пытаемся получить tg_id из initData
-            const initData = (window as any).Telegram.WebApp.initData
+            const initData = telegramWebApp.initData
             if (initData) {
               const urlParams = new URLSearchParams(initData)
               const userParam = urlParams.get('user')
