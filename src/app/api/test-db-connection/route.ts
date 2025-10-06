@@ -19,11 +19,23 @@ export async function GET() {
     const sampleUser = await prisma.user.findFirst()
     console.log('Sample user:', sampleUser)
     
+    // Конвертируем BigInt в number для JSON сериализации
+    const serializedSampleUser = sampleUser ? {
+      id: sampleUser.id,
+      tg_id: Number(sampleUser.tg_id),
+      first_name: sampleUser.first_name,
+      last_name: sampleUser.last_name,
+      phone: sampleUser.phone,
+      username: sampleUser.username,
+      created_at: sampleUser.created_at,
+      updated_at: sampleUser.updated_at
+    } : null
+    
     return NextResponse.json({ 
       success: true, 
       message: 'Database connection successful',
       userCount: userCount,
-      sampleUser: sampleUser
+      sampleUser: serializedSampleUser
     })
 
   } catch (error) {
