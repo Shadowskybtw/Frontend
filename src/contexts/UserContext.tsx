@@ -112,13 +112,22 @@ export function UserProvider({ children }: UserProviderProps) {
   useEffect(() => {
     const checkTelegramWebApp = () => {
       try {
+        console.log('🔍 Checking Telegram WebApp availability...')
+        console.log('🔍 Window object:', typeof window)
+        console.log('🔍 Telegram object:', typeof (window as any).Telegram)
+        console.log('🔍 WebApp object:', typeof (window as any).Telegram?.WebApp)
+        
         if (typeof window !== 'undefined' && (window as any).Telegram?.WebApp) {
+          console.log('✅ Telegram WebApp is available')
           // Инициализируем WebApp
           (window as any).Telegram.WebApp.ready()
           ;(window as any).Telegram.WebApp.expand()
           
           setIsInTelegram(true)
           const tgUser = (window as any).Telegram.WebApp.initDataUnsafe?.user as TgUser | undefined
+          
+          console.log('🔍 initDataUnsafe:', (window as any).Telegram.WebApp.initDataUnsafe)
+          console.log('🔍 tgUser from initDataUnsafe:', tgUser)
           
           if (tgUser) {
             console.log('👤 User found in initDataUnsafe globally:', tgUser)
@@ -157,13 +166,16 @@ export function UserProvider({ children }: UserProviderProps) {
             }
           }
         } else {
-          console.log('🔄 Telegram WebApp not available globally, checking if we can get user data from URL')
+          console.log('❌ Telegram WebApp not available globally, checking if we can get user data from URL')
           // Проверяем, есть ли данные пользователя в URL параметрах
           const urlParams = new URLSearchParams(window.location.search)
           const tgId = urlParams.get('tg_id')
           const firstName = urlParams.get('first_name')
           const lastName = urlParams.get('last_name')
           const username = urlParams.get('username')
+          
+          console.log('🔍 URL parameters:', { tgId, firstName, lastName, username })
+          console.log('🔍 Current URL:', window.location.href)
           
           if (tgId) {
             console.log('👤 User data found in URL parameters:', { tgId, firstName, lastName, username })
