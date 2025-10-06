@@ -585,7 +585,7 @@ class DUNGEONBot:
         self.run_notification_scheduler()
         self.application.run_polling(
             allowed_updates=Update.ALL_TYPES,
-            drop_pending_updates=True
+            drop_pending_updates=False
         )
     
     def run_webhook(self, host='0.0.0.0', port=8443):
