@@ -32,12 +32,6 @@ export default function ProfilePage() {
     created_at: string
   }>>([])
 
-  const [hookahHistory, setHookahHistory] = useState<Array<{
-    id: number
-    hookah_type: string
-    slot_number?: number
-    created_at: string
-  }>>([])
   const [isAdmin, setIsAdmin] = useState(false)
   const [showQRScanner, setShowQRScanner] = useState(false)
   const [, setScanResult] = useState<{
@@ -63,91 +57,6 @@ export default function ProfilePage() {
   const [searchPhone, setSearchPhone] = useState('')
   const [searchedUser, setSearchedUser] = useState<any>(null)
   const [isSearchingUser, setIsSearchingUser] = useState(false)
-
-  useEffect(() => {
-    if (isInitialized && user?.id) {
-      console.log('👤 Loading profile data for user:', user.id)
-      loadProfileData(user.id)
-      loadProfileStats(user.id)
-      checkAdminRights(user.id)
-      checkAdminStatus()
-    }
-  }, [isInitialized, user])
-
-  // Загружаем данные профиля
-  const loadProfileData = async (tgId: number) => {
-    try {
-      const response = await fetch('/api/check-registration', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ tg_id: tgId }),
-      })
-
-      const data = await response.json()
-      console.log('📱 Profile data loaded:', data)
-      if (data.success && data.registered && data.user) {
-        console.log('📱 User phone from API:', data.user.phone)
-        setProfileData(data.user)
-        setEditForm({
-          first_name: data.user.first_name || '',
-          last_name: data.user.last_name || ''
-        })
-      }
-    } catch (error) {
-      console.error('Error loading profile data:', error)
-    }
-  }
-
-  // Загружаем статистику профиля
-  const loadProfileStats = async (tgId: number) => {
-    try {
-      const response = await fetch(`/api/profile/${tgId}`)
-      const data = await response.json()
-      if (data.success) {
-        setProfileStats(data.stats)
-        setUsedFreeHookahs(data.usedFreeHookahs || [])
-        setHookahHistory(data.hookahHistory || [])
-      }
-    } catch (error) {
-      console.error('Error loading profile stats:', error)
-    }
-  }
-
-  // Обновляем профиль
-  const updateProfile = async () => {
-    if (!user?.id || isSaving) return
-
-    setIsSaving(true)
-    try {
-      const response = await fetch('/api/update-profile', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          tg_id: user.id,
-          first_name: editForm.first_name,
-          last_name: editForm.last_name
-        }),
-      })
-
-      const data = await response.json()
-      if (data.success) {
-        setProfileData(data.user)
-        setIsEditing(false)
-        alert('Профиль успешно обновлен!')
-      } else {
-        alert('Ошибка обновления: ' + data.message)
-      }
-    } catch (error) {
-      console.error('Error updating profile:', error)
-      alert('Ошибка обновления профиля')
-    } finally {
-      setIsSaving(false)
-    }
-  }
 
   // Получение TG ID из базы данных
   const getTgIdFromDb = useCallback(async (userId: number) => {
@@ -222,6 +131,90 @@ export default function ProfilePage() {
       }
     }
   }, [user?.id, user?.tg_id, user?.first_name, user?.last_name, getTgIdFromDb])
+
+  useEffect(() => {
+    if (isInitialized && user?.id) {
+      console.log('👤 Loading profile data for user:', user.id)
+      loadProfileData(user.id)
+      loadProfileStats(user.id)
+      checkAdminRights(user.id)
+      checkAdminStatus()
+    }
+  }, [isInitialized, user, checkAdminStatus])
+
+  // Загружаем данные профиля
+  const loadProfileData = async (tgId: number) => {
+    try {
+      const response = await fetch('/api/check-registration', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ tg_id: tgId }),
+      })
+
+      const data = await response.json()
+      console.log('📱 Profile data loaded:', data)
+      if (data.success && data.registered && data.user) {
+        console.log('📱 User phone from API:', data.user.phone)
+        setProfileData(data.user)
+        setEditForm({
+          first_name: data.user.first_name || '',
+          last_name: data.user.last_name || ''
+        })
+      }
+    } catch (error) {
+      console.error('Error loading profile data:', error)
+    }
+  }
+
+  // Загружаем статистику профиля
+  const loadProfileStats = async (tgId: number) => {
+    try {
+      const response = await fetch(`/api/profile/${tgId}`)
+      const data = await response.json()
+      if (data.success) {
+        setProfileStats(data.stats)
+        setUsedFreeHookahs(data.usedFreeHookahs || [])
+      }
+    } catch (error) {
+      console.error('Error loading profile stats:', error)
+    }
+  }
+
+  // Обновляем профиль
+  const updateProfile = async () => {
+    if (!user?.id || isSaving) return
+
+    setIsSaving(true)
+    try {
+      const response = await fetch('/api/update-profile', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          tg_id: user.id,
+          first_name: editForm.first_name,
+          last_name: editForm.last_name
+        }),
+      })
+
+      const data = await response.json()
+      if (data.success) {
+        setProfileData(data.user)
+        setIsEditing(false)
+        alert('Профиль успешно обновлен!')
+      } else {
+        alert('Ошибка обновления: ' + data.message)
+      }
+    } catch (error) {
+      console.error('Error updating profile:', error)
+      alert('Ошибка обновления профиля')
+    } finally {
+      setIsSaving(false)
+    }
+  }
 
   // Прямое добавление кальяна по номеру телефона (как в старой админ панели)
   const addHookahDirectly = async () => {
@@ -649,7 +642,7 @@ export default function ProfilePage() {
                     <p><strong>Telegram ID:</strong> {user.tg_id}</p>
                     <p><strong>Имя:</strong> {profileData?.first_name || user.first_name || 'Не указано'}</p>
                     <p><strong>Фамилия:</strong> {profileData?.last_name || user.last_name || 'Не указано'}</p>
-                    <p><strong>Телефон:</strong> {profileData?.phone || user.phone || 'Не указано'}</p>
+                    <p><strong>Телефон:</strong> {profileData?.phone || 'Не указано'}</p>
                     <p><strong>Username:</strong> @{user.username || 'Не указано'}</p>
                   </div>
                 )}

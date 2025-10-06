@@ -211,9 +211,9 @@ export function UserProvider({ children }: UserProviderProps) {
       }
     }
 
-    // Запускаем проверку сразу
-    checkTelegramWebApp()
-  }, [])
+        // Запускаем проверку сразу
+        checkTelegramWebApp()
+      }, [checkOrRegisterUser, tryToGetUserFromUrl])
 
   const value = {
     user,

@@ -125,7 +125,7 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
       isScanningRef.current = false
       isInitializedRef.current = false
     }
-  }, [stopScanner, handleScan])
+  }, [stopScanner, handleScan, isScanning, isInitialized])
 
   useEffect(() => {
     mountedRef.current = true

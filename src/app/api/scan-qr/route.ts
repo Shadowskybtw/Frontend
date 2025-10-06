@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
         // Пытаемся парсить как JSON
         userData = JSON.parse(qr_data)
         console.log('Parsed QR data as JSON:', userData)
-      } catch (parseError) {
+      } catch {
         // Если не JSON, проверяем, может быть это просто TG ID
         console.log('QR data is not JSON, treating as raw data:', qr_data)
         
