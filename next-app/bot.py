@@ -187,6 +187,11 @@ class DUNGEONBot:
         # WebApp data handler
         self.application.add_handler(MessageHandler(filters.StatusUpdate.WEB_APP_DATA, self.webapp_data_handler))
         
+        # Callback query handlers for free hookah requests
+        from telegram.ext import CallbackQueryHandler
+        self.application.add_handler(CallbackQueryHandler(self.handle_approve_free_hookah, pattern="^approve_free_hookah_"))
+        self.application.add_handler(CallbackQueryHandler(self.handle_reject_free_hookah, pattern="^reject_free_hookah_"))
+        
         # Error handler
         self.application.add_error_handler(self.error_handler)
     
@@ -639,6 +644,154 @@ class DUNGEONBot:
         else:
             logger.error("Failed to setup webhook, falling back to polling")
             self.run_polling()
+
+    def get_all_admins(self):
+        """Get all administrators from database"""
+        conn = self.get_db_connection()
+        if not conn:
+            return []
+        
+        try:
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT id, tg_id, first_name, last_name, username 
+                FROM users 
+                WHERE is_admin = true
+            """)
+            admins = cursor.fetchall()
+            cursor.close()
+            conn.close()
+            
+            return [{
+                'id': admin[0],
+                'tg_id': admin[1],
+                'first_name': admin[2],
+                'last_name': admin[3],
+                'username': admin[4]
+            } for admin in admins]
+        except Exception as e:
+            logger.error(f"Error getting admins: {e}")
+            return []
+
+    async def notify_admins_about_free_hookah_request(self, user, stock, request_id):
+        """Send notification to all admins about free hookah request"""
+        try:
+            admins = self.get_all_admins()
+            logger.info(f"📢 Notifying {len(admins)} admins about free hookah request {request_id}")
+            
+            for admin in admins:
+                try:
+                    message = f"""
+🎁 <b>Запрос на бесплатный кальян</b>
+
+👤 <b>Пользователь:</b> {user['first_name']} {user['last_name']}
+🆔 <b>Telegram ID:</b> {user['tg_id']}
+📱 <b>Username:</b> @{user.get('username', 'Не указан')}
+📊 <b>Акция:</b> {stock['stock_name']}
+🆔 <b>ID запроса:</b> {request_id}
+
+Нажмите кнопку для подтверждения:
+                    """
+                    
+                    keyboard = [
+                        [InlineKeyboardButton(
+                            "✅ Подтвердить бесплатный кальян",
+                            callback_data=f"approve_free_hookah_{request_id}"
+                        )],
+                        [InlineKeyboardButton(
+                            "❌ Отклонить",
+                            callback_data=f"reject_free_hookah_{request_id}"
+                        )]
+                    ]
+                    reply_markup = InlineKeyboardMarkup(keyboard)
+                    
+                    await self.application.bot.send_message(
+                        chat_id=admin['tg_id'],
+                        text=message,
+                        reply_markup=reply_markup,
+                        parse_mode=ParseMode.HTML
+                    )
+                    logger.info(f"📢 Notification sent to admin {admin['first_name']} {admin['last_name']} (TG ID: {admin['tg_id']})")
+                    
+                except Exception as e:
+                    logger.error(f"Error sending notification to admin {admin['tg_id']}: {e}")
+                    
+        except Exception as e:
+            logger.error(f"Error notifying admins: {e}")
+
+    async def notify_user_about_approved_free_hookah(self, user_tg_id):
+        """Send notification to user about approved free hookah"""
+        try:
+            message = """
+🎉 <b>Ваш бесплатный кальян подтвержден!</b>
+
+✅ Администратор подтвердил ваш запрос на бесплатный кальян.
+🎁 Теперь вы можете использовать его в приложении!
+
+Нажмите кнопку для открытия приложения:
+            """
+            
+            keyboard = [
+                [InlineKeyboardButton(
+                    "📱 Открыть приложение",
+                    web_app=WebAppInfo(url=f"{WEBAPP_URL}/stocks?tg_id={user_tg_id}")
+                )]
+            ]
+            reply_markup = InlineKeyboardMarkup(keyboard)
+            
+            await self.application.bot.send_message(
+                chat_id=user_tg_id,
+                text=message,
+                reply_markup=reply_markup,
+                parse_mode=ParseMode.HTML
+            )
+            logger.info(f"📢 Approval notification sent to user {user_tg_id}")
+            
+        except Exception as e:
+            logger.error(f"Error notifying user about approved free hookah: {e}")
+
+    async def handle_approve_free_hookah(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """Handle approve free hookah callback"""
+        query = update.callback_query
+        await query.answer()
+        
+        request_id = int(query.data.split('_')[-1])
+        admin_tg_id = update.effective_user.id
+        
+        logger.info(f"Admin {admin_tg_id} approving free hookah request {request_id}")
+        
+        try:
+            # Call API to approve the request
+            response = requests.post(f"{WEBAPP_URL}/api/approve-free-hookah", json={
+                'request_id': request_id,
+                'admin_tg_id': admin_tg_id
+            })
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data['success']:
+                    await query.edit_message_text("✅ Запрос на бесплатный кальян подтвержден!")
+                else:
+                    await query.edit_message_text(f"❌ Ошибка: {data['message']}")
+            else:
+                await query.edit_message_text("❌ Ошибка сервера при подтверждении запроса")
+                
+        except Exception as e:
+            logger.error(f"Error approving free hookah request: {e}")
+            await query.edit_message_text("❌ Произошла ошибка при подтверждении запроса")
+
+    async def handle_reject_free_hookah(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """Handle reject free hookah callback"""
+        query = update.callback_query
+        await query.answer()
+        
+        request_id = int(query.data.split('_')[-1])
+        admin_tg_id = update.effective_user.id
+        
+        logger.info(f"Admin {admin_tg_id} rejecting free hookah request {request_id}")
+        
+        # TODO: Implement reject logic
+        await query.edit_message_text("❌ Запрос на бесплатный кальян отклонен")
 
 def main():
     """Main function"""

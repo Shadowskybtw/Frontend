@@ -49,6 +49,16 @@ export interface HookahHistory {
   created_at: Date | null
 }
 
+export interface FreeHookahRequest {
+  id: number
+  user_id: number
+  stock_id: number
+  status: string
+  approved_by?: number | null
+  created_at: Date
+  updated_at: Date
+}
+
 // Database queries
 export const db = {
   // Helper to check if database is connected
@@ -522,6 +532,192 @@ export const db = {
     } catch (error) {
       console.error('Error granting admin rights:', error)
       return false
+    }
+  },
+
+  // Free Hookah Request functions
+  async createFreeHookahRequest(userId: number, stockId: number): Promise<number> {
+    try {
+      const request = await prisma.freeHookahRequest.create({
+        data: {
+          user_id: userId,
+          stock_id: stockId,
+          status: 'pending'
+        }
+      })
+      console.log('Free hookah request created:', request)
+      return request.id
+    } catch (error) {
+      console.error('Error creating free hookah request:', error)
+      throw error
+    }
+  },
+
+  async getPendingFreeHookahRequest(userId: number): Promise<FreeHookahRequest | null> {
+    try {
+      const request = await prisma.freeHookahRequest.findFirst({
+        where: {
+          user_id: userId,
+          status: 'pending'
+        }
+      })
+      return request as FreeHookahRequest | null
+    } catch (error) {
+      console.error('Error getting pending free hookah request:', error)
+      return null
+    }
+  },
+
+  async getFreeHookahRequestById(requestId: number): Promise<FreeHookahRequest | null> {
+    try {
+      const request = await prisma.freeHookahRequest.findUnique({
+        where: { id: requestId }
+      })
+      return request as FreeHookahRequest | null
+    } catch (error) {
+      console.error('Error getting free hookah request by ID:', error)
+      return null
+    }
+  },
+
+  async approveFreeHookahRequest(requestId: number, adminId: number): Promise<boolean> {
+    try {
+      await prisma.freeHookahRequest.update({
+        where: { id: requestId },
+        data: {
+          status: 'approved',
+          approved_by: adminId
+        }
+      })
+      console.log('Free hookah request approved:', requestId)
+      return true
+    } catch (error) {
+      console.error('Error approving free hookah request:', error)
+      return false
+    }
+  },
+
+  async getAllAdmins(): Promise<User[]> {
+    try {
+      const admins = await prisma.user.findMany({
+        where: {
+          is_admin: true
+        }
+      })
+      return admins.map(admin => ({
+        id: admin.id,
+        tg_id: Number(admin.tg_id),
+        first_name: admin.first_name,
+        last_name: admin.last_name,
+        phone: admin.phone,
+        username: admin.username,
+        created_at: admin.created_at,
+        updated_at: admin.updated_at
+      })) as User[]
+    } catch (error) {
+      console.error('Error getting all admins:', error)
+      return []
+    }
+  },
+
+  async checkAdminRights(userId: number): Promise<boolean> {
+    try {
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { is_admin: true }
+      })
+      return user?.is_admin || false
+    } catch (error) {
+      console.error('Error checking admin rights:', error)
+      return false
+    }
+  },
+
+  async getUserById(userId: number): Promise<User | null> {
+    try {
+      const user = await prisma.user.findUnique({
+        where: { id: userId }
+      })
+      
+      if (!user) return null
+      
+      return {
+        id: user.id,
+        tg_id: Number(user.tg_id),
+        first_name: user.first_name,
+        last_name: user.last_name,
+        phone: user.phone,
+        username: user.username,
+        created_at: user.created_at,
+        updated_at: user.updated_at
+      } as User
+    } catch (error) {
+      console.error('Error getting user by ID:', error)
+      return null
+    }
+  },
+
+  async notifyAdminsAboutFreeHookahRequest(user: User, stock: Stock, requestId: number): Promise<void> {
+    try {
+      const admins = await this.getAllAdmins()
+      console.log(`Notifying ${admins.length} admins about free hookah request ${requestId}`)
+      
+      // Отправляем уведомление через API бота
+      try {
+        const response = await fetch(`${process.env.WEBAPP_URL || 'https://frontend-delta-sandy-58.vercel.app'}/api/telegram/notify-admins`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            user: user,
+            stock: stock,
+            requestId: requestId
+          })
+        })
+        
+        if (response.ok) {
+          console.log('✅ Admin notification sent successfully')
+        } else {
+          console.error('❌ Failed to send admin notification')
+        }
+      } catch (apiError) {
+        console.error('❌ Error calling notification API:', apiError)
+      }
+    } catch (error) {
+      console.error('Error notifying admins:', error)
+    }
+  },
+
+  async notifyUserAboutApprovedFreeHookah(userId: number): Promise<void> {
+    try {
+      const user = await this.getUserById(userId)
+      if (user) {
+        console.log(`📢 Notify user ${user.first_name} ${user.last_name} (TG ID: ${user.tg_id}) about approved free hookah`)
+        
+        // Отправляем уведомление через API бота
+        try {
+          const response = await fetch(`${process.env.WEBAPP_URL || 'https://frontend-delta-sandy-58.vercel.app'}/api/telegram/notify-user`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              userTgId: user.tg_id
+            })
+          })
+          
+          if (response.ok) {
+            console.log('✅ User notification sent successfully')
+          } else {
+            console.error('❌ Failed to send user notification')
+          }
+        } catch (apiError) {
+          console.error('❌ Error calling notification API:', apiError)
+        }
+      }
+    } catch (error) {
+      console.error('Error notifying user about approved free hookah:', error)
     }
   }
 }

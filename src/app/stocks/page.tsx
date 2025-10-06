@@ -113,13 +113,13 @@ export default function StocksPage() {
     }
   }
 
-  // Получаем бесплатный кальян (создаем его в БД)
-  const claimFreeHookah = async () => {
+  // Запрашиваем бесплатный кальян (отправляем запрос администраторам)
+  const requestFreeHookah = async () => {
     if (!user?.tg_id || isUsingHookah) return
     
     setIsUsingHookah(true)
     try {
-      const response = await fetch('/api/claim-free-hookah', {
+      const response = await fetch('/api/request-free-hookah', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -131,15 +131,14 @@ export default function StocksPage() {
       
       const data = await response.json()
       if (data.success) {
-        alert('🎉 Бесплатный кальян успешно получен!')
-        await loadFreeHookahs(user.tg_id) // Перезагружаем бесплатные кальяны
+        alert('⏳ Запрос на бесплатный кальян отправлен администраторам. Ожидайте подтверждения.')
         await loadStocks(user.tg_id) // Перезагружаем акции
       } else {
         alert('❌ Ошибка: ' + data.message)
       }
     } catch (error) {
-      console.error('Error claiming free hookah:', error)
-      alert('❌ Произошла ошибка при получении бесплатного кальяна')
+      console.error('Error requesting free hookah:', error)
+      alert('❌ Произошла ошибка при отправке запроса')
     } finally {
       setIsUsingHookah(false)
     }
@@ -320,11 +319,11 @@ export default function StocksPage() {
                           🎉 Все слоты заполнены! Бесплатный кальян доступен!
                         </p>
                         <button
-                          onClick={claimFreeHookah}
+                          onClick={requestFreeHookah}
                           disabled={isUsingHookah}
                           className="w-full bg-yellow-600 hover:bg-yellow-700 disabled:bg-yellow-400 text-white py-2 px-4 rounded-md text-sm font-medium transition-colors"
                         >
-                          {isUsingHookah ? '⏳ Получаем...' : '🎁 Получить бесплатный кальян'}
+                          {isUsingHookah ? '⏳ Отправляем запрос...' : '🎁 Запросить бесплатный кальян'}
                         </button>
                       </div>
                     )
