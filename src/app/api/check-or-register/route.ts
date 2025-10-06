@@ -78,12 +78,15 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    console.log('Checking if user exists for tg_id:', payload.tg_id)
+    console.log('🔍 Checking if user exists for tg_id:', payload.tg_id)
+    console.log('🔍 Payload received:', payload)
     
     // Check if user already exists
     const existingUser = await db.getUserByTgId(payload.tg_id)
+    console.log('🔍 Database lookup result:', existingUser)
+    
     if (existingUser) {
-      console.log('User already exists:', existingUser)
+      console.log('✅ User already exists:', existingUser)
       return NextResponse.json({ 
         success: true, 
         message: 'User already registered',
@@ -92,7 +95,13 @@ export async function POST(req: NextRequest) {
       })
     }
 
-    console.log('User not found, creating new user...')
+    console.log('🆕 User not found, creating new user...')
+    console.log('🆕 User data to create:', {
+      tg_id: payload.tg_id,
+      first_name: payload.firstName,
+      last_name: payload.lastName,
+      username: payload.username
+    })
     
     // Create new user with default phone if not provided
     const defaultPhone = payload.phone || '+0000000000'
@@ -105,7 +114,7 @@ export async function POST(req: NextRequest) {
       username: payload.username || undefined
     })
 
-    console.log('New user created successfully:', newUser)
+    console.log('✅ New user created successfully:', newUser)
 
     // Create initial stock for new user
     const initialStock = await db.createStock({

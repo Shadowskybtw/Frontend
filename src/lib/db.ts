@@ -58,16 +58,21 @@ export const db = {
   // User operations
   async getUserByTgId(tgId: number): Promise<User | null> {
     try {
-      console.log('Getting user by TG ID:', tgId)
+      console.log('🔍 Getting user by TG ID:', tgId)
+      console.log('🔍 Searching for tg_id as BigInt:', BigInt(tgId))
+      
       const user = await prisma.user.findUnique({
         where: { tg_id: BigInt(tgId) }
       })
-      console.log('User found:', user)
+      
+      console.log('🔍 Raw user from database:', user)
+      console.log('🔍 User tg_id type:', typeof user?.tg_id)
+      console.log('🔍 User tg_id value:', user?.tg_id)
       
       if (!user) return null
       
       // Convert BigInt to number for JSON serialization
-      return {
+      const convertedUser = {
         id: user.id,
         tg_id: Number(user.tg_id),
         first_name: user.first_name,
@@ -77,8 +82,11 @@ export const db = {
         created_at: user.created_at,
         updated_at: user.updated_at
       } as User
+      
+      console.log('✅ Converted user for return:', convertedUser)
+      return convertedUser
     } catch (error) {
-      console.error('Error getting user by TG ID:', error)
+      console.error('❌ Error getting user by TG ID:', error)
       return null
     }
   },

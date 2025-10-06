@@ -55,6 +55,7 @@ export function UserProvider({ children }: UserProviderProps) {
   const checkOrRegisterUser = async (tgUser: TgUser) => {
     try {
       console.log('🔍 Checking or registering user globally:', tgUser)
+      console.log('🔍 Current user state before API call:', user)
       
       const initData = (window as any).Telegram?.WebApp?.initData || ''
       console.log('📡 Init data available:', !!initData)
@@ -78,6 +79,7 @@ export function UserProvider({ children }: UserProviderProps) {
       console.log('📡 Global check/register response:', data)
 
       if (data.success) {
+        console.log('✅ User data loaded successfully:', data.user)
         setUser(data.user)
         setLoading(false)
         setIsInitialized(true)
@@ -100,16 +102,9 @@ export function UserProvider({ children }: UserProviderProps) {
   }
 
   const loadFallbackData = () => {
-    console.log('🔄 No Telegram user data available - using fallback for development')
-    // Для разработки используем тестового пользователя, если нет Telegram данных
-    const testUser = { 
-      id: 937011437, 
-      tg_id: 937011437, 
-      first_name: 'Тест', 
-      last_name: 'Пользователь', 
-      username: 'test_user' 
-    }
-    setUser(testUser)
+    console.log('🔄 No Telegram user data available - redirecting to register')
+    // Не используем fallback пользователя - перенаправляем на регистрацию
+    setUser(null)
     setLoading(false)
     setIsInitialized(true)
   }
