@@ -7,6 +7,9 @@ type TgUser = {
   username?: string
   first_name?: string
   last_name?: string
+  phone?: string
+  created_at?: string
+  updated_at?: string
 }
 
 type TelegramWebApp = {
@@ -51,8 +54,22 @@ export function UserProvider({ children }: UserProviderProps) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isInitialized, setIsInitialized] = useState(false)
+  const [isInitializing, setIsInitializing] = useState(false)
 
   const checkOrRegisterUser = async (tgUser: TgUser) => {
+    // Защита от повторных вызовов
+    if (isInitializing) {
+      console.log('⚠️ Already initializing, skipping duplicate call')
+      return
+    }
+    
+    if (isInitialized && user) {
+      console.log('⚠️ User already initialized, skipping duplicate call')
+      return
+    }
+    
+    setIsInitializing(true)
+    
     try {
       console.log('🔍 Checking or registering user globally:', tgUser)
       console.log('🔍 Current user state before API call:', user)
@@ -99,6 +116,8 @@ export function UserProvider({ children }: UserProviderProps) {
       console.error('❌ Error checking/registering user globally:', error)
       // В случае ошибки используем fallback вместо показа ошибки
       loadFallbackData()
+    } finally {
+      setIsInitializing(false)
     }
   }
 
@@ -108,6 +127,7 @@ export function UserProvider({ children }: UserProviderProps) {
     setUser(null)
     setLoading(false)
     setIsInitialized(true)
+    setIsInitializing(false)
   }
 
   const tryToGetUserFromUrl = () => {
