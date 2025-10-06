@@ -7,6 +7,9 @@ Supports both webhook and polling modes
 import os
 import logging
 import asyncio
+import schedule
+import time
+from datetime import datetime, timezone
 from telegram import Update, WebAppInfo, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 from telegram.constants import ParseMode
@@ -30,6 +33,7 @@ class DUNGEONBot:
     def __init__(self):
         self.application = Application.builder().token(BOT_TOKEN).build()
         self.setup_handlers()
+        self.setup_daily_notifications()
     
     def setup_handlers(self):
         """Setup bot command and message handlers"""
@@ -46,6 +50,140 @@ class DUNGEONBot:
         
         # Error handler
         self.application.add_error_handler(self.error_handler)
+    
+    def setup_daily_notifications(self):
+        """Setup daily notification scheduler"""
+        # Schedule daily notifications at 18:00
+        schedule.every().day.at("18:00").do(self.send_daily_notifications)
+        logger.info("Daily notifications scheduled for 18:00")
+    
+    async def get_all_users(self):
+        """Get all users from the database via API"""
+        try:
+            response = requests.post(
+                f"{WEBAPP_URL}/api/broadcast",
+                json={
+                    "action": "get_users",
+                    "admin_key": "admin123"  # Use the same key as in the API
+                }
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('success'):
+                    return data.get('users', [])
+                else:
+                    logger.error(f"API error: {data.get('message')}")
+                    return []
+            else:
+                logger.error(f"HTTP error: {response.status_code}")
+                return []
+                
+        except Exception as e:
+            logger.error(f"Error getting users: {e}")
+            return []
+    
+    async def get_user_progress(self, user_id):
+        """Get user's progress from API"""
+        try:
+            response = requests.get(
+                f"{WEBAPP_URL}/api/stocks/{user_id}",
+                headers={'x-telegram-init-data': 'test'}
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('success') and data.get('stocks'):
+                    # Find the main promotion stock
+                    for stock in data['stocks']:
+                        if '5+1' in stock['stock_name'] or 'кальян' in stock['stock_name'].lower():
+                            progress = stock['progress']
+                            slots_filled = progress // 20
+                            slots_remaining = 5 - slots_filled
+                            
+                            # Check for free hookahs
+                            free_hookahs_response = requests.get(
+                                f"{WEBAPP_URL}/api/free-hookahs/{user_id}",
+                                headers={'x-telegram-init-data': 'test'}
+                            )
+                            
+                            has_free_hookah = False
+                            if free_hookahs_response.status_code == 200:
+                                free_data = free_hookahs_response.json()
+                                if free_data.get('success'):
+                                    has_free_hookah = free_data.get('unusedCount', 0) > 0
+                            
+                            return {
+                                'progress': progress,
+                                'slots_filled': slots_filled,
+                                'slots_remaining': slots_remaining,
+                                'has_free_hookah': has_free_hookah
+                            }
+                return None
+            else:
+                return None
+                
+        except Exception as e:
+            logger.error(f"Error getting user progress for {user_id}: {e}")
+            return None
+    
+    async def send_daily_notifications(self):
+        """Send daily notifications to all users"""
+        logger.info("Starting daily notifications...")
+        
+        users = await self.get_all_users()
+        if not users:
+            logger.warning("No users found for notifications")
+            return
+        
+        logger.info(f"Found {len(users)} users for notifications")
+        
+        for user_data in users:
+            try:
+                user_id = user_data.get('tg_id')
+                if not user_id:
+                    continue
+                
+                progress_data = await self.get_user_progress(user_id)
+                if not progress_data:
+                    continue
+                
+                # Create notification message
+                if progress_data['has_free_hookah']:
+                    message = "🎉 У вас есть бесплатный кальян! 🎁\n\nПриходите скорее забирать его!"
+                elif progress_data['slots_remaining'] > 0:
+                    message = f"📊 До бесплатного кальяна осталось: {progress_data['slots_remaining']} кальянов"
+                else:
+                    continue  # Skip if no progress
+                
+                # Send message
+                await self.application.bot.send_message(
+                    chat_id=user_id,
+                    text=message
+                )
+                
+                logger.info(f"Sent notification to user {user_id}")
+                
+                # Small delay to avoid rate limiting
+                await asyncio.sleep(0.1)
+                
+            except Exception as e:
+                logger.error(f"Error sending notification to user {user_data.get('tg_id')}: {e}")
+                continue
+        
+        logger.info("Daily notifications completed")
+    
+    def run_notification_scheduler(self):
+        """Run the notification scheduler in a separate thread"""
+        def scheduler_loop():
+            while True:
+                schedule.run_pending()
+                time.sleep(60)  # Check every minute
+        
+        import threading
+        scheduler_thread = threading.Thread(target=scheduler_loop, daemon=True)
+        scheduler_thread.start()
+        logger.info("Notification scheduler started")
     
     async def start_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Handle /start command"""
@@ -125,7 +263,7 @@ class DUNGEONBot:
                         slots_remaining = 5 - slots_filled
                         
                         if progress >= 100:
-                            progress_text = "🎉 Поздравляем! У вас есть бесплатный кальян! 🎁"
+                            progress_text = "🎉 Поздравляем! У вас есть бесплатный кальян! 🎁\n\nПриходите скорее забирать его!"
                         else:
                             progress_text = f"📊 До бесплатного кальяна осталось: {slots_remaining} кальянов"
                     else:
@@ -310,6 +448,8 @@ class DUNGEONBot:
     def run_polling(self):
         """Run bot in polling mode (for development/testing)"""
         logger.info("Starting bot in polling mode...")
+        # Start notification scheduler
+        self.run_notification_scheduler()
         self.application.run_polling(
             allowed_updates=Update.ALL_TYPES,
             drop_pending_updates=True
@@ -318,6 +458,9 @@ class DUNGEONBot:
     def run_webhook(self, host='0.0.0.0', port=8443):
         """Run bot in webhook mode (for production)"""
         logger.info(f"Starting bot in webhook mode on {host}:{port}")
+        
+        # Start notification scheduler
+        self.run_notification_scheduler()
         
         if self.setup_webhook():
             self.application.run_webhook(
