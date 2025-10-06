@@ -11,9 +11,11 @@ export default function HomePage() {
     if (isInitialized && !loading) {
       if (user) {
         // Пользователь авторизован - перенаправляем на акции
+        console.log('✅ User authenticated, redirecting to stocks:', user)
         router.push('/stocks')
       } else {
         // Пользователь не авторизован - перенаправляем на регистрацию
+        console.log('❌ User not authenticated, redirecting to register')
         router.push('/register')
       }
     }
@@ -24,7 +26,10 @@ export default function HomePage() {
       <div className="text-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500 mx-auto mb-4"></div>
         <p className="text-gray-300">
-          {loading ? 'Загрузка...' : 'Перенаправление...'}
+          {loading ? 'Загрузка пользователя...' : 'Перенаправление...'}
+        </p>
+        <p className="text-gray-400 text-sm mt-2">
+          {!isInitialized ? 'Инициализация...' : user ? `Добро пожаловать, ${user.first_name}!` : 'Регистрация...'}
         </p>
       </div>
     </div>
