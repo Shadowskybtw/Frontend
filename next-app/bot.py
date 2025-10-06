@@ -9,6 +9,7 @@ import logging
 import asyncio
 import schedule
 import time
+import psycopg2
 from datetime import datetime, timezone
 from telegram import Update, WebAppInfo, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
@@ -22,6 +23,9 @@ WEBAPP_URL = "https://frontend-delta-sandy-58.vercel.app"
 WEBHOOK_URL = f"{WEBAPP_URL}/api/telegram/webhook"
 WEBHOOK_SECRET = "78256ad5d219d6c4851b24d7c386bc05bbe2456d3e3b965557cb25294a6e49f9"
 
+# Database configuration
+DATABASE_URL = os.getenv('DATABASE_URL', 'postgresql://neondb_owner:npg_Z9sDKnLjrX4l@ep-odd-surf-a2btswct-pooler.eu-central-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require')
+
 # Setup logging
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -34,6 +38,132 @@ class DUNGEONBot:
         self.application = Application.builder().token(BOT_TOKEN).build()
         self.setup_handlers()
         self.setup_daily_notifications()
+    
+    def get_db_connection(self):
+        """Get database connection"""
+        try:
+            conn = psycopg2.connect(DATABASE_URL)
+            return conn
+        except Exception as e:
+            logger.error(f"Database connection error: {e}")
+            return None
+    
+    def get_user_by_tg_id(self, tg_id):
+        """Get user by Telegram ID from database"""
+        conn = self.get_db_connection()
+        if not conn:
+            return None
+        
+        try:
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT id, tg_id, first_name, last_name, phone, username FROM users WHERE tg_id = %s",
+                (tg_id,)
+            )
+            user = cursor.fetchone()
+            cursor.close()
+            conn.close()
+            
+            if user:
+                return {
+                    'id': user[0],
+                    'tg_id': user[1],
+                    'first_name': user[2],
+                    'last_name': user[3],
+                    'phone': user[4],
+                    'username': user[5]
+                }
+            return None
+        except Exception as e:
+            logger.error(f"Error getting user by tg_id {tg_id}: {e}")
+            if conn:
+                conn.close()
+            return None
+    
+    def get_user_stocks(self, user_id):
+        """Get user stocks from database"""
+        conn = self.get_db_connection()
+        if not conn:
+            return []
+        
+        try:
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT id, user_id, stock_name, progress FROM stocks WHERE user_id = %s",
+                (user_id,)
+            )
+            stocks = cursor.fetchall()
+            cursor.close()
+            conn.close()
+            
+            return [{
+                'id': stock[0],
+                'user_id': stock[1],
+                'stock_name': stock[2],
+                'progress': stock[3]
+            } for stock in stocks]
+        except Exception as e:
+            logger.error(f"Error getting user stocks for user {user_id}: {e}")
+            if conn:
+                conn.close()
+            return []
+    
+    def get_user_free_hookahs(self, user_id):
+        """Get user free hookahs from database"""
+        conn = self.get_db_connection()
+        if not conn:
+            return []
+        
+        try:
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT id, user_id, is_used, created_at FROM free_hookahs WHERE user_id = %s",
+                (user_id,)
+            )
+            hookahs = cursor.fetchall()
+            cursor.close()
+            conn.close()
+            
+            return [{
+                'id': hookah[0],
+                'user_id': hookah[1],
+                'is_used': hookah[2],
+                'created_at': hookah[3]
+            } for hookah in hookahs]
+        except Exception as e:
+            logger.error(f"Error getting user free hookahs for user {user_id}: {e}")
+            if conn:
+                conn.close()
+            return []
+    
+    def get_all_users_from_db(self):
+        """Get all users from database"""
+        conn = self.get_db_connection()
+        if not conn:
+            return []
+        
+        try:
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT id, tg_id, first_name, last_name, phone, username FROM users WHERE tg_id IS NOT NULL"
+            )
+            users = cursor.fetchall()
+            cursor.close()
+            conn.close()
+            
+            return [{
+                'id': user[0],
+                'tg_id': user[1],
+                'first_name': user[2],
+                'last_name': user[3],
+                'phone': user[4],
+                'username': user[5]
+            } for user in users]
+        except Exception as e:
+            logger.error(f"Error getting all users: {e}")
+            if conn:
+                conn.close()
+            return []
     
     def setup_handlers(self):
         """Setup bot command and message handlers"""
@@ -58,70 +188,38 @@ class DUNGEONBot:
         logger.info("Daily notifications scheduled for 18:00")
     
     async def get_all_users(self):
-        """Get all users from the database via API"""
-        try:
-            response = requests.post(
-                f"{WEBAPP_URL}/api/broadcast",
-                json={
-                    "action": "get_users",
-                    "admin_key": "admin123"  # Use the same key as in the API
-                }
-            )
-            
-            if response.status_code == 200:
-                data = response.json()
-                if data.get('success'):
-                    return data.get('users', [])
-                else:
-                    logger.error(f"API error: {data.get('message')}")
-                    return []
-            else:
-                logger.error(f"HTTP error: {response.status_code}")
-                return []
-                
-        except Exception as e:
-            logger.error(f"Error getting users: {e}")
-            return []
+        """Get all users from the database"""
+        return self.get_all_users_from_db()
     
     async def get_user_progress(self, user_id):
-        """Get user's progress from API"""
+        """Get user's progress from database"""
         try:
-            response = requests.get(
-                f"{WEBAPP_URL}/api/stocks/{user_id}",
-                headers={'x-telegram-init-data': 'test'}
-            )
+            # Get user's stocks from database
+            stocks = self.get_user_stocks(user_id)
+            main_stock = None
             
-            if response.status_code == 200:
-                data = response.json()
-                if data.get('success') and data.get('stocks'):
-                    # Find the main promotion stock
-                    for stock in data['stocks']:
-                        if '5+1' in stock['stock_name'] or 'кальян' in stock['stock_name'].lower():
-                            progress = stock['progress']
-                            slots_filled = progress // 20
-                            slots_remaining = 5 - slots_filled
-                            
-                            # Check for free hookahs
-                            free_hookahs_response = requests.get(
-                                f"{WEBAPP_URL}/api/free-hookahs/{user_id}",
-                                headers={'x-telegram-init-data': 'test'}
-                            )
-                            
-                            has_free_hookah = False
-                            if free_hookahs_response.status_code == 200:
-                                free_data = free_hookahs_response.json()
-                                if free_data.get('success'):
-                                    has_free_hookah = free_data.get('unusedCount', 0) > 0
-                            
-                            return {
-                                'progress': progress,
-                                'slots_filled': slots_filled,
-                                'slots_remaining': slots_remaining,
-                                'has_free_hookah': has_free_hookah
-                            }
-                return None
-            else:
-                return None
+            for stock in stocks:
+                if '5+1' in stock['stock_name'] or 'кальян' in stock['stock_name'].lower():
+                    main_stock = stock
+                    break
+            
+            if main_stock:
+                progress = main_stock['progress']
+                slots_filled = progress // 20
+                slots_remaining = 5 - slots_filled
+                
+                # Check for free hookahs
+                free_hookahs = self.get_user_free_hookahs(user_id)
+                unused_free_hookahs = [h for h in free_hookahs if not h['is_used']]
+                has_free_hookah = len(unused_free_hookahs) > 0
+                
+                return {
+                    'progress': progress,
+                    'slots_filled': slots_filled,
+                    'slots_remaining': slots_remaining,
+                    'has_free_hookah': has_free_hookah
+                }
+            return None
                 
         except Exception as e:
             logger.error(f"Error getting user progress for {user_id}: {e}")
@@ -240,44 +338,67 @@ class DUNGEONBot:
         """Handle /progress command"""
         user = update.effective_user
         
-        # Try to get user stocks from API
-        try:
-            response = requests.get(
-                f"{WEBAPP_URL}/api/stocks/{user.id}",
-                headers={'x-telegram-init-data': 'test'}  # Placeholder
-            )
-            
-            if response.status_code == 200:
-                data = response.json()
-                if data.get('success') and data.get('stocks'):
-                    # Find the main promotion stock (5+1 кальян)
-                    main_stock = None
-                    for stock in data['stocks']:
-                        if '5+1' in stock['stock_name'] or 'кальян' in stock['stock_name'].lower():
-                            main_stock = stock
-                            break
-                    
-                    if main_stock:
-                        progress = main_stock['progress']
-                        slots_filled = progress // 20  # Each slot is 20%
-                        slots_remaining = 5 - slots_filled
-                        
-                        if progress >= 100:
-                            progress_text = "🎉 Поздравляем! У вас есть бесплатный кальян! 🎁\n\nПриходите скорее забирать его!"
-                        else:
-                            progress_text = f"📊 До бесплатного кальяна осталось: {slots_remaining} кальянов"
-                    else:
-                        progress_text = "📊 У вас пока нет акций. Зарегистрируйтесь в WebApp!"
-                else:
-                    progress_text = "📊 У вас пока нет акций. Зарегистрируйтесь в WebApp!"
-            else:
-                progress_text = "📊 Для просмотра прогресса зарегистрируйтесь в WebApp!"
-                
-        except Exception as e:
-            logger.error(f"Error fetching progress: {e}")
-            progress_text = "📊 Для просмотра прогресса зарегистрируйтесь в WebApp!"
+        logger.info(f"User {user.id} ({user.username}) requested /progress")
         
-        await update.message.reply_text(progress_text)
+        # Get user from database
+        db_user = self.get_user_by_tg_id(user.id)
+        if not db_user:
+            progress_message = "📊 Для просмотра прогресса зарегистрируйтесь в WebApp!"
+            keyboard = [
+                [InlineKeyboardButton(
+                    "🚀 Открыть приложение", 
+                    web_app=WebAppInfo(url=f"{WEBAPP_URL}/register")
+                )]
+            ]
+            reply_markup = InlineKeyboardMarkup(keyboard)
+        else:
+            # Get user's stocks from database
+            stocks = self.get_user_stocks(db_user['id'])
+            main_stock = None
+            
+            for stock in stocks:
+                if '5+1' in stock['stock_name'] or 'кальян' in stock['stock_name'].lower():
+                    main_stock = stock
+                    break
+            
+            if main_stock:
+                progress = main_stock['progress']
+                slots_filled = progress // 20  # Each slot is 20%
+                slots_remaining = 5 - slots_filled
+                
+                # Check for free hookahs
+                free_hookahs = self.get_user_free_hookahs(db_user['id'])
+                unused_free_hookahs = [h for h in free_hookahs if not h['is_used']]
+                
+                if unused_free_hookahs:
+                    progress_message = f"Привет, {db_user['first_name']}! 👋\n\n🎯 У вас есть бесплатный кальян! 🎁\n\nПриходите скорее забирать его!"
+                elif progress >= 100:
+                    progress_message = f"Привет, {db_user['first_name']}! 👋\n\n🎯 Поздравляем! У вас есть бесплатный кальян! 🎁\n\nПриходите скорее забирать его!"
+                else:
+                    progress_message = f"Привет, {db_user['first_name']}! 👋\n\n🎯 До бесплатного кальяна осталось: {slots_remaining} кальянов"
+                
+                keyboard = [
+                    [InlineKeyboardButton(
+                        "📱 Открыть приложение", 
+                        web_app=WebAppInfo(url=f"{WEBAPP_URL}/stocks")
+                    )]
+                ]
+                reply_markup = InlineKeyboardMarkup(keyboard)
+            else:
+                progress_message = f"Привет, {db_user['first_name']}! 👋\n\n📊 У вас пока нет акций. Зарегистрируйтесь в WebApp!"
+                keyboard = [
+                    [InlineKeyboardButton(
+                        "🚀 Открыть приложение", 
+                        web_app=WebAppInfo(url=f"{WEBAPP_URL}/register")
+                    )]
+                ]
+                reply_markup = InlineKeyboardMarkup(keyboard)
+        
+        await update.message.reply_text(
+            progress_message,
+            reply_markup=reply_markup,
+            parse_mode=ParseMode.HTML
+        )
     
     async def register_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Handle /register command"""
