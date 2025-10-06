@@ -60,7 +60,7 @@ class DUNGEONBot:
         try:
             cursor = conn.cursor()
             cursor.execute(
-                "SELECT id, tg_id, first_name, last_name, phone, username FROM users WHERE tg_id = %s",
+                "SELECT id, tg_id, first_name, last_name, phone, username FROM users WHERE tg_id = %s AND tg_id IS NOT NULL AND tg_id != 0",
                 (tg_id,)
             )
             user = cursor.fetchone()
@@ -355,8 +355,14 @@ class DUNGEONBot:
         logger.info(f"🔍 Bot: Update object: {update}")
         
         # Get user from database
+        logger.info(f"🔍 Bot: Looking up user with tg_id: {user.id}")
         db_user = self.get_user_by_tg_id(user.id)
         logger.info(f"🔍 Bot: Database user lookup result: {db_user}")
+        
+        if db_user:
+            logger.info(f"🔍 Bot: Found user in DB: {db_user['first_name']} {db_user['last_name']} (ID: {db_user['id']})")
+        else:
+            logger.info(f"🔍 Bot: No user found in DB for tg_id: {user.id}")
         
         if not db_user:
             progress_message = "📊 Для просмотра прогресса зарегистрируйтесь в WebApp!"

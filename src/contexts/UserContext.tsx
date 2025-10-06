@@ -130,19 +130,25 @@ export function UserProvider({ children }: UserProviderProps) {
           console.log('🔍 initDataUnsafe:', telegramWebApp.initDataUnsafe)
           console.log('🔍 tgUser from initDataUnsafe:', tgUser)
           
-          if (tgUser) {
+          if (tgUser && tgUser.id) {
             console.log('👤 User found in initDataUnsafe globally:', tgUser)
             checkOrRegisterUser(tgUser)
           } else {
             console.log('🔍 No user data in initDataUnsafe, trying to get from initData')
             // Пытаемся получить tg_id из initData
             const initData = telegramWebApp.initData
+            console.log('🔍 initData:', initData)
+            
             if (initData) {
               const urlParams = new URLSearchParams(initData)
               const userParam = urlParams.get('user')
+              console.log('🔍 userParam from initData:', userParam)
+              
               if (userParam) {
                 try {
                   const userData = JSON.parse(decodeURIComponent(userParam))
+                  console.log('🔍 Parsed userData:', userData)
+                  
                   if (userData.id) {
                     console.log('👤 User found in initData globally:', userData)
                     checkOrRegisterUser({ 
@@ -152,6 +158,9 @@ export function UserProvider({ children }: UserProviderProps) {
                       last_name: userData.last_name, 
                       username: userData.username 
                     })
+                  } else {
+                    console.log('❌ No user ID in parsed data globally')
+                    loadFallbackData()
                   }
                 } catch (e) {
                   console.error('❌ Error parsing user data globally:', e)
