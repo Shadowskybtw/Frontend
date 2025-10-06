@@ -11,6 +11,7 @@ export default function StocksPage() {
     user_id: number
     stock_name: string
     progress: number
+    promotion_completed: boolean
     created_at: string
     updated_at: string
   }[]>([])
@@ -310,10 +311,9 @@ export default function StocksPage() {
                 {/* Кнопка получения бесплатного кальяна */}
                 {(() => {
                   const stock = stocks.find(s => s.stock_name === '5+1 кальян')
-                  const progress = stock ? stock.progress : 0
                   const hasUnusedFreeHookah = freeHookahs.some(h => !h.used)
                   
-                  if (progress >= 100 && !hasUnusedFreeHookah) {
+                  if (stock?.promotion_completed && !hasUnusedFreeHookah) {
                     return (
                       <div className="mt-4 p-3 bg-yellow-900/30 border border-yellow-500/50 rounded-lg">
                         <p className="text-yellow-200 text-sm mb-3 text-center">

@@ -154,6 +154,9 @@ export async function POST(request: NextRequest) {
       // Если все слоты заполнены, сбрасываем прогресс на 0
       const resetStock = await db.updateStockProgress(stock.id, 0)
       
+      // Устанавливаем флаг, что акция завершена и бесплатный кальян доступен
+      await db.updateStockPromotionCompleted(stock.id, true)
+      
       // НЕ создаем бесплатный кальян автоматически - только показываем, что он доступен
       // Бесплатный кальян будет создан только когда пользователь нажмет кнопку
       

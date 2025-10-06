@@ -23,8 +23,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, message: 'У пользователя нет активных акций' }, { status: 404 })
     }
 
-    // Проверяем, что слоты заполнены (прогресс 100%)
-    if (stock.progress < 100) {
+    // Проверяем, что акция завершена (флаг promotion_completed)
+    if (!stock.promotion_completed) {
       return NextResponse.json({ success: false, message: 'Слоты не заполнены. Нужно 5 кальянов для получения бесплатного.' }, { status: 400 })
     }
 
@@ -36,6 +36,9 @@ export async function POST(request: NextRequest) {
 
     // Создаем бесплатный кальян
     const freeHookah = await db.createFreeHookah(user.id)
+    
+    // Сбрасываем флаг promotion_completed, так как бесплатный кальян получен
+    await db.updateStockPromotionCompleted(stock.id, false)
     
     // Добавляем запись в историю о получении бесплатного кальяна
     try {

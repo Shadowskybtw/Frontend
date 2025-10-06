@@ -25,6 +25,7 @@ export interface Stock {
   user_id: number
   stock_name: string
   progress: number
+  promotion_completed: boolean
   created_at: Date
   updated_at: Date
 }
@@ -237,6 +238,21 @@ export const db = {
       return stock as Stock
     } catch (error) {
       console.error('Error updating stock progress:', error)
+      return null
+    }
+  },
+
+  async updateStockPromotionCompleted(stockId: number, completed: boolean): Promise<Stock | null> {
+    try {
+      console.log('Updating stock promotion completed:', { stockId, completed })
+      const stock = await prisma.stock.update({
+        where: { id: stockId },
+        data: { promotion_completed: completed }
+      })
+      console.log('Stock promotion status updated:', stock)
+      return stock as Stock
+    } catch (error) {
+      console.error('Error updating stock promotion status:', error)
       return null
     }
   },

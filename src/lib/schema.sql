@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS stocks (
   user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   stock_name VARCHAR(255) NOT NULL,
   progress INTEGER DEFAULT 0 CHECK (progress >= 0 AND progress <= 100),
+  promotion_completed BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
