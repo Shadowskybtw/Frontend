@@ -587,6 +587,17 @@ export default function ProfilePage() {
                 {isEditing ? (
                   <div className="space-y-3">
                     <div>
+                      <label className="block text-sm font-medium text-purple-700 mb-1">Telegram ID</label>
+                      <input
+                        type="text"
+                        value={user.tg_id}
+                        disabled
+                        className="w-full px-3 py-2 border border-purple-300 rounded-md bg-gray-100 text-gray-600 cursor-not-allowed"
+                        placeholder="Telegram ID"
+                      />
+                      <p className="text-xs text-purple-600 mt-1">Telegram ID нельзя изменить</p>
+                    </div>
+                    <div>
                       <label className="block text-sm font-medium text-purple-700 mb-1">Имя</label>
                       <input
                         type="text"
@@ -633,6 +644,7 @@ export default function ProfilePage() {
                 ) : (
                   <div className="text-left space-y-2 text-purple-800 text-sm">
                     <p><strong>ID:</strong> {user.id}</p>
+                    <p><strong>Telegram ID:</strong> {user.tg_id}</p>
                     <p><strong>Имя:</strong> {profileData?.first_name || user.first_name || 'Не указано'}</p>
                     <p><strong>Фамилия:</strong> {profileData?.last_name || user.last_name || 'Не указано'}</p>
                     <p><strong>Телефон:</strong> {profileData?.phone || 'Не указано'}</p>
