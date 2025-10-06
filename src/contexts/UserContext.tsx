@@ -80,6 +80,7 @@ export function UserProvider({ children }: UserProviderProps) {
 
       if (data.success) {
         console.log('✅ User data loaded successfully:', data.user)
+        console.log('📱 User phone in context:', data.user.phone)
         setUser(data.user)
         setLoading(false)
         setIsInitialized(true)

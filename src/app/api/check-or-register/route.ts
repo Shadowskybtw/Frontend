@@ -87,6 +87,7 @@ export async function POST(req: NextRequest) {
     
     if (existingUser) {
       console.log('✅ User already exists:', existingUser)
+      console.log('📱 Existing user phone:', existingUser.phone)
       return NextResponse.json({ 
         success: true, 
         message: 'User already registered',

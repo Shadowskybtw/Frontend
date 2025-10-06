@@ -86,7 +86,9 @@ export default function ProfilePage() {
       })
 
       const data = await response.json()
+      console.log('📱 Profile data loaded:', data)
       if (data.success && data.registered && data.user) {
+        console.log('📱 User phone from API:', data.user.phone)
         setProfileData(data.user)
         setEditForm({
           first_name: data.user.first_name || '',
@@ -647,7 +649,7 @@ export default function ProfilePage() {
                     <p><strong>Telegram ID:</strong> {user.tg_id}</p>
                     <p><strong>Имя:</strong> {profileData?.first_name || user.first_name || 'Не указано'}</p>
                     <p><strong>Фамилия:</strong> {profileData?.last_name || user.last_name || 'Не указано'}</p>
-                    <p><strong>Телефон:</strong> {profileData?.phone || 'Не указано'}</p>
+                    <p><strong>Телефон:</strong> {profileData?.phone || user.phone || 'Не указано'}</p>
                     <p><strong>Username:</strong> @{user.username || 'Не указано'}</p>
                   </div>
                 )}
