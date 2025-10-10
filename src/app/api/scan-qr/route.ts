@@ -163,7 +163,7 @@ export async function POST(request: NextRequest) {
         await db.addHookahToHistory(
           user.id,
           'free',
-          null, // slot_number
+          undefined, // slot_number
           stock.id,
           null, // adminId
           'promotion_completed' // scanMethod
