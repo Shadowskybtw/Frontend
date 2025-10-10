@@ -719,6 +719,112 @@ export const db = {
     } catch (error) {
       console.error('Error notifying user about approved free hookah:', error)
     }
+  },
+
+  // Review operations
+  async addHookahReview(userId: number, hookahId: number, rating: number, reviewText?: string): Promise<boolean> {
+    try {
+      console.log('Adding hookah review:', { userId, hookahId, rating, reviewText })
+      
+      await prisma.hookahReview.create({
+        data: {
+          user_id: userId,
+          hookah_id: hookahId,
+          rating: rating,
+          review_text: reviewText
+        }
+      })
+      
+      console.log('✅ Hookah review added successfully')
+      return true
+    } catch (error) {
+      console.error('Error adding hookah review:', error)
+      return false
+    }
+  },
+
+  async getHookahReview(userId: number, hookahId: number): Promise<{ rating: number; review_text?: string } | null> {
+    try {
+      const review = await prisma.hookahReview.findUnique({
+        where: {
+          user_id_hookah_id: {
+            user_id: userId,
+            hookah_id: hookahId
+          }
+        }
+      })
+      
+      if (review) {
+        return {
+          rating: review.rating,
+          review_text: review.review_text || undefined
+        }
+      }
+      
+      return null
+    } catch (error) {
+      console.error('Error getting hookah review:', error)
+      return null
+    }
+  },
+
+  async getHookahHistoryWithReviews(userId: number, page: number = 1, limit: number = 10): Promise<{
+    history: Array<HookahHistory & { review?: { rating: number; review_text?: string } }>
+    totalPages: number
+    currentPage: number
+  }> {
+    try {
+      const offset = (page - 1) * limit
+      
+      const [history, totalCount] = await Promise.all([
+        prisma.hookahHistory.findMany({
+          where: { user_id: userId },
+          orderBy: { created_at: 'desc' },
+          skip: offset,
+          take: limit
+        }),
+        prisma.hookahHistory.count({
+          where: { user_id: userId }
+        })
+      ])
+
+      // Получаем отзывы для каждой записи истории
+      const historyWithReviews = await Promise.all(
+        history.map(async (hookah) => {
+          const review = await prisma.hookahReview.findUnique({
+            where: {
+              user_id_hookah_id: {
+                user_id: userId,
+                hookah_id: hookah.id
+              }
+            }
+          })
+
+          return {
+            ...hookah,
+            review: review ? {
+              rating: review.rating,
+              review_text: review.review_text || undefined
+            } : undefined
+          }
+        })
+      )
+
+      const totalPages = Math.ceil(totalCount / limit)
+
+      return {
+        history: historyWithReviews,
+        totalPages,
+        currentPage: page
+      }
+    } catch (error) {
+      console.error('Error getting hookah history with reviews:', error)
+      return {
+        history: [],
+        totalPages: 0,
+        currentPage: 1
+      }
+    }
   }
 }
 

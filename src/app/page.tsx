@@ -11,9 +11,9 @@ export default function HomePage() {
     console.log('🏠 HomePage useEffect triggered:', { isInitialized, loading, user: !!user })
     if (isInitialized && !loading) {
       if (user) {
-        // Пользователь авторизован - перенаправляем на акции
-        console.log('✅ User authenticated, redirecting to stocks:', user)
-        router.push('/stocks')
+        // Пользователь авторизован - перенаправляем в профиль
+        console.log('✅ User authenticated, redirecting to profile:', user)
+        router.push('/profile')
       } else {
         // Пользователь не авторизован - перенаправляем на регистрацию
         console.log('❌ User not authenticated, redirecting to register')

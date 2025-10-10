@@ -4,815 +4,473 @@ import QRScanner from '@/components/QRScanner'
 import Navigation from '@/components/Navigation'
 import { useUser } from '@/contexts/UserContext'
 
+interface Stock {
+  id: number
+  user_id: number
+  stock_name: string
+  progress: number
+  promotion_completed: boolean
+  created_at: string
+  updated_at: string
+}
+
+interface FreeHookah {
+  id: number
+  user_id: number
+  used: boolean
+  used_at?: string
+  created_at: string
+}
+
+interface HookahHistoryItem {
+  id: number
+  user_id: number
+  hookah_type: string
+  slot_number?: number
+  stock_id?: number
+  admin_id?: number
+  scan_method?: string
+  created_at: string
+  review?: {
+    rating: number
+    review_text?: string
+  }
+}
+
 export default function ProfilePage() {
   const { user, isInTelegram, loading, isInitialized } = useUser()
   const [isEditing, setIsEditing] = useState(false)
   const [editForm, setEditForm] = useState({ first_name: '', last_name: '' })
   const [isSaving, setIsSaving] = useState(false)
-  const [profileStats, setProfileStats] = useState<{
-    totalSmokedHookahs: number
-    totalFreeHookahs: number
-    regularHookahs: number
-    freeHookahsReceived: number
-    freeHookahsUsed: number
-    slotsFilled: number
-    isPromotionCompleted: boolean
-  } | null>(null)
-  const [, setUsedFreeHookahs] = useState<Array<{
-    id: number
-    used_at: string
-    created_at: string
-  }>>([])
-
+  const [stocks, setStocks] = useState<Stock[]>([])
+  const [freeHookahs, setFreeHookahs] = useState<FreeHookah[]>([])
+  const [history, setHistory] = useState<HookahHistoryItem[]>([])
   const [isAdmin, setIsAdmin] = useState(false)
   const [showQRScanner, setShowQRScanner] = useState(false)
-  const [, setScanResult] = useState<{
-    success: boolean
-    message: string
-    user?: {
-      id: number
-      first_name: string
-      last_name: string
-    }
-    stock?: {
-      stock_name: string
-      progress: number
-    }
-  } | null>(null)
-  const [adminPanelOpen, setAdminPanelOpen] = useState(false)
-  const [newAdminTgId, setNewAdminTgId] = useState('')
-  const [isGrantingAdmin, setIsGrantingAdmin] = useState(false)
-  const [adminStatusChecked, setAdminStatusChecked] = useState(false)
-  const [guestSearchPhone, setGuestSearchPhone] = useState('')
-  const [isAddingHookah, setIsAddingHookah] = useState(false)
-  const [isRemovingHookah, setIsRemovingHookah] = useState(false)
-  const [searchPhone, setSearchPhone] = useState('')
-  const [searchedUser, setSearchedUser] = useState<any>(null)
-  const [isSearchingUser, setIsSearchingUser] = useState(false)
+  const [isClaiming, setIsClaiming] = useState(false)
+  const [showReviewModal, setShowReviewModal] = useState(false)
+  const [selectedHookahForReview, setSelectedHookahForReview] = useState<HookahHistoryItem | null>(null)
+  const [reviewRating, setReviewRating] = useState(5)
+  const [reviewText, setReviewText] = useState('')
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false)
 
-  // Получение TG ID из базы данных
-  const getTgIdFromDb = useCallback(async (userId: number) => {
+  // Load profile data
+  const loadProfileData = useCallback(async () => {
+    if (!user?.tg_id) return
+
     try {
-      const response = await fetch(`/api/check-registration?tg_id=${userId}`)
-      const data = await response.json()
-      if (data.success && data.user?.tg_id) {
-        return data.user.tg_id
+      // Load stocks
+      const stocksResponse = await fetch(`/api/stocks/${user.tg_id}`)
+      if (stocksResponse.ok) {
+        const stocksData = await stocksResponse.json()
+        setStocks(stocksData.stocks || [])
+      }
+
+      // Load free hookahs
+      const freeHookahsResponse = await fetch(`/api/free-hookahs/${user.tg_id}`)
+      if (freeHookahsResponse.ok) {
+        const freeHookahsData = await freeHookahsResponse.json()
+        setFreeHookahs(freeHookahsData.freeHookahs || [])
+      }
+
+      // Load history with reviews
+      const historyResponse = await fetch(`/api/history/${user.tg_id}?withReviews=true`)
+      if (historyResponse.ok) {
+        const historyData = await historyResponse.json()
+        setHistory(historyData.history || [])
+      }
+
+      // Check admin status
+      const adminResponse = await fetch(`/api/admin?tg_id=${user.tg_id}`)
+      if (adminResponse.ok) {
+        const adminData = await adminResponse.json()
+        setIsAdmin(adminData.isAdmin || false)
       }
     } catch (error) {
-      console.error('Error getting TG ID from DB:', error)
+      console.error('Error loading profile data:', error)
     }
-    return null
-  }, [])
-
-  // Проверка админских прав
-  const checkAdminStatus = useCallback(async () => {
-    if (!user?.id) return
-    
-    let tgId = user.tg_id
-    
-    // Если tg_id не получен из Telegram, получаем из базы данных
-    if (!tgId || tgId === 0) {
-      tgId = await getTgIdFromDb(user.id)
-    }
-    
-    if (!tgId) {
-      console.error('Could not get TG ID for admin check')
-      return
-    }
-    
-    console.log(`Checking admin status for user ${user.first_name} ${user.last_name} (TG ID: ${tgId})`)
-    
-    try {
-      const response = await fetch('/api/admin', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          tg_id: String(tgId),
-          action: 'check_admin',
-          admin_key: 'admin123'
-        }),
-      })
-
-      const data = await response.json()
-      console.log('Admin check response:', data)
-      
-      if (data.success) {
-        setIsAdmin(data.is_admin)
-        setAdminStatusChecked(true)
-        console.log(`Admin status: ${data.is_admin ? 'ADMIN' : 'USER'}`)
-      } else {
-        console.error('Admin check failed:', data.message)
-        // Fallback: проверяем по известным админам
-        const knownAdmins = [937011437, 1159515006] // Ваш ID и Кирилл
-        if (knownAdmins.includes(Number(tgId))) {
-          console.log('User is known admin, setting admin status')
-          setIsAdmin(true)
-          setAdminStatusChecked(true)
-        }
-      }
-    } catch (error) {
-      console.error('Error checking admin status:', error)
-      // Fallback: проверяем по известным админам
-      const knownAdmins = [937011437, 1159515006] // Ваш ID и Кирилл
-      if (knownAdmins.includes(Number(tgId))) {
-        console.log('User is known admin (fallback), setting admin status')
-        setIsAdmin(true)
-        setAdminStatusChecked(true)
-      }
-    }
-  }, [user?.id, user?.tg_id, user?.first_name, user?.last_name, getTgIdFromDb])
-
+  }, [user?.tg_id])
 
   useEffect(() => {
-    if (isInitialized && user?.id) {
-      console.log('👤 Loading profile stats for user:', user.id)
-      loadProfileStats(user.tg_id)
-      checkAdminRights(user.tg_id)
-      checkAdminStatus()
+    if (isInitialized && user?.tg_id) {
+      loadProfileData()
     }
-  }, [isInitialized, user, checkAdminStatus])
+  }, [isInitialized, user?.tg_id, loadProfileData])
 
-
-  // Загружаем статистику профиля
-  const loadProfileStats = async (tgId: number) => {
-    try {
-      const response = await fetch(`/api/profile/${tgId}`)
-      const data = await response.json()
-      if (data.success) {
-        setProfileStats(data.stats)
-        setUsedFreeHookahs(data.usedFreeHookahs || [])
-      }
-    } catch (error) {
-      console.error('Error loading profile stats:', error)
-    }
-  }
-
-  // Обновляем профиль
-  const updateProfile = async () => {
-    if (!user?.id || isSaving) return
+  // Save profile changes
+  const saveProfile = async () => {
+    if (!user?.tg_id) return
 
     setIsSaving(true)
     try {
-      const response = await fetch('/api/update-profile', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          tg_id: user.id,
-          first_name: editForm.first_name,
-          last_name: editForm.last_name
-        }),
+      const response = await fetch(`/api/profile/${user.tg_id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(editForm)
       })
 
-      const data = await response.json()
-      if (data.success) {
+      if (response.ok) {
         setIsEditing(false)
-        alert('Профиль успешно обновлен!')
+        loadProfileData()
       } else {
-        alert('Ошибка обновления: ' + data.message)
+        alert('Ошибка при сохранении профиля')
       }
     } catch (error) {
-      console.error('Error updating profile:', error)
-      alert('Ошибка обновления профиля')
+      console.error('Error saving profile:', error)
+      alert('Ошибка при сохранении профиля')
     } finally {
       setIsSaving(false)
     }
   }
 
-  // Прямое добавление кальяна по номеру телефона (как в старой админ панели)
-  const addHookahDirectly = async () => {
-    if (!guestSearchPhone || guestSearchPhone.length !== 4) {
-      alert('Введите ровно 4 последние цифры номера телефона')
-      return
-    }
-    
-    if (isAddingHookah || isRemovingHookah) return
-    
-    setIsAddingHookah(true)
-    
+  // Claim free hookah
+  const claimFreeHookah = async () => {
+    if (!user?.tg_id || isClaiming) return
+
+    setIsClaiming(true)
     try {
-      console.log('🚀 Adding hookah directly for phone:', guestSearchPhone)
-      
-      const response = await fetch('/api/scan-qr', {
+      const response = await fetch('/api/claim-free-hookah', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          phone_digits: guestSearchPhone,
-          admin_key: 'admin123'
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tg_id: user.tg_id })
       })
-      
+
       const data = await response.json()
-      console.log('📊 Add hookah response:', data)
-      
       if (data.success) {
-        alert('✅ Кальян добавлен! Слот заполнен.')
+        alert('🎉 Вы получили бесплатный кальян! Покажите это сообщение администратору.')
+        loadProfileData() // Reload data
       } else {
-        alert('Ошибка добавления кальяна: ' + data.message)
+        alert('Ошибка: ' + data.message)
       }
     } catch (error) {
-      console.error('Error adding hookah:', error)
-      alert('Ошибка добавления кальяна')
+      console.error('Error claiming free hookah:', error)
+      alert('Ошибка при получении бесплатного кальяна')
     } finally {
-      setIsAddingHookah(false)
+      setIsClaiming(false)
     }
   }
 
-  // Прямое удаление кальяна по номеру телефона
-  const removeHookahDirectly = async () => {
-    if (!guestSearchPhone || guestSearchPhone.length !== 4) {
-      alert('Введите ровно 4 последние цифры номера телефона')
-      return
-    }
-    
-    if (isAddingHookah || isRemovingHookah) return
-    
-    setIsRemovingHookah(true)
-    
-    try {
-      console.log('🚀 Removing hookah directly for phone:', guestSearchPhone)
-      
-      const response = await fetch('/api/remove-hookah', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          phone_digits: guestSearchPhone,
-          admin_key: 'admin123'
-        }),
-      })
-      
-      const data = await response.json()
-      console.log('📊 Remove hookah response:', data)
-      
-      if (data.success) {
-        alert('✅ Кальян убран! Слот освобожден.')
-      } else {
-        alert('Ошибка удаления кальяна: ' + data.message)
-      }
-    } catch (error) {
-      console.error('Error removing hookah:', error)
-      alert('Ошибка удаления кальяна')
-    } finally {
-      setIsRemovingHookah(false)
-    }
-  }
-
-  // Поиск пользователя для просмотра информации
-  const searchUser = async () => {
-    if (!searchPhone || searchPhone.length !== 4) {
-      alert('Введите ровно 4 последние цифры номера телефона')
-      return
-    }
-    
-    setIsSearchingUser(true)
-    
-    try {
-      console.log('🔍 Searching user for phone:', searchPhone)
-      
-      const response = await fetch('/api/search-user', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          phone_digits: searchPhone,
-          admin_key: 'admin123'
-        }),
-      })
-      
-      const data = await response.json()
-      console.log('📊 Search user response:', data)
-      
-      if (data.success) {
-        setSearchedUser(data)
-      } else {
-        setSearchedUser(null)
-        alert('Пользователь не найден: ' + data.message)
-      }
-    } catch (error) {
-      console.error('Error searching user:', error)
-      alert('Ошибка поиска пользователя')
-      setSearchedUser(null)
-    } finally {
-      setIsSearchingUser(false)
-    }
-  }
-
-
-  // Загружаем данные профиля когда получаем пользователя
-  useEffect(() => {
-    if (user?.id && isInTelegram) {
-      loadProfileStats(user.tg_id)
-      checkAdminRights(user.tg_id)
-      checkAdminStatus()
-    }
-  }, [user, isInTelegram, checkAdminStatus])
-
-  // Добавляем периодическое обновление данных для отслеживания изменений
-  useEffect(() => {
-    if (!user?.id || !isInTelegram) return
-
-    const interval = setInterval(() => {
-      loadProfileStats(user.tg_id)
-    }, 5000) // Обновляем каждые 5 секунд
-
-    return () => clearInterval(interval)
-  }, [user, isInTelegram])
-
-  // Добавляем обработчик для обновления данных при возвращении на страницу
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible' && user?.id && isInTelegram) {
-        loadProfileStats(user.tg_id)
-      }
-    }
-
-    document.addEventListener('visibilitychange', handleVisibilityChange)
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
-  }, [user, isInTelegram])
-
-  const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setEditForm(prev => ({ ...prev, [name]: value }))
-  }
-
-  // Проверяем админские права
-  const checkAdminRights = async (tgId: number) => {
-    try {
-      const response = await fetch('/api/admin', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          tg_id: tgId,
-          action: 'check_admin',
-          admin_key: process.env.NEXT_PUBLIC_ADMIN_KEY || 'admin123'
-        }),
-      })
-
-      const data = await response.json()
-      if (data.success) {
-        setIsAdmin(data.is_admin)
-      }
-    } catch (error) {
-      console.error('Error checking admin rights:', error)
-    }
-  }
-
-
-  // Обработка сканирования QR кода с камеры
-  const handleQRScan = (result: string) => {
-    setShowQRScanner(false)
-    
-    // Автоматически сканируем QR код без показа поля ввода
-    scanQrCodeDirectly(result)
-  }
-
-  // Прямое сканирование QR кода без проверки поля ввода
-  const scanQrCodeDirectly = async (qrData: string) => {
-    if (!qrData.trim()) {
-      alert('Ошибка: пустые данные QR кода')
-      return
-    }
+  // Handle QR scan
+  const handleQRScan = async (qrData: string) => {
+    if (!user?.tg_id) return
 
     try {
       const response = await fetch('/api/scan-qr', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          qr_data: qrData,
-          admin_key: 'admin123'
-        }),
+          qrData,
+          tg_id: user.tg_id
+        })
       })
 
       const data = await response.json()
-      setScanResult(data)
-      
       if (data.success) {
-        alert(`QR код отсканирован! Пользователь: ${data.user.first_name} ${data.user.last_name}`)
-        
-        // Принудительно обновляем статистику профиля
-        if (user?.id) {
-          // Множественные обновления для надежности
-          loadProfileStats(user.tg_id)
-          setTimeout(() => loadProfileStats(user.id), 500)
-          setTimeout(() => loadProfileStats(user.id), 1000)
-          setTimeout(() => loadProfileStats(user.id), 2000)
-          setTimeout(() => loadProfileStats(user.id), 5000)
-        }
+        alert(data.message)
+        loadProfileData() // Reload data
       } else {
         alert('Ошибка: ' + data.message)
       }
     } catch (error) {
       console.error('Error scanning QR:', error)
-      alert('Ошибка сканирования QR кода')
+      alert('Ошибка при сканировании QR кода')
     }
   }
 
-  // Назначение админских прав
-  const grantAdminRights = async () => {
-    if (!newAdminTgId.trim()) {
-      alert('Введите Telegram ID')
-      return
-    }
+  // Handle review submission
+  const submitReview = async () => {
+    if (!selectedHookahForReview || !user?.id) return
 
-    if (!user?.id) {
-      alert('Ошибка: пользователь не найден')
-      return
-    }
-
-    const tgId = parseInt(newAdminTgId)
-    if (isNaN(tgId)) {
-      alert('Неверный формат Telegram ID')
-      return
-    }
-
-    // Получаем TG ID текущего пользователя
-    let currentTgId = user.tg_id
-    if (!currentTgId || currentTgId === 0) {
-      currentTgId = await getTgIdFromDb(user.id)
-    }
-
-    if (!currentTgId) {
-      alert('Ошибка: не удалось получить ваш Telegram ID')
-      return
-    }
-
-    setIsGrantingAdmin(true)
+    setIsSubmittingReview(true)
     try {
-      const response = await fetch('/api/admin', {
+      const response = await fetch('/api/add-review', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          tg_id: String(currentTgId), // TG ID текущего пользователя (админа)
-          target_tg_id: String(tgId), // TG ID пользователя, которому выдаем права
-          action: 'grant_admin',
-          admin_key: 'admin123'
-        }),
+          userId: user.id,
+          hookahId: selectedHookahForReview.id,
+          rating: reviewRating,
+          reviewText: reviewText.trim() || undefined
+        })
       })
 
       const data = await response.json()
-      
       if (data.success) {
-        alert(`✅ Админские права успешно предоставлены пользователю ${data.user.first_name} ${data.user.last_name}`)
-        setNewAdminTgId('')
-        setAdminPanelOpen(false)
+        alert('Отзыв успешно добавлен!')
+        setShowReviewModal(false)
+        setSelectedHookahForReview(null)
+        setReviewText('')
+        loadProfileData() // Reload data
       } else {
-        alert('❌ Ошибка: ' + data.message)
+        alert('Ошибка: ' + data.message)
       }
     } catch (error) {
-      console.error('Error granting admin rights:', error)
-      alert('❌ Ошибка при предоставлении админских прав')
+      console.error('Error submitting review:', error)
+      alert('Ошибка при отправке отзыва')
     } finally {
-      setIsGrantingAdmin(false)
+      setIsSubmittingReview(false)
     }
   }
 
+  // Open review modal
+  const openReviewModal = (hookah: HookahHistoryItem) => {
+    setSelectedHookahForReview(hookah)
+    setReviewRating(hookah.review?.rating || 5)
+    setReviewText(hookah.review?.review_text || '')
+    setShowReviewModal(true)
+  }
 
+  // Render stars for rating
+  const renderStars = (rating: number, interactive: boolean = false) => {
+    return (
+      <div className="flex items-center gap-1">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <span
+            key={star}
+            className={`text-lg ${star <= rating ? 'text-yellow-400' : 'text-gray-400'} ${
+              interactive ? 'cursor-pointer hover:text-yellow-300' : ''
+            }`}
+            onClick={interactive ? () => setReviewRating(star) : undefined}
+          >
+            ★
+          </span>
+        ))}
+      </div>
+    )
+  }
+
+  if (loading || !isInitialized) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black flex flex-col">
-      {/* Navigation */}
-      <Navigation />
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500 mx-auto mb-4"></div>
+          <p className="text-gray-300">Загрузка профиля...</p>
+        </div>
+      </div>
+    )
+  }
 
-      {/* Main Content */}
-      <main className="flex-1 flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-700 p-8">
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black flex items-center justify-center">
           <div className="text-center">
-            <div className="text-center mb-2">
-              <h1 className="text-3xl font-bold text-white">
-                👤 Профиль
-              </h1>
-            </div>
-            <p className="text-gray-300 mb-8">
-              Управляйте своим профилем
-            </p>
-
-          {loading || !isInitialized ? (
-            <div className="bg-yellow-900/30 border border-yellow-500/50 rounded-lg p-4 backdrop-blur-sm">
-              <p className="text-yellow-300 text-sm">
-                ⏳ Загрузка пользователя...
-              </p>
-            </div>
-          ) : user ? (
-            <div className="space-y-4">
-              {/* Кнопка админа */}
-              {isAdmin && (
-                <div className="bg-red-900/30 border border-red-500/50 rounded-lg p-4 mb-4 backdrop-blur-sm">
-                  <button
-                    onClick={() => setAdminPanelOpen(true)}
-                    className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2"
-                  >
-                    <span className="text-xl">👑</span>
-                    <span>Админ панель</span>
-                  </button>
-                </div>
-              )}
-
-              <div className="bg-purple-900/30 border border-purple-500/50 rounded-lg p-4 mb-4 backdrop-blur-sm">
-                <div className="flex justify-between items-center mb-2">
-                  <h3 className="font-semibold text-purple-300">Информация о пользователе</h3>
-                  <div className="flex items-center gap-2">
-                    {adminStatusChecked && (
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        isAdmin 
-                          ? 'bg-red-100 text-red-800' 
-                          : 'bg-gray-100 text-gray-600'
-                      }`}>
-                        {isAdmin ? '👑 Админ' : '👤 Пользователь'}
-                      </span>
-                    )}
-                    {!isEditing && (
+          <p className="text-gray-300 mb-4">Пользователь не найден</p>
                       <button
-                        onClick={() => setIsEditing(true)}
-                        className="text-purple-600 hover:text-purple-800 text-sm font-medium"
+            onClick={() => window.location.href = '/register'}
+            className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg"
                       >
-                        ✏️ Редактировать
+            Регистрация
                       </button>
-                    )}
                   </div>
                 </div>
+    )
+  }
+
+  const stock = stocks.find(s => s.stock_name === '5+1 кальян')
+  const unusedFreeHookahs = freeHookahs.filter(h => !h.used)
+  const hasUnusedFreeHookah = unusedFreeHookahs.length > 0
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
+      <Navigation />
+      
+      <main className="max-w-4xl mx-auto p-4 space-y-6">
+        {/* Profile Info */}
+        <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-700 p-6">
+          <h1 className="text-3xl font-bold text-white mb-6">👤 Профиль</h1>
+          
+          <div className="grid md:grid-cols-2 gap-6">
+            <div>
+              <h2 className="text-xl font-semibold text-white mb-4">Информация о пользователе</h2>
                 
                 {isEditing ? (
-                  <div className="space-y-3">
+                <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-purple-700 mb-1">Telegram ID</label>
+                    <label className="block text-sm font-medium text-gray-300 mb-1">Имя</label>
                       <input
                         type="text"
-                        value={user.tg_id}
-                        disabled
-                        className="w-full px-3 py-2 border border-purple-300 rounded-md bg-gray-100 text-gray-600 cursor-not-allowed"
-                        placeholder="Telegram ID"
-                      />
-                      <p className="text-xs text-purple-600 mt-1">Telegram ID нельзя изменить</p>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-purple-700 mb-1">Имя</label>
-                      <input
-                        type="text"
-                        name="first_name"
                         value={editForm.first_name}
-                        onChange={handleEditChange}
-                        className="w-full px-3 py-2 border border-purple-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
-                        placeholder="Введите имя"
+                      onChange={(e) => setEditForm({...editForm, first_name: e.target.value})}
+                      className="w-full px-3 py-2 border border-gray-600 rounded-md bg-gray-700 text-white"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-purple-700 mb-1">Фамилия</label>
+                    <label className="block text-sm font-medium text-gray-300 mb-1">Фамилия</label>
                       <input
                         type="text"
-                        name="last_name"
                         value={editForm.last_name}
-                        onChange={handleEditChange}
-                        className="w-full px-3 py-2 border border-purple-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
-                        placeholder="Введите фамилию"
+                      onChange={(e) => setEditForm({...editForm, last_name: e.target.value})}
+                      className="w-full px-3 py-2 border border-gray-600 rounded-md bg-gray-700 text-white"
                       />
                     </div>
                     <div className="flex gap-2">
                       <button
-                        onClick={updateProfile}
+                      onClick={saveProfile}
                         disabled={isSaving}
-                        className="flex-1 bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 text-white py-2 px-4 rounded-md text-sm font-medium"
+                      className="bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white px-4 py-2 rounded-md"
                       >
-                        {isSaving ? '💾 Сохранение...' : '💾 Сохранить'}
+                      {isSaving ? 'Сохранение...' : 'Сохранить'}
                       </button>
                       <button
-                        onClick={() => {
-                          setIsEditing(false)
-                          setEditForm({
-                            first_name: user.first_name || '',
-                            last_name: user.last_name || ''
-                          })
-                        }}
-                        className="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded-md text-sm font-medium"
-                      >
-                        ❌ Отмена
+                      onClick={() => setIsEditing(false)}
+                      className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md"
+                    >
+                      Отмена
                       </button>
                     </div>
                   </div>
                 ) : (
-                  <div className="text-left space-y-2 text-purple-800 text-sm">
-                    <p><strong>ID:</strong> {user.id}</p>
-                    <p><strong>Telegram ID:</strong> {user.tg_id}</p>
-                    <p><strong>Имя:</strong> {user.first_name || 'Не указано'}</p>
-                    <p><strong>Фамилия:</strong> {user.last_name || 'Не указано'}</p>
-                    <p><strong>Телефон:</strong> {user.phone || 'Не указано'}</p>
-                    <p><strong>Username:</strong> @{user.username || 'Не указано'}</p>
+                <div className="space-y-2">
+                  <p className="text-gray-300"><strong>Имя:</strong> {user.first_name}</p>
+                  <p className="text-gray-300"><strong>Фамилия:</strong> {user.last_name}</p>
+                  <p className="text-gray-300"><strong>Телефон:</strong> {user.phone || 'Не указан'}</p>
+                  <p className="text-gray-300"><strong>Username:</strong> @{user.username || 'Не указан'}</p>
+                  <button
+                    onClick={() => {
+                      setEditForm({ first_name: user.first_name || '', last_name: user.last_name || '' })
+                      setIsEditing(true)
+                    }}
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md mt-4"
+                  >
+                    Редактировать
+                  </button>
                   </div>
                 )}
               </div>
-
-              <div className="bg-blue-900/30 border border-blue-500/50 rounded-lg p-4 backdrop-blur-sm">
-                <h3 className="font-semibold text-blue-300 mb-2">Статистика</h3>
-                <div className="text-left space-y-2 text-blue-200 text-sm">
-                  <p>Дата регистрации: {user.created_at ? new Date(user.created_at).toLocaleDateString('ru-RU') : 'Сегодня'}</p>
-                  <p>Выкурено всего кальянов: {profileStats?.totalSmokedHookahs || 0}</p>
-                  <p>Получено бесплатных: {profileStats?.freeHookahsReceived || 0}</p>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="bg-red-900/30 border border-red-500/50 rounded-lg p-4 backdrop-blur-sm">
-              <p className="text-red-300 text-sm">
-                ❌ Откройте приложение в Telegram для просмотра профиля
-              </p>
-            </div>
-          )}
-
-        </div>
-      </div>
-      
-      {/* Admin Panel Modal */}
-      {adminPanelOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-800 rounded-2xl shadow-2xl border border-gray-700 max-w-md w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-white flex items-center">
-                  <span className="text-3xl mr-3">👑</span>
-                  Админ панель
-                </h2>
-                <button
-                  onClick={() => {
-                    setAdminPanelOpen(false)
-                    // Сбрасываем данные найденного пользователя при закрытии панели
-                    setSearchedUser(null)
-                    setSearchPhone('')
-                    setGuestSearchPhone('')
-                  }}
-                  className="text-gray-400 hover:text-white text-2xl"
-                >
-                  ✕
-                </button>
-              </div>
-
-              <div className="space-y-6">
-                {/* QR Scanner */}
-                <div className="bg-blue-900/30 border border-blue-500/50 rounded-lg p-4">
-                  <h3 className="font-semibold text-blue-300 mb-3">QR Сканер</h3>
-                  <button
-                    onClick={() => setShowQRScanner(true)}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2"
-                  >
-                    <span className="text-xl">📷</span>
-                    <span>Открыть сканер</span>
-                  </button>
-                </div>
-
-                {/* Управление кальянами (как в старой админ панели) */}
-                <div className="bg-green-900/30 border border-green-500/50 rounded-lg p-4">
-                  <h3 className="font-semibold text-green-300 mb-3">Управление кальянами</h3>
-                  <div className="space-y-3">
-                    <div>
-                      <label className="block text-sm font-medium text-green-300 mb-1">
-                        Последние 4 цифры номера телефона:
-                      </label>
-                      <input
-                        type="text"
-                        value={guestSearchPhone}
-                        onChange={(e) => {
-                          const value = e.target.value.replace(/\D/g, '').slice(0, 4)
-                          setGuestSearchPhone(value)
-                        }}
-                        placeholder="Например: 1234"
-                        className="w-full px-3 py-2 border-2 border-green-400 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 text-center text-xl font-bold text-black bg-white shadow-inner"
-                        maxLength={4}
-                      />
-                    </div>
-                    
-                    <div className="flex space-x-2">
+              
+            {/* Free Hookahs Counter */}
+            <div>
+              <h2 className="text-xl font-semibold text-white mb-4">Бесплатные кальяны</h2>
+              <div className="bg-yellow-900/30 border border-yellow-500/50 rounded-lg p-4">
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-yellow-400 mb-2">
+                    {unusedFreeHookahs.length}
+                  </div>
+                  <p className="text-yellow-200">Доступно бесплатных кальянов</p>
+                  {hasUnusedFreeHookah && (
                       <button
-                        onClick={addHookahDirectly}
-                        disabled={isAddingHookah || isRemovingHookah || guestSearchPhone.length !== 4}
-                        className="flex-1 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white py-2 px-3 rounded-md text-sm font-medium"
+                      onClick={claimFreeHookah}
+                      disabled={isClaiming}
+                      className="mt-4 bg-yellow-600 hover:bg-yellow-700 disabled:bg-yellow-400 text-white px-6 py-2 rounded-md font-medium"
                       >
-                        {isAddingHookah ? '⏳ Добавляем...' : '➕ Добавить кальян'}
+                      {isClaiming ? '⏳ Получаем...' : '🎁 Получить бесплатный кальян'}
                       </button>
-                      <button
-                        onClick={removeHookahDirectly}
-                        disabled={isRemovingHookah || isAddingHookah || guestSearchPhone.length !== 4}
-                        className="flex-1 bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white py-2 px-3 rounded-md text-sm font-medium"
-                      >
-                        {isRemovingHookah ? '⏳ Убираем...' : '➖ Убрать кальян'}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Поиск пользователя */}
-                <div className="bg-blue-900/30 border border-blue-500/50 rounded-lg p-4">
-                  <h3 className="font-semibold text-blue-300 mb-3">Поиск пользователя</h3>
-                  <div className="space-y-3">
-                    <div>
-                      <label className="block text-sm font-medium text-blue-300 mb-1">
-                        Последние 4 цифры номера телефона:
-                      </label>
-                      <input
-                        type="text"
-                        value={searchPhone}
-                        onChange={(e) => {
-                          const value = e.target.value.replace(/\D/g, '').slice(0, 4)
-                          setSearchPhone(value)
-                        }}
-                        placeholder="Например: 1234"
-                        className="w-full px-3 py-2 border-2 border-blue-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-center text-xl font-bold text-black bg-white shadow-inner"
-                        maxLength={4}
-                      />
-                    </div>
-                    
-                    <button
-                      onClick={searchUser}
-                      disabled={isSearchingUser || searchPhone.length !== 4}
-                      className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white py-2 px-4 rounded-md text-sm font-medium"
-                    >
-                      {isSearchingUser ? '⏳ Поиск...' : '🔍 Найти пользователя'}
-                    </button>
-
-                    {/* Результат поиска */}
-                    {searchedUser && (
-                      <div className="mt-4 p-3 bg-blue-800/50 rounded-lg border border-blue-400">
-                        <h4 className="font-semibold text-blue-300 mb-2">Информация о пользователе:</h4>
-                        <div className="text-blue-200 text-sm space-y-1">
-                          <p><strong>Имя:</strong> {searchedUser.user.first_name} {searchedUser.user.last_name}</p>
-                          <p><strong>Телефон:</strong> {searchedUser.user.phone}</p>
-                          <p><strong>Username:</strong> @{searchedUser.user.username || 'Не указан'}</p>
-                          <p><strong>Telegram ID:</strong> {searchedUser.user.tg_id}</p>
-                        </div>
-                        
-                        <div className="mt-3 pt-3 border-t border-blue-400">
-                          <h5 className="font-semibold text-blue-300 mb-2">Статистика кальянов:</h5>
-                          <div className="grid grid-cols-2 gap-2 text-sm">
-                            <div className="bg-blue-700/50 rounded p-2">
-                              <div className="text-blue-200">Заполнено слотов:</div>
-                              <div className="text-white font-bold text-lg">{searchedUser.stats.slotsFilled}/5</div>
-                            </div>
-                            <div className="bg-blue-700/50 rounded p-2">
-                              <div className="text-blue-200">Осталось до бесплатного:</div>
-                              <div className="text-white font-bold text-lg">{searchedUser.stats.slotsRemaining}</div>
-                            </div>
-                          </div>
-                          <div className="mt-2">
-                            <div className="text-blue-200 text-sm">Прогресс: {searchedUser.stats.progress}%</div>
-                            <div className="w-full bg-blue-600 rounded-full h-2 mt-1">
-                              <div 
-                                className="bg-blue-300 h-2 rounded-full transition-all duration-300" 
-                                style={{ width: `${searchedUser.stats.progress}%` }}
-                              ></div>
-                            </div>
-                          </div>
-                          {searchedUser.stats.hasFreeHookah && (
-                            <div className="mt-2 text-green-400 font-semibold">
-                              🎁 Есть бесплатный кальян!
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Назначение админа */}
-                <div className="bg-purple-900/30 border border-purple-500/50 rounded-lg p-4">
-                  <h3 className="font-semibold text-purple-300 mb-3">Назначить админа</h3>
-                  <div className="space-y-3">
-                    <div>
-                      <label className="block text-sm font-medium text-purple-300 mb-1">
-                        Telegram ID пользователя:
-                      </label>
-                      <input
-                        type="number"
-                        value={newAdminTgId}
-                        onChange={(e) => setNewAdminTgId(e.target.value)}
-                        placeholder="Введите Telegram ID..."
-                        className="w-full px-3 py-2 border-2 border-purple-400 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm text-black bg-white shadow-inner font-mono"
-                      />
-                    </div>
-                    <button
-                      onClick={grantAdminRights}
-                      disabled={isGrantingAdmin || !newAdminTgId}
-                      className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 text-white py-2 px-4 rounded-md text-sm font-medium"
-                    >
-                      {isGrantingAdmin ? '⏳ Назначаем...' : '👑 Назначить админа'}
-                    </button>
-                  </div>
+                  )}
                 </div>
               </div>
             </div>
           </div>
         </div>
-      )}
 
+        {/* Slots Panel */}
+        <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-700 p-6">
+          <h2 className="text-2xl font-bold text-white mb-4">🎯 Акция "5+1 кальян"</h2>
+          
+          {stock ? (
+            <div className="space-y-4">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-white mb-2">
+                  {stock.progress}%
+                </div>
+                <div className="w-full bg-gray-700 rounded-full h-4 mb-2">
+                  <div 
+                    className="bg-gradient-to-r from-blue-500 to-purple-600 h-4 rounded-full transition-all duration-500"
+                    style={{ width: `${stock.progress}%` }}
+                  ></div>
+                </div>
+                <p className="text-gray-300">
+                  Заполнено слотов: {Math.floor(stock.progress / 20)}/5
+                </p>
+                    </div>
+                    
+              {/* Slots */}
+              <div className="grid grid-cols-5 gap-2">
+                {[1, 2, 3, 4, 5].map((slot) => (
+                  <div
+                    key={slot}
+                    className={`h-16 rounded-lg border-2 flex items-center justify-center text-white font-bold ${
+                      Math.floor(stock.progress / 20) >= slot
+                        ? 'bg-green-600 border-green-500'
+                        : 'bg-gray-700 border-gray-600'
+                    }`}
+                  >
+                    {Math.floor(stock.progress / 20) >= slot ? '✅' : slot}
+                  </div>
+                ))}
+                    </div>
+                    
+              {stock.progress >= 100 && (
+                <div className="text-center p-4 bg-green-900/30 border border-green-500/50 rounded-lg">
+                  <p className="text-green-200 font-semibold">
+                    🎉 Акция завершена! Бесплатный кальян добавлен!
+                  </p>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="text-center text-gray-300">
+              <p>Акция еще не начата</p>
+            </div>
+          )}
+
+          {/* QR Scanner Button */}
+          <div className="mt-6 text-center">
+                        <button
+                          onClick={() => setShowQRScanner(true)}
+              className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-medium"
+                        >
+              📱 Сканировать QR код
+                        </button>
+          </div>
+                        </div>
+
+        {/* History */}
+        <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-700 p-6">
+          <h2 className="text-2xl font-bold text-white mb-4">📜 История кальянов</h2>
+          
+          {history.length > 0 ? (
+            <div className="space-y-3">
+              {history.map((item) => (
+                <div key={item.id} className="bg-gray-700/50 rounded-lg p-4 border border-gray-600">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <p className="text-white font-semibold">
+                        {item.hookah_type === 'free' ? '🎁 Бесплатный кальян' : '🚬 Обычный кальян'}
+                      </p>
+                      <p className="text-gray-300 text-sm">
+                        {new Date(item.created_at).toLocaleString('ru-RU')}
+                      </p>
+                      {item.review && (
+                        <div className="mt-2 flex items-center gap-2">
+                          <span className="text-gray-300 text-sm">Ваш отзыв:</span>
+                          {renderStars(item.review.rating)}
+                          {item.review.review_text && (
+                            <span className="text-gray-300 text-sm">"{item.review.review_text}"</span>
+                          )}
+                        </div>
+                      )}
+                      </div>
+                    
+                    {!item.review && (
+                        <button
+                        onClick={() => openReviewModal(item)}
+                        className="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded-md text-sm"
+                        >
+                        ⭐ Оставить отзыв
+                        </button>
+                    )}
+                  </div>
+                        </div>
+                      ))}
+            </div>
+          ) : (
+            <div className="text-center text-gray-300">
+              <p>История пуста</p>
+            </div>
+          )}
+        </div>
+      </main>
+      
       {/* QR Scanner Modal */}
       {showQRScanner && (
         <QRScanner
@@ -820,8 +478,50 @@ export default function ProfilePage() {
           onClose={() => setShowQRScanner(false)}
         />
       )}
-    </main>
+
+      {/* Review Modal */}
+      {showReviewModal && selectedHookahForReview && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-gray-800 rounded-2xl p-6 w-full max-w-md">
+            <h3 className="text-xl font-bold text-white mb-4">Оставить отзыв</h3>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Оценка</label>
+                <div className="flex justify-center">
+                  {renderStars(reviewRating, true)}
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Отзыв (необязательно)</label>
+                <textarea
+                  value={reviewText}
+                  onChange={(e) => setReviewText(e.target.value)}
+                  placeholder="Оставьте ваш отзыв..."
+                  className="w-full px-3 py-2 border border-gray-600 rounded-md bg-gray-700 text-white h-20 resize-none"
+                />
+              </div>
+              
+              <div className="flex gap-2">
+                <button
+                  onClick={submitReview}
+                  disabled={isSubmittingReview}
+                  className="flex-1 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white px-4 py-2 rounded-md"
+                >
+                  {isSubmittingReview ? 'Отправка...' : 'Отправить отзыв'}
+                </button>
+                <button
+                  onClick={() => setShowReviewModal(false)}
+                  className="flex-1 bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md"
+                >
+                  Отмена
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
-

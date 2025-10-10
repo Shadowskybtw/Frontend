@@ -12,12 +12,6 @@ export default function Navigation({ className = "" }: NavigationProps) {
 
   const navItems = [
     {
-      href: '/stocks',
-      label: 'Акции',
-      icon: '🎁',
-      active: pathname === '/stocks'
-    },
-    {
       href: '/profile',
       label: 'Профиль',
       icon: '👤',
@@ -43,7 +37,7 @@ export default function Navigation({ className = "" }: NavigationProps) {
         
         {/* Кнопки навигации под логотипом */}
         <div className="flex justify-center items-center pb-4">
-          <div className="grid grid-cols-3 gap-2 w-full max-w-md">
+          <div className="grid grid-cols-2 gap-2 w-full max-w-md">
             {navItems.map((item) => (
               <Link
                 key={item.href}

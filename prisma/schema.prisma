@@ -26,6 +26,7 @@ model User {
   admin_rights            Admin? @relation("AdminUser")
   granted_admins          Admin[] @relation("AdminGranter")
   free_hookah_requests    FreeHookahRequest[]
+  hookah_reviews          HookahReview[]
 
   @@map("users")
 }
@@ -105,4 +106,19 @@ model FreeHookahRequest {
   approver Admin? @relation(fields: [approved_by], references: [id], onDelete: SetNull)
 
   @@map("free_hookah_requests")
+}
+
+model HookahReview {
+  id            Int      @id @default(autoincrement())
+  user_id       Int
+  hookah_id     Int      // ID записи в hookah_history
+  rating        Int      // 1-5 звезд
+  review_text   String?  // Текст отзыва (опционально)
+  created_at    DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, hookah_id]) // Один отзыв на кальян от пользователя
+  @@map("hookah_reviews")
 }

@@ -12,6 +12,10 @@ interface PurchaseHistory {
   admin_id?: number | null
   scan_method?: string | null
   created_at: string
+  review?: {
+    rating: number
+    review_text?: string
+  }
 }
 
 export default function HistoryPage() {
@@ -25,13 +29,7 @@ export default function HistoryPage() {
   const fetchHistory = useCallback(async (tgId: number, page: number = 1) => {
     setHistoryLoading(true)
     try {
-      const response = await fetch('/api/history', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ tg_id: tgId, page }),
-      })
+      const response = await fetch(`/api/history/${tgId}?withReviews=true&page=${page}`)
 
       const data = await response.json()
 
@@ -172,10 +170,22 @@ export default function HistoryPage() {
                           
                           <div className="text-right">
                             {item.scan_method && (
-                              <div className="text-gray-400 text-xs">
+                              <div className="text-gray-400 text-xs mb-2">
                                 {item.scan_method === 'admin_add' && '👑 Админ добавил'}
-                                {item.scan_method === 'promotion_complete' && '🎯 Акция завершена'}
+                                {item.scan_method === 'promotion_completed' && '🎯 Акция завершена'}
                                 {item.scan_method === 'qr_scan' && '📷 QR код'}
+                              </div>
+                            )}
+                            {item.review && (
+                              <div className="flex items-center justify-end gap-1">
+                                <span className="text-yellow-400 text-sm">
+                                  {Array.from({ length: item.review.rating }, (_, i) => '★').join('')}
+                                </span>
+                                {item.review.review_text && (
+                                  <span className="text-gray-300 text-xs ml-2">
+                                    "{item.review.review_text}"
+                                  </span>
+                                )}
                               </div>
                             )}
                           </div>
