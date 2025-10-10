@@ -179,11 +179,11 @@ export default function HistoryPage() {
                             {item.review && (
                               <div className="flex items-center justify-end gap-1">
                                 <span className="text-yellow-400 text-sm">
-                                  {Array.from({ length: item.review.rating }, (_, i) => '★').join('')}
+                                  {Array.from({ length: item.review.rating }, () => '★').join('')}
                                 </span>
                                 {item.review.review_text && (
                                   <span className="text-gray-300 text-xs ml-2">
-                                    "{item.review.review_text}"
+                                    &ldquo;{item.review.review_text}&rdquo;
                                   </span>
                                 )}
                               </div>

@@ -38,14 +38,13 @@ interface HookahHistoryItem {
 }
 
 export default function ProfilePage() {
-  const { user, isInTelegram, loading, isInitialized } = useUser()
+  const { user, loading, isInitialized } = useUser()
   const [isEditing, setIsEditing] = useState(false)
   const [editForm, setEditForm] = useState({ first_name: '', last_name: '' })
   const [isSaving, setIsSaving] = useState(false)
   const [stocks, setStocks] = useState<Stock[]>([])
   const [freeHookahs, setFreeHookahs] = useState<FreeHookah[]>([])
   const [history, setHistory] = useState<HookahHistoryItem[]>([])
-  const [isAdmin, setIsAdmin] = useState(false)
   const [showQRScanner, setShowQRScanner] = useState(false)
   const [isClaiming, setIsClaiming] = useState(false)
   const [showReviewModal, setShowReviewModal] = useState(false)
@@ -80,12 +79,7 @@ export default function ProfilePage() {
         setHistory(historyData.history || [])
       }
 
-      // Check admin status
-      const adminResponse = await fetch(`/api/admin?tg_id=${user.tg_id}`)
-      if (adminResponse.ok) {
-        const adminData = await adminResponse.json()
-        setIsAdmin(adminData.isAdmin || false)
-      }
+      // Admin status check removed as it's not used in the simplified profile
     } catch (error) {
       console.error('Error loading profile data:', error)
     }
@@ -364,7 +358,7 @@ export default function ProfilePage() {
 
         {/* Slots Panel */}
         <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-700 p-6">
-          <h2 className="text-2xl font-bold text-white mb-4">🎯 Акция "5+1 кальян"</h2>
+          <h2 className="text-2xl font-bold text-white mb-4">🎯 Акция &ldquo;5+1 кальян&rdquo;</h2>
           
           {stock ? (
             <div className="space-y-4">
@@ -445,7 +439,7 @@ export default function ProfilePage() {
                           <span className="text-gray-300 text-sm">Ваш отзыв:</span>
                           {renderStars(item.review.rating)}
                           {item.review.review_text && (
-                            <span className="text-gray-300 text-sm">"{item.review.review_text}"</span>
+                            <span className="text-gray-300 text-sm">&ldquo;{item.review.review_text}&rdquo;</span>
                           )}
                         </div>
                       )}
