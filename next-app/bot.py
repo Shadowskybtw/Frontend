@@ -128,38 +128,28 @@ class DUNGEONBot:
         chat_id = update.effective_chat.id
         
         logger.info(f"User {user.id} ({user.username}) started the bot in chat {chat_id}")
-        logger.info(f"🔍 Bot: Update object: {update}")
         
-        # Check if user is registered
-        db_user = self.get_user_by_tg_id(user.id)
-        logger.info(f"🔍 Bot: User registration check result: {db_user}")
-        
-        if db_user:
-            # User is registered - send to stocks page
-            webapp_url = f"{WEBAPP_URL}/stocks?tg_id={user.id}&first_name={user.first_name}&last_name={user.last_name}&username={user.username or ''}"
-            button_text = "📱 Открыть приложение"
-        else:
-            # User is not registered - send to register page
-            webapp_url = f"{WEBAPP_URL}/register?tg_id={user.id}&first_name={user.first_name}&last_name={user.last_name}&username={user.username or ''}"
-            button_text = "🚀 Зарегистрироваться"
+        # WebApp URL - всегда открываем главную страницу
+        webapp_url = f"{WEBAPP_URL}?tg_id={user.id}&first_name={user.first_name}&last_name={user.last_name}&username={user.username or ''}"
         
         # Create WebApp button
         keyboard = [
             [InlineKeyboardButton(
-                button_text, 
+                "🚀 Открыть приложение", 
                 web_app=WebAppInfo(url=webapp_url)
             )]
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
         
-        welcome_text = f"""Добро пожаловать в DUNGEON Hookah! 🎉
+        welcome_text = """Здравствуйте! 👋
 
-Используйте кнопку ниже для открытия приложения:"""
+Добро пожаловать в DUNGEON Hookah!
+
+Откройте наше приложение по кнопке ниже:"""
         
         await update.message.reply_text(
             welcome_text,
-            reply_markup=reply_markup,
-            parse_mode=ParseMode.HTML
+            reply_markup=reply_markup
         )
     
     async def notify_admins_about_free_hookah_request(self, user, stock, request_id):
