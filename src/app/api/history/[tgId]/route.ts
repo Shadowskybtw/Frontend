@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 
-export async function GET(request: NextRequest, { params }: { params: { tgId: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ tgId: string }> }) {
   try {
-    const tgId = parseInt(params.tgId)
+    const resolvedParams = await params
+    const tgId = parseInt(resolvedParams.tgId)
     const url = new URL(request.url)
     const page = parseInt(url.searchParams.get('page') || '1')
     const withReviews = url.searchParams.get('withReviews') === 'true'
