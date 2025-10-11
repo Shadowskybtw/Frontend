@@ -52,6 +52,16 @@ export default function ProfilePage() {
   const [reviewRating, setReviewRating] = useState(5)
   const [reviewText, setReviewText] = useState('')
   const [isSubmittingReview, setIsSubmittingReview] = useState(false)
+  const [isAdmin, setIsAdmin] = useState(false)
+  const [adminPanelOpen, setAdminPanelOpen] = useState(false)
+  const [newAdminTgId, setNewAdminTgId] = useState('')
+  const [isGrantingAdmin, setIsGrantingAdmin] = useState(false)
+  const [guestSearchPhone, setGuestSearchPhone] = useState('')
+  const [isAddingHookah, setIsAddingHookah] = useState(false)
+  const [isRemovingHookah, setIsRemovingHookah] = useState(false)
+  const [searchPhone, setSearchPhone] = useState('')
+  const [searchedUser, setSearchedUser] = useState<any>(null)
+  const [isSearchingUser, setIsSearchingUser] = useState(false)
 
   // Load profile data
   const loadProfileData = useCallback(async () => {
@@ -79,7 +89,12 @@ export default function ProfilePage() {
         setHistory(historyData.history || [])
       }
 
-      // Admin status check removed as it's not used in the simplified profile
+      // Check admin status
+      const adminResponse = await fetch(`/api/admin?tg_id=${user.tg_id}`)
+      if (adminResponse.ok) {
+        const adminData = await adminResponse.json()
+        setIsAdmin(adminData.isAdmin || false)
+      }
     } catch (error) {
       console.error('Error loading profile data:', error)
     }
@@ -233,6 +248,143 @@ export default function ProfilePage() {
     )
   }
 
+  // Admin functions
+  const grantAdminRights = async () => {
+    if (!newAdminTgId.trim()) {
+      alert('Введите Telegram ID')
+      return
+    }
+
+    if (!user?.id) {
+      alert('Ошибка: пользователь не найден')
+      return
+    }
+
+    const tgId = parseInt(newAdminTgId)
+    if (isNaN(tgId)) {
+      alert('Неверный формат Telegram ID')
+      return
+    }
+
+    setIsGrantingAdmin(true)
+    try {
+      const response = await fetch('/api/admin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          tg_id: String(user.tg_id),
+          target_tg_id: String(tgId),
+          action: 'grant_admin',
+          admin_key: 'admin123'
+        }),
+      })
+
+      const data = await response.json()
+      
+      if (data.success) {
+        alert(`✅ Админские права успешно предоставлены пользователю ${data.user.first_name} ${data.user.last_name}`)
+        setNewAdminTgId('')
+        setAdminPanelOpen(false)
+      } else {
+        alert('❌ Ошибка: ' + data.message)
+      }
+    } catch (error) {
+      console.error('Error granting admin rights:', error)
+      alert('❌ Ошибка при предоставлении админских прав')
+    } finally {
+      setIsGrantingAdmin(false)
+    }
+  }
+
+  const searchUser = async () => {
+    if (searchPhone.length !== 4) {
+      alert('Введите ровно 4 цифры номера телефона')
+      return
+    }
+
+    setIsSearchingUser(true)
+    try {
+      const response = await fetch(`/api/search-user?phone=${searchPhone}`)
+      const data = await response.json()
+
+      if (data.success && data.user) {
+        setSearchedUser(data)
+      } else {
+        setSearchedUser(null)
+        alert('Пользователь не найден')
+      }
+    } catch (error) {
+      console.error('Error searching user:', error)
+      alert('Ошибка при поиске пользователя')
+    } finally {
+      setIsSearchingUser(false)
+    }
+  }
+
+  const addHookahDirectly = async () => {
+    if (!searchedUser || !user?.tg_id) return
+
+    setIsAddingHookah(true)
+    try {
+      const response = await fetch('/api/scan-qr', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          qrData: `admin_add_${searchedUser.user.tg_id}`,
+          tg_id: user.tg_id
+        })
+      })
+
+      const data = await response.json()
+      if (data.success) {
+        alert('✅ Кальян успешно добавлен пользователю')
+        loadProfileData()
+        setSearchedUser(null)
+        setSearchPhone('')
+      } else {
+        alert('Ошибка: ' + data.message)
+      }
+    } catch (error) {
+      console.error('Error adding hookah:', error)
+      alert('Ошибка при добавлении кальяна')
+    } finally {
+      setIsAddingHookah(false)
+    }
+  }
+
+  const removeHookahDirectly = async () => {
+    if (!searchedUser || !user?.tg_id) return
+
+    setIsRemovingHookah(true)
+    try {
+      const response = await fetch('/api/remove-hookah', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_tg_id: searchedUser.user.tg_id,
+          admin_tg_id: user.tg_id
+        })
+      })
+
+      const data = await response.json()
+      if (data.success) {
+        alert('✅ Кальян успешно удален у пользователя')
+        loadProfileData()
+        setSearchedUser(null)
+        setSearchPhone('')
+      } else {
+        alert('Ошибка: ' + data.message)
+      }
+    } catch (error) {
+      console.error('Error removing hookah:', error)
+      alert('Ошибка при удалении кальяна')
+    } finally {
+      setIsRemovingHookah(false)
+    }
+  }
+
   if (loading || !isInitialized) {
   return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black flex items-center justify-center">
@@ -271,7 +423,17 @@ export default function ProfilePage() {
       <main className="max-w-4xl mx-auto p-4 space-y-6">
         {/* Profile Info */}
         <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-700 p-6">
-          <h1 className="text-3xl font-bold text-white mb-6">👤 Профиль</h1>
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-3xl font-bold text-white">👤 Профиль</h1>
+            {isAdmin && (
+              <button
+                onClick={() => setAdminPanelOpen(!adminPanelOpen)}
+                className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium"
+              >
+                👑 Админ панель
+              </button>
+            )}
+          </div>
           
           <div className="grid md:grid-cols-2 gap-6">
             <div>
@@ -355,6 +517,130 @@ export default function ProfilePage() {
             </div>
           </div>
         </div>
+
+        {/* Admin Panel */}
+        {isAdmin && adminPanelOpen && (
+          <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-700 p-6">
+            <h2 className="text-2xl font-bold text-white mb-6">👑 Админская панель</h2>
+            
+            <div className="space-y-6">
+              {/* Grant Admin Rights */}
+              <div className="bg-purple-900/30 border border-purple-500/50 rounded-lg p-4">
+                <h3 className="font-semibold text-purple-300 mb-3">Назначить админа</h3>
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-sm font-medium text-purple-300 mb-1">
+                      Telegram ID пользователя:
+                    </label>
+                    <input
+                      type="number"
+                      value={newAdminTgId}
+                      onChange={(e) => setNewAdminTgId(e.target.value)}
+                      placeholder="Введите Telegram ID..."
+                      className="w-full px-3 py-2 border-2 border-purple-400 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm text-black bg-white shadow-inner font-mono"
+                    />
+                  </div>
+                  <button
+                    onClick={grantAdminRights}
+                    disabled={isGrantingAdmin || !newAdminTgId}
+                    className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 text-white py-2 px-4 rounded-md text-sm font-medium"
+                  >
+                    {isGrantingAdmin ? '⏳ Назначаем...' : '👑 Назначить админа'}
+                  </button>
+                </div>
+              </div>
+
+              {/* Search User */}
+              <div className="bg-blue-900/30 border border-blue-500/50 rounded-lg p-4">
+                <h3 className="font-semibold text-blue-300 mb-3">Поиск пользователя</h3>
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-sm font-medium text-blue-300 mb-1">
+                      Последние 4 цифры номера телефона:
+                    </label>
+                    <input
+                      type="text"
+                      value={searchPhone}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/\D/g, '').slice(0, 4)
+                        setSearchPhone(value)
+                      }}
+                      placeholder="Например: 1234"
+                      className="w-full px-3 py-2 border-2 border-blue-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-center text-xl font-bold text-black bg-white shadow-inner"
+                      maxLength={4}
+                    />
+                  </div>
+                  
+                  <button
+                    onClick={searchUser}
+                    disabled={isSearchingUser || searchPhone.length !== 4}
+                    className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white py-2 px-4 rounded-md text-sm font-medium"
+                  >
+                    {isSearchingUser ? '⏳ Поиск...' : '🔍 Найти пользователя'}
+                  </button>
+
+                  {/* Search Result */}
+                  {searchedUser && (
+                    <div className="mt-4 p-3 bg-blue-800/50 rounded-lg border border-blue-400">
+                      <h4 className="font-semibold text-blue-300 mb-2">Информация о пользователе:</h4>
+                      <div className="text-blue-200 text-sm space-y-1">
+                        <p><strong>Имя:</strong> {searchedUser.user.first_name} {searchedUser.user.last_name}</p>
+                        <p><strong>Телефон:</strong> {searchedUser.user.phone}</p>
+                        <p><strong>Username:</strong> @{searchedUser.user.username || 'Не указан'}</p>
+                        <p><strong>Telegram ID:</strong> {searchedUser.user.tg_id}</p>
+                      </div>
+                      
+                      <div className="mt-3 pt-3 border-t border-blue-400">
+                        <h5 className="font-semibold text-blue-300 mb-2">Статистика кальянов:</h5>
+                        <div className="grid grid-cols-2 gap-2 text-sm">
+                          <div className="bg-blue-700/50 rounded p-2">
+                            <div className="text-blue-200">Заполнено слотов:</div>
+                            <div className="text-white font-bold text-lg">{searchedUser.stats.slotsFilled}/5</div>
+                          </div>
+                          <div className="bg-blue-700/50 rounded p-2">
+                            <div className="text-blue-200">Осталось до бесплатного:</div>
+                            <div className="text-white font-bold text-lg">{searchedUser.stats.slotsRemaining}</div>
+                          </div>
+                        </div>
+                        <div className="mt-2">
+                          <div className="text-blue-200 text-sm">Прогресс: {searchedUser.stats.progress}%</div>
+                          <div className="w-full bg-blue-600 rounded-full h-2 mt-1">
+                            <div 
+                              className="bg-blue-300 h-2 rounded-full transition-all duration-300" 
+                              style={{ width: `${searchedUser.stats.progress}%` }}
+                            ></div>
+                          </div>
+                        </div>
+                        {searchedUser.stats.hasFreeHookah && (
+                          <div className="mt-2 text-green-400 font-semibold">
+                            🎁 Есть бесплатный кальян!
+                          </div>
+                        )}
+                      </div>
+                      
+                      <div className="mt-3 flex gap-2">
+                        <button
+                          onClick={addHookahDirectly}
+                          disabled={isAddingHookah || isRemovingHookah}
+                          className="flex-1 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white py-2 px-3 rounded-md text-sm font-medium"
+                        >
+                          {isAddingHookah ? '⏳ Добавляем...' : '➕ Добавить кальян'}
+                        </button>
+                        <button
+                          onClick={removeHookahDirectly}
+                          disabled={isRemovingHookah || isAddingHookah}
+                          className="flex-1 bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white py-2 px-3 rounded-md text-sm font-medium"
+                        >
+                          {isRemovingHookah ? '⏳ Убираем...' : '➖ Убрать кальян'}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Slots Panel */}
         <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-700 p-6">
