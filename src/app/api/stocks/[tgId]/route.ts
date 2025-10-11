@@ -26,8 +26,9 @@ export async function GET(
     return NextResponse.json({ success: false, message: 'Server misconfigured' }, { status: 500 })
   }
 
+  // Проверяем init data только если он есть
   const initData = req.headers.get('x-telegram-init-data') || ''
-  if (!initData || !verifyTelegramInitData(initData, tgBotToken)) {
+  if (initData && !verifyTelegramInitData(initData, tgBotToken)) {
     return NextResponse.json({ success: false, message: 'Invalid Telegram initData' }, { status: 401 })
   }
 

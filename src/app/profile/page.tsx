@@ -437,32 +437,6 @@ export default function ProfilePage() {
             <h2 className="text-2xl font-bold text-white mb-6">👑 Админская панель</h2>
             
             <div className="space-y-6">
-              {/* Grant Admin Rights */}
-              <div className="bg-purple-900/30 border border-purple-500/50 rounded-lg p-4">
-                <h3 className="font-semibold text-purple-300 mb-3">Назначить админа</h3>
-                <div className="space-y-3">
-                  <div>
-                    <label className="block text-sm font-medium text-purple-300 mb-1">
-                      Telegram ID пользователя:
-                    </label>
-                    <input
-                      type="number"
-                      value={newAdminTgId}
-                      onChange={(e) => setNewAdminTgId(e.target.value)}
-                      placeholder="Введите Telegram ID..."
-                      className="w-full px-3 py-2 border-2 border-purple-400 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm text-black bg-white shadow-inner font-mono"
-                    />
-                  </div>
-                  <button
-                    onClick={grantAdminRights}
-                    disabled={isGrantingAdmin || !newAdminTgId}
-                    className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 text-white py-2 px-4 rounded-md text-sm font-medium"
-                  >
-                    {isGrantingAdmin ? '⏳ Назначаем...' : '👑 Назначить админа'}
-                  </button>
-                </div>
-              </div>
-
               {/* Search User */}
               <div className="bg-blue-900/30 border border-blue-500/50 rounded-lg p-4">
                 <h3 className="font-semibold text-blue-300 mb-3">Поиск пользователя</h3>
@@ -549,6 +523,32 @@ export default function ProfilePage() {
                       </div>
                     </div>
                   )}
+                </div>
+              </div>
+
+              {/* Grant Admin Rights */}
+              <div className="bg-purple-900/30 border border-purple-500/50 rounded-lg p-4">
+                <h3 className="font-semibold text-purple-300 mb-3">Назначить админа</h3>
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-sm font-medium text-purple-300 mb-1">
+                      Telegram ID пользователя:
+                    </label>
+                    <input
+                      type="number"
+                      value={newAdminTgId}
+                      onChange={(e) => setNewAdminTgId(e.target.value)}
+                      placeholder="Введите Telegram ID..."
+                      className="w-full px-3 py-2 border-2 border-purple-400 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm text-black bg-white shadow-inner font-mono"
+                    />
+                  </div>
+                  <button
+                    onClick={grantAdminRights}
+                    disabled={isGrantingAdmin || !newAdminTgId}
+                    className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 text-white py-2 px-4 rounded-md text-sm font-medium"
+                  >
+                    {isGrantingAdmin ? '⏳ Назначаем...' : '👑 Назначить админа'}
+                  </button>
                 </div>
               </div>
             </div>
