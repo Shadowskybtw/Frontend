@@ -61,8 +61,6 @@ export default function ProfilePage() {
   const [searchPhone, setSearchPhone] = useState('')
   const [searchedUser, setSearchedUser] = useState<any>(null)
   const [isSearchingUser, setIsSearchingUser] = useState(false)
-  const [qrCodeImage, setQrCodeImage] = useState<string | null>(null)
-  const [isLoadingQR, setIsLoadingQR] = useState(false)
 
   // Load profile data
   const loadProfileData = useCallback(async () => {
@@ -104,32 +102,12 @@ export default function ProfilePage() {
     }
   }, [user?.tg_id])
 
-  // Load user QR code
-  const loadUserQRCode = useCallback(async () => {
-    if (!user?.tg_id) return
-
-    setIsLoadingQR(true)
-    try {
-      const response = await fetch(`/api/user-qr-code/${user.tg_id}`)
-      if (response.ok) {
-        const data = await response.json()
-        if (data.success) {
-          setQrCodeImage(data.qrCodeImage)
-        }
-      }
-    } catch (error) {
-      console.error('Error loading QR code:', error)
-    } finally {
-      setIsLoadingQR(false)
-    }
-  }, [user?.tg_id])
 
   useEffect(() => {
     if (isInitialized && user?.tg_id) {
       loadProfileData()
-      loadUserQRCode()
     }
-  }, [isInitialized, user?.tg_id, loadProfileData, loadUserQRCode])
+  }, [isInitialized, user?.tg_id, loadProfileData])
 
   // Save profile changes
   const saveProfile = async () => {
@@ -466,21 +444,6 @@ export default function ProfilePage() {
             <h2 className="text-2xl font-bold text-white mb-6">👑 Админская панель</h2>
             
             <div className="space-y-6">
-              {/* QR Scanner */}
-              <div className="bg-gray-700/50 rounded-lg p-4 border border-gray-600">
-                <h3 className="text-lg font-semibold text-white mb-4">📱 QR Сканер</h3>
-                <div className="text-center">
-                  <div className="bg-white p-4 rounded-lg mb-3">
-                    <div className="text-black text-sm">
-                      📱 Используйте камеру для сканирования QR кодов пользователей
-                    </div>
-                  </div>
-                  <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
-                    Запустить сканер
-                  </button>
-                </div>
-              </div>
-
               {/* Grant Admin Rights */}
               <div className="bg-purple-900/30 border border-purple-500/50 rounded-lg p-4">
                 <h3 className="font-semibold text-purple-300 mb-3">Назначить админа</h3>
@@ -738,37 +701,6 @@ export default function ProfilePage() {
             )}
           </div>
 
-          {/* QR Code Panel */}
-          <div className="mt-6">
-            <div className="bg-gray-700/50 rounded-lg p-4 border border-gray-600">
-              <h3 className="text-lg font-semibold text-white mb-3">📱 Ваш QR код</h3>
-              <div className="text-center">
-                {isLoadingQR ? (
-                  <div className="bg-white p-8 rounded-lg inline-block mb-3">
-                    <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-gray-900 mx-auto"></div>
-                    <p className="text-black text-sm mt-2">Генерация QR кода...</p>
-                  </div>
-                ) : qrCodeImage ? (
-                  <div className="bg-white p-4 rounded-lg inline-block mb-3">
-                    <img 
-                      src={qrCodeImage} 
-                      alt="QR Code" 
-                      className="w-48 h-48 mx-auto"
-                    />
-                  </div>
-                ) : (
-                  <div className="bg-white p-4 rounded-lg inline-block mb-3">
-                    <div className="text-black text-sm">
-                      Ошибка загрузки QR кода
-                    </div>
-                  </div>
-                )}
-                <p className="text-gray-300 text-sm">
-                  Покажите этот QR код администратору для добавления кальяна в акцию
-                </p>
-              </div>
-            </div>
-          </div>
                         </div>
 
         {/* Hookah Statistics */}
