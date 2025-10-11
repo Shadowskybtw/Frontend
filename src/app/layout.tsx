@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { UserProvider } from "@/contexts/UserContext";
+import TelegramInit from "@/components/TelegramInit";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,28 +27,15 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <head>
-        <script src="https://telegram.org/js/telegram-web-app.js"></script>
         <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              // Инициализация Telegram WebApp после загрузки
-              window.addEventListener('DOMContentLoaded', function() {
-                if (window.Telegram?.WebApp) {
-                  console.log('🚀 Initializing Telegram WebApp');
-                  window.Telegram.WebApp.ready();
-                  window.Telegram.WebApp.expand();
-                  console.log('✅ Telegram WebApp initialized');
-                } else {
-                  console.log('❌ Telegram WebApp not available');
-                }
-              });
-            `,
-          }}
+          src="https://telegram.org/js/telegram-web-app.js"
+          strategy="afterInteractive"
         />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <TelegramInit />
         <UserProvider>
           {children}
         </UserProvider>
