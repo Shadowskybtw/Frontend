@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
     // Получаем статистику пользователя
     const stocks = await db.getUserStocks(user.id)
     const stock = stocks.find(s => s.stock_name === '5+1 кальян')
-    const freeHookahs = await db.getUserFreeHookahs(user.id)
+    const freeHookahs = await db.getFreeHookahs(user.id)
     const unusedFreeHookahs = freeHookahs.filter(h => !h.used)
 
     const stats = {
