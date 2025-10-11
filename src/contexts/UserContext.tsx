@@ -149,9 +149,18 @@ export function UserProvider({ children }: UserProviderProps) {
     
     if (tgId) {
       console.log('👤 User data found in URL parameters, attempting registration')
+      const parsedTgId = parseInt(tgId)
+      console.log('🔍 Parsed tg_id:', parsedTgId, 'Original:', tgId, 'Is valid:', !isNaN(parsedTgId))
+      
+      if (isNaN(parsedTgId)) {
+        console.error('❌ Invalid tg_id in URL parameters:', tgId)
+        loadFallbackData()
+        return
+      }
+      
       checkOrRegisterUser({
-        id: parseInt(tgId),
-        tg_id: parseInt(tgId),
+        id: parsedTgId,
+        tg_id: parsedTgId,
         first_name: firstName || 'Unknown',
         last_name: lastName || 'User',
         username: username || undefined
@@ -193,7 +202,21 @@ export function UserProvider({ children }: UserProviderProps) {
           
           if (tgUser && tgUser.id) {
             console.log('👤 User found in initDataUnsafe globally:', tgUser)
-            checkOrRegisterUser(tgUser)
+            console.log('🔍 tgUser.id type:', typeof tgUser.id, 'value:', tgUser.id)
+            
+            // Убеждаемся, что id - это число
+            const userId = typeof tgUser.id === 'string' ? parseInt(tgUser.id) : tgUser.id
+            if (isNaN(userId)) {
+              console.error('❌ Invalid user ID from initDataUnsafe:', tgUser.id)
+              loadFallbackData()
+              return
+            }
+            
+            checkOrRegisterUser({
+              ...tgUser,
+              id: userId,
+              tg_id: userId
+            })
           } else {
             console.log('🔍 No user data in initDataUnsafe, trying to get from initData')
             // Пытаемся получить tg_id из initData
@@ -212,9 +235,19 @@ export function UserProvider({ children }: UserProviderProps) {
                   
                   if (userData.id) {
                     console.log('👤 User found in initData globally:', userData)
+                    console.log('🔍 userData.id type:', typeof userData.id, 'value:', userData.id)
+                    
+                    // Убеждаемся, что id - это число
+                    const userId = typeof userData.id === 'string' ? parseInt(userData.id) : userData.id
+                    if (isNaN(userId)) {
+                      console.error('❌ Invalid user ID from initData:', userData.id)
+                      loadFallbackData()
+                      return
+                    }
+                    
                     checkOrRegisterUser({ 
-                      id: userData.id,
-                      tg_id: userData.id,
+                      id: userId,
+                      tg_id: userId,
                       first_name: userData.first_name, 
                       last_name: userData.last_name, 
                       username: userData.username 

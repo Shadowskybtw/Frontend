@@ -80,6 +80,7 @@ export async function POST(req: NextRequest) {
   try {
     console.log('🔍 Checking if user exists for tg_id:', payload.tg_id)
     console.log('🔍 Payload received:', payload)
+    console.log('🔍 tg_id type:', typeof payload.tg_id, 'is valid number:', !isNaN(payload.tg_id))
     
     // Check if user already exists
     const existingUser = await db.getUserByTgId(payload.tg_id)
