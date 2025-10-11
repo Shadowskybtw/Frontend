@@ -50,13 +50,13 @@ export async function POST(request: NextRequest) {
       if (targetUser) {
         // Проверяем, не является ли уже админом
         const existingAdmin = await prisma.adminList.findUnique({
-          where: { tg_id: BigInt(targetTgId) }
+          where: { tg_id: targetTgId }
         })
         
         if (!existingAdmin) {
           await prisma.adminList.create({
             data: {
-              tg_id: BigInt(targetTgId)
+              tg_id: targetTgId
             }
           })
           results.push(`✅ Admin rights granted to user ${targetUser.first_name} ${targetUser.last_name} (TG ID: ${targetTgId})`)

@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
 
     // Получаем пользователя
     const user = await prisma.user.findUnique({
-      where: { tg_id: BigInt(tg_id) }
+      where: { tg_id: tg_id }
     })
 
     if (!user) {
@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
     try {
       await prisma.adminList.create({
         data: {
-          tg_id: BigInt(tg_id)
+          tg_id: tg_id
         }
       })
       console.log(`✅ Admin added to admin_list table: ${tg_id}`)

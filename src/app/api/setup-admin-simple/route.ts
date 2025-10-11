@@ -40,7 +40,7 @@ export async function POST() {
     for (const tgId of adminTgIdsToGrant) {
       try {
         const user = await prisma.user.findUnique({
-          where: { tg_id: BigInt(tgId) }
+          where: { tg_id: tgId }
         })
 
         if (user) {
