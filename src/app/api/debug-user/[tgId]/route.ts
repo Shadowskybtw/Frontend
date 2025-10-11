@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 
-export async function GET(request: Request, { params }: { params: { tgId: string } }) {
+export async function GET(request: Request, { params }: { params: Promise<{ tgId: string }> }) {
   try {
-    const tgId = parseInt(params.tgId)
+    const resolvedParams = await params
+    const tgId = parseInt(resolvedParams.tgId)
     console.log(`🔍 Debug user API called for TG ID: ${tgId}`)
     
     if (!tgId || isNaN(tgId)) {
