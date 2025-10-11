@@ -67,10 +67,10 @@ export const db = {
   async getUserByTgId(tgId: number): Promise<User | null> {
     try {
       console.log('🔍 Getting user by TG ID:', tgId)
-      console.log('🔍 Searching for tg_id as BigInt:', BigInt(tgId))
+      console.log('🔍 Searching for tg_id:', tgId)
       
       const user = await prisma.user.findUnique({
-        where: { tg_id: BigInt(tgId) }
+        where: { tg_id: tgId }
       })
       
       console.log('🔍 Raw user from database:', user)
@@ -79,20 +79,8 @@ export const db = {
       
       if (!user) return null
       
-      // Convert BigInt to number for JSON serialization
-      const convertedUser = {
-        id: user.id,
-        tg_id: Number(user.tg_id),
-        first_name: user.first_name,
-        last_name: user.last_name,
-        phone: user.phone,
-        username: user.username,
-        created_at: user.created_at,
-        updated_at: user.updated_at
-      } as User
-      
-      console.log('✅ Converted user for return:', convertedUser)
-      return convertedUser
+      console.log('✅ User found:', user)
+      return user
     } catch (error) {
       console.error('❌ Error getting user by TG ID:', error)
       return null
@@ -148,7 +136,7 @@ export const db = {
     console.log('Creating user:', userData)
     const user = await prisma.user.create({
       data: {
-        tg_id: BigInt(userData.tg_id),
+        tg_id: userData.tg_id,
         first_name: userData.first_name,
         last_name: userData.last_name,
         phone: userData.phone,
@@ -157,24 +145,14 @@ export const db = {
     })
     console.log('User created:', user)
     
-    // Convert BigInt to number for JSON serialization
-    return {
-      id: user.id,
-      tg_id: Number(user.tg_id),
-      first_name: user.first_name,
-      last_name: user.last_name,
-      phone: user.phone,
-      username: user.username,
-      created_at: user.created_at,
-      updated_at: user.updated_at
-    } as User
+    return user
   },
 
   async updateUser(tgId: number, updates: Partial<User>): Promise<User | null> {
     try {
       console.log('Updating user:', { tgId, updates })
       const user = await prisma.user.update({
-        where: { tg_id: BigInt(tgId) },
+        where: { tg_id: tgId },
         data: {
           first_name: updates.first_name,
           last_name: updates.last_name,
@@ -184,17 +162,7 @@ export const db = {
       })
       console.log('User updated:', user)
       
-      // Convert BigInt to number for JSON serialization
-      return {
-        id: user.id,
-        tg_id: Number(user.tg_id),
-        first_name: user.first_name,
-        last_name: user.last_name,
-        phone: user.phone,
-        username: user.username,
-        created_at: user.created_at,
-        updated_at: user.updated_at
-      } as User
+      return user
     } catch (error) {
       console.error('Error updating user:', error)
       return null

@@ -23,7 +23,7 @@ export async function POST(req: Request) {
 
     // Проверяем, существует ли пользователь
     const existingUser = await prisma.user.findUnique({
-      where: { tg_id: BigInt(tg_id) }
+      where: { tg_id: tg_id }
     })
 
     if (existingUser) {
@@ -47,7 +47,7 @@ export async function POST(req: Request) {
     // Создаем нового пользователя
     const newUser = await prisma.user.create({
       data: {
-        tg_id: BigInt(tg_id),
+        tg_id: tg_id,
         first_name: firstName,
         last_name: lastName,
         phone: phone,

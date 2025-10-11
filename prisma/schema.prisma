@@ -3,13 +3,13 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./hookah.db"
 }
 
 model User {
   id                      Int             @id @default(autoincrement())
-  tg_id                   BigInt          @unique
+  tg_id                   Int             @unique
   first_name              String
   last_name               String
   phone                   String
@@ -59,9 +59,9 @@ model FreeHookah {
 model HookahHistory {
   id          Int       @id @default(autoincrement())
   user_id     Int
-  hookah_type String    @db.VarChar(20)
+  hookah_type String
   slot_number Int?
-  created_at  DateTime? @default(now()) @map("created_at") @db.Timestamp(6)
+  created_at  DateTime? @default(now()) @map("created_at")
   user        User      @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([created_at], map: "idx_hookah_history_created_at")
@@ -85,7 +85,7 @@ model Admin {
 
 model AdminList {
   id         Int      @id @default(autoincrement())
-  tg_id      BigInt   @unique
+  tg_id      Int      @unique
   created_at DateTime @default(now()) @map("created_at")
 
   @@map("admin_list")
