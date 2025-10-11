@@ -8,6 +8,22 @@ export const prisma = globalForPrisma.prisma ?? new PrismaClient()
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
 
+// Функция для инициализации базы данных
+async function initializeDatabase() {
+  try {
+    console.log('🔧 Initializing database...')
+    await prisma.$connect()
+    console.log('✅ Database connected successfully')
+    return true
+  } catch (error) {
+    console.error('❌ Failed to connect to database:', error)
+    return false
+  }
+}
+
+// Инициализируем базу данных при импорте
+initializeDatabase()
+
 // Database types
 export interface User {
   id: number
@@ -60,7 +76,12 @@ export interface FreeHookahRequest {
 export const db = {
   // Helper to check if database is connected
   isConnected(): boolean {
-    return !!prisma
+    try {
+      return !!prisma
+    } catch (error) {
+      console.error('❌ Database connection check failed:', error)
+      return false
+    }
   },
 
   // User operations
@@ -907,6 +928,16 @@ export const db = {
     } catch (error) {
       console.error('Error getting all free hookahs:', error)
       return []
+    }
+  },
+
+  async getAllUsersCount(): Promise<number> {
+    try {
+      const count = await prisma.user.count()
+      return count
+    } catch (error) {
+      console.error('Error getting users count:', error)
+      return 0
     }
   }
 }
