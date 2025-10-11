@@ -94,7 +94,8 @@ export default function ProfilePage() {
       const adminResponse = await fetch(`/api/admin?tg_id=${user.tg_id}`)
       if (adminResponse.ok) {
         const adminData = await adminResponse.json()
-        setIsAdmin(adminData.isAdmin || false)
+        console.log('Admin status check result:', adminData)
+        setIsAdmin(adminData.is_admin || false)
       }
 
       // Load user QR code will be called separately
@@ -457,6 +458,10 @@ export default function ProfilePage() {
                 👑 Админ панель
               </button>
             )}
+            {/* Debug info - remove in production */}
+            <div className="text-xs text-gray-500">
+              Admin: {isAdmin ? 'Yes' : 'No'} | TG ID: {user?.tg_id}
+            </div>
           </div>
           
           <div className="grid md:grid-cols-2 gap-6">
