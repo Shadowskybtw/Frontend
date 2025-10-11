@@ -1,6 +1,61 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 
+export async function GET(request: NextRequest) {
+  try {
+    const url = new URL(request.url)
+    const tg_id = url.searchParams.get('tg_id')
+    
+    if (!tg_id) {
+      return NextResponse.json({ 
+        success: false, 
+        message: 'TG ID is required' 
+      }, { status: 400 })
+    }
+
+    console.log('Admin GET API called for TG ID:', tg_id)
+
+    // Получаем пользователя
+    const user = await db.getUserByTgId(Number(tg_id))
+    console.log('User lookup result:', { tg_id, user })
+    
+    if (!user) {
+      // Если пользователь не найден, но это админский ID, все равно даем права
+      const adminTgId = parseInt(process.env.ADMIN_TG_ID || '937011437')
+      console.log('Checking admin TG ID:', { tg_id, adminTgId, isMatch: Number(tg_id) === adminTgId })
+      if (Number(tg_id) === adminTgId) {
+        console.log('Admin TG ID detected, granting admin rights')
+        return NextResponse.json({ 
+          success: true, 
+          is_admin: true,
+          message: 'Admin rights granted by TG ID'
+        })
+      }
+      console.log('User not found and not admin TG ID')
+      return NextResponse.json({ success: false, message: 'User not found' }, { status: 404 })
+    }
+
+    // Проверяем, является ли пользователь админом
+    const adminTgId = parseInt(process.env.ADMIN_TG_ID || '937011437')
+    const isHardcodedAdmin = Number(user.tg_id) === adminTgId
+    const isDbAdmin = await db.isUserAdmin(user.id)
+    const isAdmin = isHardcodedAdmin || isDbAdmin
+    console.log('Checking admin rights:', { userTgId: Number(user.tg_id), adminTgId, isHardcodedAdmin, isDbAdmin, isAdmin })
+    
+    return NextResponse.json({ 
+      success: true, 
+      is_admin: isAdmin
+    })
+
+  } catch (error) {
+    console.error('Error in admin GET API:', error)
+    return NextResponse.json(
+      { success: false, message: 'Internal server error' },
+      { status: 500 }
+    )
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     console.log('Admin API called')
