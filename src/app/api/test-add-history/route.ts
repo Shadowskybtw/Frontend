@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
       user.id,
       'regular',
       1, // slot_number
-      null, // stockId
+      undefined, // stockId
       null, // adminId
       'test' // scanMethod
     )
