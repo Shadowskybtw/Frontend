@@ -153,13 +153,16 @@ export const db = {
     username?: string
   }): Promise<User> {
     console.log('Creating user:', userData)
+    const now = new Date()
     const user = await prisma.user.create({
       data: {
         tg_id: userData.tg_id,
         first_name: userData.first_name,
         last_name: userData.last_name,
         phone: userData.phone,
-        username: userData.username
+        username: userData.username,
+        created_at: now,
+        updated_at: now
       }
     })
     console.log('User created:', user)

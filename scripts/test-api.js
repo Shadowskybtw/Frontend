@@ -30,14 +30,20 @@ async function testAPI() {
     // Тестируем создание нового пользователя
     console.log('🆕 Тестируем создание нового пользователя...');
     
-    const newUser = await prisma.user.create({
-      data: {
-        tg_id: 999999999,
-        first_name: 'Новый',
-        last_name: 'Пользователь',
-        phone: '+7999999999',
-        username: 'newuser'
-      }
+    // Генерируем уникальный TG ID в пределах INT
+    const uniqueTgId = Math.floor(Math.random() * 1000000000) + 1000000000;
+    
+    const now = new Date().toISOString();
+    
+    // Используем raw SQL для создания пользователя
+    const result = await prisma.$executeRaw`
+      INSERT INTO users (tg_id, first_name, last_name, phone, username, created_at, updated_at, is_admin, total_purchases, total_regular_purchases, total_free_purchases)
+      VALUES (${uniqueTgId}, 'Тестовый', 'Пользователь', '+7999999999', 'testuser', ${now}, ${now}, 0, 0, 0, 0)
+    `;
+    
+    // Получаем созданного пользователя
+    const newUser = await prisma.user.findUnique({
+      where: { tg_id: uniqueTgId }
     });
     
     console.log('✅ Новый пользователь создан:', newUser);
