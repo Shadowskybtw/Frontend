@@ -832,11 +832,10 @@ export const db = {
     try {
       console.log('Removing hookah from history:', { userId, stockId, hookahType })
       
-      // Находим последнюю запись с указанными параметрами
+      // Находим последнюю запись с указанными параметрами (без stock_id, так как его нет в схеме)
       const lastHistoryRecord = await prisma.hookahHistory.findFirst({
         where: {
           user_id: userId,
-          stock_id: stockId,
           hookah_type: hookahType
         },
         orderBy: {
