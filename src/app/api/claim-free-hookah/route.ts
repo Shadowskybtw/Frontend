@@ -23,19 +23,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, message: 'У пользователя нет активных акций' }, { status: 404 })
     }
 
-    // Проверяем, что акция завершена (флаг promotion_completed)
-    if (!stock.promotion_completed) {
-      return NextResponse.json({ success: false, message: 'Слоты не заполнены. Нужно 5 кальянов для получения бесплатного.' }, { status: 400 })
-    }
-
-    // Проверяем, что у пользователя еще нет неиспользованного бесплатного кальяна
+    // Проверяем, есть ли неиспользованный бесплатный кальян
     const existingFreeHookahs = await db.getUnusedFreeHookahs(user.id)
-    if (existingFreeHookahs.length > 0) {
-      return NextResponse.json({ success: false, message: 'У вас уже есть неиспользованный бесплатный кальян' }, { status: 400 })
+    if (existingFreeHookahs.length === 0) {
+      return NextResponse.json({ success: false, message: 'У вас нет доступных бесплатных кальянов. Заполните все 5 слотов акции.' }, { status: 400 })
     }
 
-    // Создаем бесплатный кальян
-    const freeHookah = await db.createFreeHookah(user.id)
+    // Используем первый доступный бесплатный кальян
+    const freeHookah = existingFreeHookahs[0]
+    const usedHookah = await db.useFreeHookah(freeHookah.id)
+    
+    if (!usedHookah) {
+      return NextResponse.json({ success: false, message: 'Ошибка при получении бесплатного кальяна' }, { status: 500 })
+    }
     
     // Сбрасываем флаг promotion_completed, так как бесплатный кальян получен
     await db.updateStockPromotionCompleted(stock.id, false)
@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
       await db.addHookahToHistory(
         user.id, 
         'free', 
-        5, // 5-й слот завершил акцию
+        undefined, // slot_number
         stock.id,
         null, // adminId
         'user_claimed' // scanMethod
@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ 
       success: true, 
       message: '🎉 Бесплатный кальян получен! Приходите забирать!',
-      freeHookah: freeHookah
+      freeHookah: usedHookah
     })
 
   } catch (error) {

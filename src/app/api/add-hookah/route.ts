@@ -72,8 +72,8 @@ export async function POST(request: NextRequest) {
 
     // Проверяем, заполнены ли все слоты (100% прогресса)
     if (newProgress >= 100) {
-      // Сбрасываем прогресс на 0
-      await db.updateStockProgress(stock.id, 0)
+      // Устанавливаем флаг promotion_completed
+      await db.updateStockPromotionCompleted(stock.id, true)
       
       // Создаем бесплатный кальян автоматически
       console.log(`🎁 Creating free hookah for user ${user.id} after promotion completion`)
@@ -94,6 +94,9 @@ export async function POST(request: NextRequest) {
       } catch (historyError) {
         console.error(`❌ Error adding free hookah to history:`, historyError)
       }
+      
+      // Сбрасываем прогресс на 0 после создания бесплатного кальяна
+      await db.updateStockProgress(stock.id, 0)
     }
 
     return NextResponse.json({
