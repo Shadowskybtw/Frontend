@@ -3,13 +3,13 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./hookah.db"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
   id                      Int             @id @default(autoincrement())
-  tg_id                   Int             @unique
+  tg_id                   BigInt          @unique
   first_name              String
   last_name               String
   phone                   String
@@ -85,7 +85,7 @@ model Admin {
 
 model AdminList {
   id         Int      @id @default(autoincrement())
-  tg_id      Int      @unique
+  tg_id      BigInt   @unique
   created_at DateTime @default(now()) @map("created_at")
 
   @@map("admin_list")
