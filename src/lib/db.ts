@@ -34,7 +34,7 @@ export interface FreeHookah {
   id: number
   user_id: number
   used: boolean
-  used_at?: Date
+  used_at: Date | null
   created_at: Date
 }
 
