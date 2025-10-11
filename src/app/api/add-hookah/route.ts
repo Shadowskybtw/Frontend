@@ -49,7 +49,11 @@ export async function POST(request: NextRequest) {
     
     if (!stock) {
       // Создаем новую акцию если её нет
-      stock = await db.createStock(user.id, '5+1 кальян', 0)
+      stock = await db.createStock({
+        user_id: user.id,
+        stock_name: '5+1 кальян',
+        progress: 0
+      })
     }
 
     // Увеличиваем прогресс на 20% (один слот)
