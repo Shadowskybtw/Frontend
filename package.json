@@ -17,6 +17,7 @@
   "dependencies": {
     "@neondatabase/serverless": "^1.0.1",
     "@prisma/client": "^6.16.2",
+    "better-sqlite3": "^12.4.1",
     "dotenv": "^16.4.5",
     "html5-qrcode": "^2.3.8",
     "next": "15.5.0",
