@@ -446,18 +446,93 @@ export default function ProfilePage() {
       <Navigation />
       
       <main className="max-w-4xl mx-auto p-4 space-y-6">
+        {/* Admin Panel Button - Above Profile */}
+        {isAdmin && (
+          <div className="bg-gradient-to-r from-purple-600 to-purple-700 rounded-2xl shadow-2xl border border-purple-500 p-4">
+            <button
+              onClick={() => setAdminPanelOpen(!adminPanelOpen)}
+              className="w-full bg-white/10 hover:bg-white/20 text-white px-6 py-4 rounded-xl font-bold text-lg transition-all duration-200 flex items-center justify-center gap-3"
+            >
+              <span className="text-2xl">👑</span>
+              <span>Админская панель</span>
+              <span className="text-sm opacity-75">{adminPanelOpen ? '▼' : '▶'}</span>
+            </button>
+          </div>
+        )}
+
+        {/* Admin Panel */}
+        {isAdmin && adminPanelOpen && (
+          <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-700 p-6">
+            <h2 className="text-2xl font-bold text-white mb-6">👑 Админская панель</h2>
+            
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* QR Scanner */}
+              <div className="bg-gray-700/50 rounded-lg p-4 border border-gray-600">
+                <h3 className="text-lg font-semibold text-white mb-4">📱 QR Сканер</h3>
+                <div className="text-center">
+                  <div className="bg-white p-4 rounded-lg mb-3">
+                    <div className="text-black text-sm">
+                      📱 Используйте камеру для сканирования QR кодов пользователей
+                    </div>
+                  </div>
+                  <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
+                    Запустить сканер
+                  </button>
+                </div>
+              </div>
+
+              {/* Add Hookah by Phone */}
+              <div className="bg-gray-700/50 rounded-lg p-4 border border-gray-600">
+                <h3 className="text-lg font-semibold text-white mb-4">📞 Добавить кальян по номеру</h3>
+                <div className="space-y-3">
+                  <input
+                    type="tel"
+                    placeholder="Введите номер телефона"
+                    className="w-full bg-gray-600 text-white px-3 py-2 rounded-lg border border-gray-500 focus:border-blue-500 focus:outline-none"
+                  />
+                  <button className="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg">
+                    Добавить кальян
+                  </button>
+                </div>
+              </div>
+
+              {/* Search Guest */}
+              <div className="bg-gray-700/50 rounded-lg p-4 border border-gray-600">
+                <h3 className="text-lg font-semibold text-white mb-4">🔍 Поиск гостя</h3>
+                <div className="space-y-3">
+                  <input
+                    type="text"
+                    placeholder="Поиск по имени или номеру"
+                    className="w-full bg-gray-600 text-white px-3 py-2 rounded-lg border border-gray-500 focus:border-blue-500 focus:outline-none"
+                  />
+                  <button className="w-full bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg">
+                    Найти
+                  </button>
+                </div>
+              </div>
+
+              {/* Grant Admin Rights */}
+              <div className="bg-gray-700/50 rounded-lg p-4 border border-gray-600">
+                <h3 className="text-lg font-semibold text-white mb-4">👑 Выдать админские права</h3>
+                <div className="space-y-3">
+                  <input
+                    type="text"
+                    placeholder="Telegram ID пользователя"
+                    className="w-full bg-gray-600 text-white px-3 py-2 rounded-lg border border-gray-500 focus:border-blue-500 focus:outline-none"
+                  />
+                  <button className="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg">
+                    Выдать права
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Profile Info */}
         <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-700 p-6">
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-3xl font-bold text-white">👤 Профиль</h1>
-            {isAdmin && (
-              <button
-                onClick={() => setAdminPanelOpen(!adminPanelOpen)}
-                className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium"
-              >
-                👑 Админ панель
-              </button>
-            )}
             {/* Debug info - remove in production */}
             <div className="text-xs text-gray-500">
               Admin: {isAdmin ? 'Yes' : 'No'} | TG ID: {user?.tg_id}
