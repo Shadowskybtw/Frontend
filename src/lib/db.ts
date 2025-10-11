@@ -43,9 +43,6 @@ export interface HookahHistory {
   user_id: number
   hookah_type: string
   slot_number?: number | null
-  stock_id?: number | null
-  admin_id?: number | null
-  scan_method?: string | null
   created_at: Date | null
 }
 

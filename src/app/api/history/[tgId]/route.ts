@@ -28,9 +28,13 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     // Получаем историю кальянов с отзывами или без
     let historyData
     if (withReviews) {
+      console.log(`Fetching history with reviews for user ${user.id}`)
       historyData = await db.getHookahHistoryWithReviews(user.id, page, 10)
+      console.log('History with reviews:', historyData)
     } else {
+      console.log(`Fetching history without reviews for user ${user.id}`)
       const history = await db.getHookahHistory(user.id)
+      console.log('Raw history:', history)
       const itemsPerPage = 10
       const offset = (page - 1) * itemsPerPage
       const paginatedHistory = history.slice(offset, offset + itemsPerPage)

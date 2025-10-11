@@ -84,7 +84,10 @@ export default function ProfilePage() {
       const historyResponse = await fetch(`/api/history/${user.tg_id}?withReviews=true`)
       if (historyResponse.ok) {
         const historyData = await historyResponse.json()
+        console.log('History data loaded:', historyData)
         setHistory(historyData.history || [])
+      } else {
+        console.error('Failed to load history:', historyResponse.status, historyResponse.statusText)
       }
 
       // Check admin status
