@@ -61,6 +61,8 @@ export default function ProfilePage() {
   const [searchPhone, setSearchPhone] = useState('')
   const [searchedUser, setSearchedUser] = useState<any>(null)
   const [isSearchingUser, setIsSearchingUser] = useState(false)
+  const [qrCodeImage, setQrCodeImage] = useState<string | null>(null)
+  const [isLoadingQR, setIsLoadingQR] = useState(false)
 
   // Load profile data
   const loadProfileData = useCallback(async () => {
@@ -94,16 +96,39 @@ export default function ProfilePage() {
         const adminData = await adminResponse.json()
         setIsAdmin(adminData.isAdmin || false)
       }
+
+      // Load user QR code will be called separately
     } catch (error) {
       console.error('Error loading profile data:', error)
+    }
+  }, [user?.tg_id])
+
+  // Load user QR code
+  const loadUserQRCode = useCallback(async () => {
+    if (!user?.tg_id) return
+
+    setIsLoadingQR(true)
+    try {
+      const response = await fetch(`/api/user-qr-code/${user.tg_id}`)
+      if (response.ok) {
+        const data = await response.json()
+        if (data.success) {
+          setQrCodeImage(data.qrCodeImage)
+        }
+      }
+    } catch (error) {
+      console.error('Error loading QR code:', error)
+    } finally {
+      setIsLoadingQR(false)
     }
   }, [user?.tg_id])
 
   useEffect(() => {
     if (isInitialized && user?.tg_id) {
       loadProfileData()
+      loadUserQRCode()
     }
-  }, [isInitialized, user?.tg_id, loadProfileData])
+  }, [isInitialized, user?.tg_id, loadProfileData, loadUserQRCode])
 
   // Save profile changes
   const saveProfile = async () => {
@@ -695,15 +720,30 @@ export default function ProfilePage() {
           {/* QR Code Panel */}
           <div className="mt-6">
             <div className="bg-gray-700/50 rounded-lg p-4 border border-gray-600">
-              <h3 className="text-lg font-semibold text-white mb-3">📱 QR Код для сканирования</h3>
+              <h3 className="text-lg font-semibold text-white mb-3">📱 Ваш QR код</h3>
               <div className="text-center">
-                <div className="bg-white p-4 rounded-lg inline-block mb-3">
-                  <div className="text-black text-sm font-mono">
-                    📱 Используйте камеру для сканирования QR кодов кальянов
+                {isLoadingQR ? (
+                  <div className="bg-white p-8 rounded-lg inline-block mb-3">
+                    <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-gray-900 mx-auto"></div>
+                    <p className="text-black text-sm mt-2">Генерация QR кода...</p>
                   </div>
-                </div>
+                ) : qrCodeImage ? (
+                  <div className="bg-white p-4 rounded-lg inline-block mb-3">
+                    <img 
+                      src={qrCodeImage} 
+                      alt="QR Code" 
+                      className="w-48 h-48 mx-auto"
+                    />
+                  </div>
+                ) : (
+                  <div className="bg-white p-4 rounded-lg inline-block mb-3">
+                    <div className="text-black text-sm">
+                      Ошибка загрузки QR кода
+                    </div>
+                  </div>
+                )}
                 <p className="text-gray-300 text-sm">
-                  Покажите QR код администратору для добавления кальяна в акцию
+                  Покажите этот QR код администратору для добавления кальяна в акцию
                 </p>
               </div>
             </div>
