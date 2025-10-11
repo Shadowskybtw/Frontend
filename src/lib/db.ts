@@ -361,15 +361,32 @@ export const db = {
   // Hookah history operations
   async getHookahHistory(userId: number): Promise<HookahHistory[]> {
     try {
-      console.log('Getting hookah history for user:', userId)
+      console.log('🔍 Getting hookah history for user:', userId)
+      
+      // Проверяем, что пользователь существует
+      const user = await prisma.user.findUnique({
+        where: { id: userId }
+      })
+      
+      if (!user) {
+        console.error('❌ User not found:', userId)
+        return []
+      }
+      
+      console.log('✅ User found:', user)
+      
+      // Получаем историю
       const history = await prisma.hookahHistory.findMany({
         where: { user_id: userId },
         orderBy: { created_at: 'desc' }
       })
-      console.log('Hookah history found:', history)
+      
+      console.log('📊 Hookah history found:', history.length, 'records')
+      console.log('📊 History details:', history)
+      
       return history
     } catch (error) {
-      console.error('Error getting hookah history:', error)
+      console.error('❌ Error getting hookah history:', error)
       return []
     }
   },
@@ -385,17 +402,41 @@ export const db = {
     const historyId = Math.random().toString(36).substr(2, 9)
     console.log(`📝 [${historyId}] Adding hookah to history:`, { userId, hookahType, slotNumber, stockId, adminId, scanMethod })
     
-    // Создаем запись с правильным временем
-    const history = await prisma.hookahHistory.create({
-      data: {
-        user_id: userId,
-        hookah_type: hookahType,
-        slot_number: slotNumber || null,
-        created_at: new Date() // Устанавливаем текущее время
+    try {
+      // Проверяем, что пользователь существует
+      const user = await prisma.user.findUnique({
+        where: { id: userId }
+      })
+      
+      if (!user) {
+        console.error(`❌ [${historyId}] User ${userId} not found`)
+        throw new Error(`User ${userId} not found`)
       }
-    })
-    console.log(`✅ [${historyId}] Hookah added to history:`, history)
-    return history
+      
+      console.log(`✅ [${historyId}] User found:`, user)
+      
+      // Создаем запись с правильным временем
+      const history = await prisma.hookahHistory.create({
+        data: {
+          user_id: userId,
+          hookah_type: hookahType,
+          slot_number: slotNumber || null,
+          created_at: new Date() // Устанавливаем текущее время
+        }
+      })
+      console.log(`✅ [${historyId}] Hookah added to history:`, history)
+      
+      // Проверяем, что запись действительно создалась
+      const createdRecord = await prisma.hookahHistory.findUnique({
+        where: { id: history.id }
+      })
+      console.log(`🔍 [${historyId}] Verification - created record:`, createdRecord)
+      
+      return history
+    } catch (error) {
+      console.error(`❌ [${historyId}] Error adding hookah to history:`, error)
+      throw error
+    }
   },
 
   async removeLastRegularHookahFromHistory(userId: number): Promise<boolean> {
