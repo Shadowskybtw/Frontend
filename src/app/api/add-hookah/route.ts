@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Получаем или создаем акцию пользователя
-    let stocks = await db.getUserStocks(user.id)
+    const stocks = await db.getUserStocks(user.id)
     let stock = stocks.find(s => s.stock_name === '5+1 кальян')
     
     if (!stock) {
@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
 
     // Увеличиваем прогресс на 20% (один слот)
     const newProgress = Math.min(100, stock.progress + 20)
-    const updatedStock = await db.updateStockProgress(stock.id, newProgress)
+    await db.updateStockProgress(stock.id, newProgress)
 
     // Добавляем запись в историю
     await db.addHookahToHistory(

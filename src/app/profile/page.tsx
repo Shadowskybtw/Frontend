@@ -224,13 +224,6 @@ export default function ProfilePage() {
     }
   }
 
-  // Open review modal
-  const openReviewModal = (hookah: HookahHistoryItem) => {
-    setSelectedHookahForReview(hookah)
-    setReviewRating(hookah.review?.rating || 5)
-    setReviewText(hookah.review?.review_text || '')
-    setShowReviewModal(true)
-  }
 
   // Render stars for rating
   const renderStars = (rating: number, interactive: boolean = false) => {
