@@ -14,10 +14,29 @@ export async function POST(request: NextRequest) {
 
     // Проверяем, что админ имеет права
     const admin = await db.getUserByTgId(admin_tg_id)
-    if (!admin || !admin.is_admin) {
+    if (!admin) {
       return NextResponse.json(
-        { success: false, message: 'Недостаточно прав для выполнения операции' },
-        { status: 403 }
+        { success: false, message: 'Админ не найден' },
+        { status: 404 }
+      )
+    }
+
+    // Проверяем админские права через API
+    try {
+      const adminCheckResponse = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/admin?tg_id=${admin_tg_id}`)
+      const adminCheckData = await adminCheckResponse.json()
+      
+      if (!adminCheckData.success || !adminCheckData.isAdmin) {
+        return NextResponse.json(
+          { success: false, message: 'Недостаточно прав для выполнения операции' },
+          { status: 403 }
+        )
+      }
+    } catch (error) {
+      console.error('Error checking admin rights:', error)
+      return NextResponse.json(
+        { success: false, message: 'Ошибка при проверке админских прав' },
+        { status: 500 }
       )
     }
 

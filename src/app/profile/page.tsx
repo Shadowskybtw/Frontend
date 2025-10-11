@@ -56,7 +56,6 @@ export default function ProfilePage() {
   const [adminPanelOpen, setAdminPanelOpen] = useState(false)
   const [newAdminTgId, setNewAdminTgId] = useState('')
   const [isGrantingAdmin, setIsGrantingAdmin] = useState(false)
-  const [guestSearchPhone, setGuestSearchPhone] = useState('')
   const [isAddingHookah, setIsAddingHookah] = useState(false)
   const [isRemovingHookah, setIsRemovingHookah] = useState(false)
   const [searchPhone, setSearchPhone] = useState('')
