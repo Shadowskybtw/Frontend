@@ -1419,3 +1419,35 @@
 2025-10-11 18:13:22,136 - __main__ - ERROR - Exception while handling an update: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
 2025-10-11 18:13:58,786 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8242076298:AAGnHplpi7Ad4hOo9z4zTugjqcCEXLJt9to/getUpdates "HTTP/1.1 409 Conflict"
 2025-10-11 18:13:58,788 - __main__ - ERROR - Exception while handling an update: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2025-10-11 18:14:33,419 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8242076298:AAGnHplpi7Ad4hOo9z4zTugjqcCEXLJt9to/getUpdates "HTTP/1.1 409 Conflict"
+2025-10-11 18:14:33,421 - __main__ - ERROR - Exception while handling an update: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2025-10-11 18:15:07,497 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8242076298:AAGnHplpi7Ad4hOo9z4zTugjqcCEXLJt9to/getUpdates "HTTP/1.1 409 Conflict"
+2025-10-11 18:15:07,510 - __main__ - ERROR - Exception while handling an update: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2025-10-11 18:15:42,549 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8242076298:AAGnHplpi7Ad4hOo9z4zTugjqcCEXLJt9to/getUpdates "HTTP/1.1 409 Conflict"
+2025-10-11 18:15:42,551 - __main__ - ERROR - Exception while handling an update: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2025-10-11 18:16:16,234 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8242076298:AAGnHplpi7Ad4hOo9z4zTugjqcCEXLJt9to/getUpdates "HTTP/1.1 409 Conflict"
+2025-10-11 18:16:16,235 - __main__ - ERROR - Exception while handling an update: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2025-10-11 18:16:50,168 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8242076298:AAGnHplpi7Ad4hOo9z4zTugjqcCEXLJt9to/getUpdates "HTTP/1.1 409 Conflict"
+2025-10-11 18:16:50,171 - __main__ - ERROR - Exception while handling an update: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2025-10-11 18:17:25,549 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8242076298:AAGnHplpi7Ad4hOo9z4zTugjqcCEXLJt9to/getUpdates "HTTP/1.1 409 Conflict"
+2025-10-11 18:17:25,551 - __main__ - ERROR - Exception while handling an update: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2025-10-11 18:18:01,236 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8242076298:AAGnHplpi7Ad4hOo9z4zTugjqcCEXLJt9to/getUpdates "HTTP/1.1 409 Conflict"
+2025-10-11 18:18:01,238 - __main__ - ERROR - Exception while handling an update: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2025-10-11 18:18:36,913 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8242076298:AAGnHplpi7Ad4hOo9z4zTugjqcCEXLJt9to/getUpdates "HTTP/1.1 409 Conflict"
+2025-10-11 18:18:36,915 - __main__ - ERROR - Exception while handling an update: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2025-10-11 18:19:13,813 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8242076298:AAGnHplpi7Ad4hOo9z4zTugjqcCEXLJt9to/getUpdates "HTTP/1.1 409 Conflict"
+2025-10-11 18:19:13,815 - __main__ - ERROR - Exception while handling an update: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2025-10-11 18:19:48,979 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8242076298:AAGnHplpi7Ad4hOo9z4zTugjqcCEXLJt9to/getUpdates "HTTP/1.1 409 Conflict"
+2025-10-11 18:19:48,980 - __main__ - ERROR - Exception while handling an update: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2025-10-11 18:20:24,719 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8242076298:AAGnHplpi7Ad4hOo9z4zTugjqcCEXLJt9to/getUpdates "HTTP/1.1 409 Conflict"
+2025-10-11 18:20:24,720 - __main__ - ERROR - Exception while handling an update: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2025-10-11 18:20:59,036 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8242076298:AAGnHplpi7Ad4hOo9z4zTugjqcCEXLJt9to/getUpdates "HTTP/1.1 409 Conflict"
+2025-10-11 18:20:59,036 - __main__ - ERROR - Exception while handling an update: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2025-10-11 18:21:34,048 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8242076298:AAGnHplpi7Ad4hOo9z4zTugjqcCEXLJt9to/getUpdates "HTTP/1.1 409 Conflict"
+2025-10-11 18:21:34,051 - __main__ - ERROR - Exception while handling an update: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2025-10-11 18:22:10,270 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8242076298:AAGnHplpi7Ad4hOo9z4zTugjqcCEXLJt9to/getUpdates "HTTP/1.1 409 Conflict"
+2025-10-11 18:22:10,273 - __main__ - ERROR - Exception while handling an update: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2025-10-11 18:22:45,606 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8242076298:AAGnHplpi7Ad4hOo9z4zTugjqcCEXLJt9to/getUpdates "HTTP/1.1 409 Conflict"
+2025-10-11 18:22:45,610 - __main__ - ERROR - Exception while handling an update: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2025-10-11 18:23:19,502 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8242076298:AAGnHplpi7Ad4hOo9z4zTugjqcCEXLJt9to/getUpdates "HTTP/1.1 409 Conflict"
+2025-10-11 18:23:19,504 - __main__ - ERROR - Exception while handling an update: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running

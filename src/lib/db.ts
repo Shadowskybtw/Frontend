@@ -866,6 +866,39 @@ export const db = {
       console.error('Error removing hookah from history:', error)
       return false
     }
+  },
+
+  // Debug functions for checking database
+  async getAllHookahHistory(): Promise<HookahHistory[]> {
+    try {
+      const history = await prisma.hookahHistory.findMany({
+        orderBy: { created_at: 'desc' }
+      })
+      return history
+    } catch (error) {
+      console.error('Error getting all hookah history:', error)
+      return []
+    }
+  },
+
+  async getAllStocks(): Promise<Stock[]> {
+    try {
+      const stocks = await prisma.stock.findMany()
+      return stocks
+    } catch (error) {
+      console.error('Error getting all stocks:', error)
+      return []
+    }
+  },
+
+  async getAllFreeHookahs(): Promise<FreeHookah[]> {
+    try {
+      const freeHookahs = await prisma.freeHookah.findMany()
+      return freeHookahs
+    } catch (error) {
+      console.error('Error getting all free hookahs:', error)
+      return []
+    }
   }
 }
 
