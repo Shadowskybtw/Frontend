@@ -187,6 +187,13 @@ export function UserProvider({ children }: UserProviderProps) {
         console.log('🔍 Telegram object:', typeof (window as any).Telegram)
         console.log('🔍 WebApp object:', typeof (window as any).Telegram?.WebApp)
         
+        // Проверяем, что DOM загружен
+        if (document.readyState === 'loading') {
+          console.log('⏳ DOM still loading, waiting...')
+          document.addEventListener('DOMContentLoaded', checkTelegramWebApp)
+          return
+        }
+        
         if (typeof window !== 'undefined' && (window as any).Telegram?.WebApp) {
           console.log('✅ Telegram WebApp is available')
           // Инициализируем WebApp
@@ -270,8 +277,19 @@ export function UserProvider({ children }: UserProviderProps) {
             }
           }
         } else {
-          console.log('❌ Telegram WebApp not available globally, trying URL parameters')
-          tryToGetUserFromUrl()
+          console.log('❌ Telegram WebApp not available globally')
+          
+          // Ждем немного и пытаемся еще раз
+          setTimeout(() => {
+            if ((window as any).Telegram?.WebApp) {
+              console.log('✅ Telegram WebApp became available after delay')
+              setHasTriedInitialization(false) // Сбрасываем флаг для повторной попытки
+              checkTelegramWebApp()
+            } else {
+              console.log('❌ Telegram WebApp still not available, trying URL parameters')
+              tryToGetUserFromUrl()
+            }
+          }, 1000)
         }
       } catch (error) {
         console.error('❌ Error checking Telegram WebApp globally:', error)

@@ -26,14 +26,21 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <head>
+        <script src="https://telegram.org/js/telegram-web-app.js"></script>
         <script
           dangerouslySetInnerHTML={{
             __html: `
-              // Автоматическое разворачивание приложения на весь экран
-              if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
-                window.Telegram.WebApp.ready();
-                window.Telegram.WebApp.expand();
-              }
+              // Инициализация Telegram WebApp после загрузки
+              window.addEventListener('DOMContentLoaded', function() {
+                if (window.Telegram?.WebApp) {
+                  console.log('🚀 Initializing Telegram WebApp');
+                  window.Telegram.WebApp.ready();
+                  window.Telegram.WebApp.expand();
+                  console.log('✅ Telegram WebApp initialized');
+                } else {
+                  console.log('❌ Telegram WebApp not available');
+                }
+              });
             `,
           }}
         />
