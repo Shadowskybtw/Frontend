@@ -692,61 +692,55 @@ export default function ProfilePage() {
             </div>
           )}
 
-          {/* QR Scanner Button */}
-          <div className="mt-6 text-center">
-                        <button
-                          onClick={() => setShowQRScanner(true)}
-              className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-medium"
-                        >
-              📱 Сканировать QR код
-                        </button>
+          {/* QR Code Panel */}
+          <div className="mt-6">
+            <div className="bg-gray-700/50 rounded-lg p-4 border border-gray-600">
+              <h3 className="text-lg font-semibold text-white mb-3">📱 QR Код для сканирования</h3>
+              <div className="text-center">
+                <div className="bg-white p-4 rounded-lg inline-block mb-3">
+                  <div className="text-black text-sm font-mono">
+                    📱 Используйте камеру для сканирования QR кодов кальянов
+                  </div>
+                </div>
+                <p className="text-gray-300 text-sm">
+                  Покажите QR код администратору для добавления кальяна в акцию
+                </p>
+              </div>
+            </div>
           </div>
                         </div>
 
-        {/* History */}
+        {/* Hookah Statistics */}
         <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-700 p-6">
-          <h2 className="text-2xl font-bold text-white mb-4">📜 История кальянов</h2>
+          <h2 className="text-2xl font-bold text-white mb-4">📊 Статистика кальянов</h2>
           
-          {history.length > 0 ? (
-            <div className="space-y-3">
-              {history.map((item) => (
-                <div key={item.id} className="bg-gray-700/50 rounded-lg p-4 border border-gray-600">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <p className="text-white font-semibold">
-                        {item.hookah_type === 'free' ? '🎁 Бесплатный кальян' : '🚬 Обычный кальян'}
-                      </p>
-                      <p className="text-gray-300 text-sm">
-                        {new Date(item.created_at).toLocaleString('ru-RU')}
-                      </p>
-                      {item.review && (
-                        <div className="mt-2 flex items-center gap-2">
-                          <span className="text-gray-300 text-sm">Ваш отзыв:</span>
-                          {renderStars(item.review.rating)}
-                          {item.review.review_text && (
-                            <span className="text-gray-300 text-sm">&ldquo;{item.review.review_text}&rdquo;</span>
-                          )}
-                        </div>
-                      )}
-                      </div>
-                    
-                    {!item.review && (
-                        <button
-                        onClick={() => openReviewModal(item)}
-                        className="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded-md text-sm"
-                        >
-                        ⭐ Оставить отзыв
-                        </button>
-                    )}
-                  </div>
-                        </div>
-                      ))}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-blue-900/30 border border-blue-500/50 rounded-lg p-4 text-center">
+              <div className="text-3xl font-bold text-blue-400 mb-2">
+                {history.filter(item => item.hookah_type === 'regular').length}
+              </div>
+              <p className="text-blue-200 font-semibold">Обычные кальяны</p>
+              <p className="text-blue-300 text-sm">В акции</p>
             </div>
-          ) : (
-            <div className="text-center text-gray-300">
-              <p>История пуста</p>
+            
+            <div className="bg-green-900/30 border border-green-500/50 rounded-lg p-4 text-center">
+              <div className="text-3xl font-bold text-green-400 mb-2">
+                {history.filter(item => item.hookah_type === 'free').length}
+              </div>
+              <p className="text-green-200 font-semibold">Бесплатные кальяны</p>
+              <p className="text-green-300 text-sm">Получено</p>
             </div>
-          )}
+          </div>
+          
+          <div className="mt-4 bg-gray-700/50 rounded-lg p-4 border border-gray-600">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-yellow-400 mb-2">
+                {history.length}
+              </div>
+              <p className="text-yellow-200 font-semibold">Всего кальянов</p>
+              <p className="text-gray-300 text-sm">За все время</p>
+            </div>
+          </div>
         </div>
       </main>
       
