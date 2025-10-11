@@ -78,7 +78,8 @@ export default function ProfilePage() {
       const freeHookahsResponse = await fetch(`/api/free-hookahs/${user.tg_id}`)
       if (freeHookahsResponse.ok) {
         const freeHookahsData = await freeHookahsResponse.json()
-        setFreeHookahs(freeHookahsData.freeHookahs || [])
+        console.log('Free hookahs data:', freeHookahsData)
+        setFreeHookahs(freeHookahsData.hookahs || [])
       }
 
       // Load history with reviews

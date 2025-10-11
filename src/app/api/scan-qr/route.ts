@@ -157,6 +157,7 @@ export async function POST(request: NextRequest) {
       // Создаем бесплатный кальян автоматически
       console.log(`🎁 [${requestId}] Creating free hookah for user ${user.id}`)
       const freeHookah = await db.createFreeHookah(user.id)
+      console.log(`✅ [${requestId}] Free hookah created:`, freeHookah)
       
       // Добавляем запись в историю о получении бесплатного кальяна
       try {
