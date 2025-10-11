@@ -20,9 +20,14 @@ interface PurchaseHistory {
 
 export default function HistoryPage() {
   const [history, setHistory] = useState<PurchaseHistory[]>([])
-  const [, setHistoryLoading] = useState(false)
+  const [historyLoading, setHistoryLoading] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
+  const [showReviewModal, setShowReviewModal] = useState(false)
+  const [selectedHookahForReview, setSelectedHookahForReview] = useState<PurchaseHistory | null>(null)
+  const [reviewRating, setReviewRating] = useState(5)
+  const [reviewText, setReviewText] = useState('')
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false)
 
   const { user, loading, error, isInitialized } = useUser()
 
@@ -52,6 +57,53 @@ export default function HistoryPage() {
       fetchHistory(user.tg_id, currentPage)
     }
   }, [isInitialized, user?.tg_id, currentPage, fetchHistory])
+
+  // Handle review submission
+  const submitReview = async () => {
+    if (!selectedHookahForReview || !user?.id) return
+
+    setIsSubmittingReview(true)
+    try {
+      const response = await fetch('/api/add-review', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user.id,
+          hookahId: selectedHookahForReview.id,
+          rating: reviewRating,
+          reviewText: reviewText || undefined
+        })
+      })
+
+      const data = await response.json()
+      if (data.success) {
+        alert('✅ Отзыв успешно добавлен!')
+        setShowReviewModal(false)
+        setSelectedHookahForReview(null)
+        setReviewText('')
+        setReviewRating(5)
+        // Reload history to show the review
+        if (user?.tg_id) {
+          fetchHistory(user.tg_id, currentPage)
+        }
+      } else {
+        alert('Ошибка: ' + data.message)
+      }
+    } catch (error) {
+      console.error('Error submitting review:', error)
+      alert('Ошибка при отправке отзыва')
+    } finally {
+      setIsSubmittingReview(false)
+    }
+  }
+
+  // Open review modal
+  const openReviewModal = (hookah: PurchaseHistory) => {
+    setSelectedHookahForReview(hookah)
+    setShowReviewModal(true)
+    setReviewRating(hookah.review?.rating || 5)
+    setReviewText(hookah.review?.review_text || '')
+  }
 
   if (loading || !isInitialized) {
     return (
@@ -173,11 +225,12 @@ export default function HistoryPage() {
                               <div className="text-gray-400 text-xs mb-2">
                                 {item.scan_method === 'admin_add' && '👑 Админ добавил'}
                                 {item.scan_method === 'promotion_completed' && '🎯 Акция завершена'}
-                                {item.scan_method === 'qr_scan' && '📷 QR код'}
+                                {item.scan_method === 'user_claimed' && '🎁 Получен пользователем'}
+                                {item.scan_method === 'admin_remove' && '👑 Админ удалил'}
                               </div>
                             )}
                             {item.review && (
-                              <div className="flex items-center justify-end gap-1">
+                              <div className="flex items-center justify-end gap-1 mb-2">
                                 <span className="text-yellow-400 text-sm">
                                   {Array.from({ length: item.review.rating }, () => '★').join('')}
                                 </span>
@@ -188,6 +241,12 @@ export default function HistoryPage() {
                                 )}
                               </div>
                             )}
+                            <button
+                              onClick={() => openReviewModal(item)}
+                              className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs font-medium"
+                            >
+                              {item.review ? '✏️ Изменить отзыв' : '⭐ Оценить'}
+                            </button>
                           </div>
                         </div>
                       </div>
@@ -224,6 +283,73 @@ export default function HistoryPage() {
           </div>
         </div>
       </main>
+
+      {/* Review Modal */}
+      {showReviewModal && selectedHookahForReview && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-gray-800 rounded-2xl p-6 w-full max-w-md">
+            <h3 className="text-xl font-bold text-white mb-4">Оставить отзыв</h3>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Оценка (1-5 звезд):
+                </label>
+                <div className="flex space-x-2">
+                  {[1, 2, 3, 4, 5].map((rating) => (
+                    <button
+                      key={rating}
+                      onClick={() => setReviewRating(rating)}
+                      className={`text-2xl ${
+                        rating <= reviewRating ? 'text-yellow-400' : 'text-gray-400'
+                      } hover:text-yellow-400 transition-colors`}
+                    >
+                      ★
+                    </button>
+                  ))}
+                </div>
+                <p className="text-gray-400 text-xs mt-1">
+                  Выбрано: {reviewRating} звезд
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Комментарий (необязательно):
+                </label>
+                <textarea
+                  value={reviewText}
+                  onChange={(e) => setReviewText(e.target.value)}
+                  placeholder="Оставьте комментарий о кальяне..."
+                  className="w-full px-3 py-2 border border-gray-600 rounded-md bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  rows={3}
+                />
+              </div>
+
+              <div className="flex space-x-3 pt-4">
+                <button
+                  onClick={() => {
+                    setShowReviewModal(false)
+                    setSelectedHookahForReview(null)
+                    setReviewText('')
+                    setReviewRating(5)
+                  }}
+                  className="flex-1 bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded-md font-medium"
+                >
+                  Отмена
+                </button>
+                <button
+                  onClick={submitReview}
+                  disabled={isSubmittingReview}
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white py-2 px-4 rounded-md font-medium"
+                >
+                  {isSubmittingReview ? '⏳ Отправляем...' : 'Отправить отзыв'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

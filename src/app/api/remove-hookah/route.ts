@@ -56,17 +56,11 @@ export async function POST(request: NextRequest) {
 
     // Уменьшаем прогресс на 20% (один слот)
     const newProgress = Math.max(0, stock.progress - 20)
+    
+    // Удаляем последнюю запись из истории (если есть)
+    await db.removeHookahFromHistory(user.id, stock.id, 'regular')
+    
     await db.updateStockProgress(stock.id, newProgress)
-
-    // Добавляем запись в историю об удалении
-    await db.addHookahToHistory(
-      user.id,
-      'regular',
-      Math.floor(newProgress / 20) + 1, // slot_number
-      stock.id,
-      admin.id, // adminId
-      'admin_remove' // scanMethod
-    )
 
     return NextResponse.json({
       success: true,

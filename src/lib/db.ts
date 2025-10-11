@@ -787,7 +787,7 @@ export const db = {
           where: { user_id: userId }
         })
       ])
-
+  
       // Получаем отзывы для каждой записи истории
       const historyWithReviews = await Promise.all(
         history.map(async (hookah) => {
@@ -799,7 +799,7 @@ export const db = {
               }
             }
           })
-
+  
           return {
             ...hookah,
             review: review ? {
@@ -809,9 +809,9 @@ export const db = {
           }
         })
       )
-
+  
       const totalPages = Math.ceil(totalCount / limit)
-
+  
       return {
         history: historyWithReviews,
         totalPages,
@@ -824,6 +824,51 @@ export const db = {
         totalPages: 0,
         currentPage: 1
       }
+    }
+  },
+
+  // Удаление записи из истории кальянов
+  async removeHookahFromHistory(userId: number, stockId: number, hookahType: 'regular' | 'free' = 'regular'): Promise<boolean> {
+    try {
+      console.log('Removing hookah from history:', { userId, stockId, hookahType })
+      
+      // Находим последнюю запись с указанными параметрами
+      const lastHistoryRecord = await prisma.hookahHistory.findFirst({
+        where: {
+          user_id: userId,
+          stock_id: stockId,
+          hookah_type: hookahType
+        },
+        orderBy: {
+          created_at: 'desc'
+        }
+      })
+
+      if (lastHistoryRecord) {
+        // Удаляем связанный отзыв, если он есть
+        await prisma.hookahReview.deleteMany({
+          where: {
+            user_id: userId,
+            hookah_id: lastHistoryRecord.id
+          }
+        })
+
+        // Удаляем запись из истории
+        await prisma.hookahHistory.delete({
+          where: {
+            id: lastHistoryRecord.id
+          }
+        })
+
+        console.log('✅ Hookah record removed from history:', lastHistoryRecord.id)
+        return true
+      } else {
+        console.log('No matching history record found')
+        return false
+      }
+    } catch (error) {
+      console.error('Error removing hookah from history:', error)
+      return false
     }
   }
 }
