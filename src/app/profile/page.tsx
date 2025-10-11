@@ -465,7 +465,7 @@ export default function ProfilePage() {
           <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-700 p-6">
             <h2 className="text-2xl font-bold text-white mb-6">👑 Админская панель</h2>
             
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="space-y-6">
               {/* QR Scanner */}
               <div className="bg-gray-700/50 rounded-lg p-4 border border-gray-600">
                 <h3 className="text-lg font-semibold text-white mb-4">📱 QR Сканер</h3>
@@ -481,153 +481,6 @@ export default function ProfilePage() {
                 </div>
               </div>
 
-              {/* Add Hookah by Phone */}
-              <div className="bg-gray-700/50 rounded-lg p-4 border border-gray-600">
-                <h3 className="text-lg font-semibold text-white mb-4">📞 Добавить кальян по номеру</h3>
-                <div className="space-y-3">
-                  <input
-                    type="tel"
-                    placeholder="Введите номер телефона"
-                    className="w-full bg-gray-600 text-white px-3 py-2 rounded-lg border border-gray-500 focus:border-blue-500 focus:outline-none"
-                  />
-                  <button className="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg">
-                    Добавить кальян
-                  </button>
-                </div>
-              </div>
-
-              {/* Search Guest */}
-              <div className="bg-gray-700/50 rounded-lg p-4 border border-gray-600">
-                <h3 className="text-lg font-semibold text-white mb-4">🔍 Поиск гостя</h3>
-                <div className="space-y-3">
-                  <input
-                    type="text"
-                    placeholder="Поиск по имени или номеру"
-                    className="w-full bg-gray-600 text-white px-3 py-2 rounded-lg border border-gray-500 focus:border-blue-500 focus:outline-none"
-                  />
-                  <button className="w-full bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg">
-                    Найти
-                  </button>
-                </div>
-              </div>
-
-              {/* Grant Admin Rights */}
-              <div className="bg-gray-700/50 rounded-lg p-4 border border-gray-600">
-                <h3 className="text-lg font-semibold text-white mb-4">👑 Выдать админские права</h3>
-                <div className="space-y-3">
-                  <input
-                    type="text"
-                    placeholder="Telegram ID пользователя"
-                    className="w-full bg-gray-600 text-white px-3 py-2 rounded-lg border border-gray-500 focus:border-blue-500 focus:outline-none"
-                  />
-                  <button className="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg">
-                    Выдать права
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Profile Info */}
-        <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-700 p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h1 className="text-3xl font-bold text-white">👤 Профиль</h1>
-            {/* Debug info - remove in production */}
-            <div className="text-xs text-gray-500">
-              Admin: {isAdmin ? 'Yes' : 'No'} | TG ID: {user?.tg_id}
-            </div>
-          </div>
-          
-          <div className="grid md:grid-cols-2 gap-6">
-            <div>
-              <h2 className="text-xl font-semibold text-white mb-4">Информация о пользователе</h2>
-                
-                {isEditing ? (
-                <div className="space-y-4">
-                    <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">Имя</label>
-                      <input
-                        type="text"
-                        value={editForm.first_name}
-                      onChange={(e) => setEditForm({...editForm, first_name: e.target.value})}
-                      className="w-full px-3 py-2 border border-gray-600 rounded-md bg-gray-700 text-white"
-                      />
-                    </div>
-                    <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">Фамилия</label>
-                      <input
-                        type="text"
-                        value={editForm.last_name}
-                      onChange={(e) => setEditForm({...editForm, last_name: e.target.value})}
-                      className="w-full px-3 py-2 border border-gray-600 rounded-md bg-gray-700 text-white"
-                      />
-                    </div>
-                    <div className="flex gap-2">
-                      <button
-                      onClick={saveProfile}
-                        disabled={isSaving}
-                      className="bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white px-4 py-2 rounded-md"
-                      >
-                      {isSaving ? 'Сохранение...' : 'Сохранить'}
-                      </button>
-                      <button
-                      onClick={() => setIsEditing(false)}
-                      className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md"
-                    >
-                      Отмена
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                <div className="space-y-2">
-                  <p className="text-gray-300"><strong>Имя:</strong> {user.first_name}</p>
-                  <p className="text-gray-300"><strong>Фамилия:</strong> {user.last_name}</p>
-                  <p className="text-gray-300"><strong>Телефон:</strong> {user.phone || 'Не указан'}</p>
-                  <p className="text-gray-300"><strong>Username:</strong> @{user.username || 'Не указан'}</p>
-                  <button
-                    onClick={() => {
-                      setEditForm({ first_name: user.first_name || '', last_name: user.last_name || '' })
-                      setIsEditing(true)
-                    }}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md mt-4"
-                  >
-                    Редактировать
-                  </button>
-                  </div>
-                )}
-              </div>
-              
-            {/* Free Hookahs Counter */}
-            <div>
-              <h2 className="text-xl font-semibold text-white mb-4">Бесплатные кальяны</h2>
-              <div className="bg-yellow-900/30 border border-yellow-500/50 rounded-lg p-4">
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-yellow-400 mb-2">
-                    {unusedFreeHookahs.length}
-                  </div>
-                  <p className="text-yellow-200">Доступно бесплатных кальянов</p>
-                  {hasUnusedFreeHookah && (
-                      <button
-                      onClick={claimFreeHookah}
-                      disabled={isClaiming}
-                      className="mt-4 bg-yellow-600 hover:bg-yellow-700 disabled:bg-yellow-400 text-white px-6 py-2 rounded-md font-medium"
-                      >
-                      {isClaiming ? '⏳ Получаем...' : '🎁 Получить бесплатный кальян'}
-                      </button>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Admin Panel */}
-        {isAdmin && adminPanelOpen && (
-          <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-700 p-6">
-            <h2 className="text-2xl font-bold text-white mb-6">👑 Админская панель</h2>
-            
-            <div className="space-y-6">
               {/* Grant Admin Rights */}
               <div className="bg-purple-900/30 border border-purple-500/50 rounded-lg p-4">
                 <h3 className="font-semibold text-purple-300 mb-3">Назначить админа</h3>
@@ -746,56 +599,144 @@ export default function ProfilePage() {
           </div>
         )}
 
+        {/* Profile Info */}
+        <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-700 p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-3xl font-bold text-white">👤 Профиль</h1>
+            {/* Debug info - remove in production */}
+            <div className="text-xs text-gray-500">
+              Admin: {isAdmin ? 'Yes' : 'No'} | TG ID: {user?.tg_id}
+            </div>
+          </div>
+          
+          <div className="grid md:grid-cols-2 gap-6">
+            <div>
+              <h2 className="text-xl font-semibold text-white mb-4">Информация о пользователе</h2>
+                
+                {isEditing ? (
+                <div className="space-y-4">
+                    <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-1">Имя</label>
+                      <input
+                        type="text"
+                        value={editForm.first_name}
+                      onChange={(e) => setEditForm({...editForm, first_name: e.target.value})}
+                      className="w-full px-3 py-2 border border-gray-600 rounded-md bg-gray-700 text-white"
+                      />
+                    </div>
+                    <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-1">Фамилия</label>
+                      <input
+                        type="text"
+                        value={editForm.last_name}
+                      onChange={(e) => setEditForm({...editForm, last_name: e.target.value})}
+                      className="w-full px-3 py-2 border border-gray-600 rounded-md bg-gray-700 text-white"
+                      />
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                      onClick={saveProfile}
+                        disabled={isSaving}
+                      className="bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white px-4 py-2 rounded-md"
+                      >
+                      {isSaving ? 'Сохранение...' : 'Сохранить'}
+                      </button>
+                      <button
+                      onClick={() => setIsEditing(false)}
+                      className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md"
+                    >
+                      Отмена
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                <div className="space-y-2">
+                  <p className="text-gray-300"><strong>Имя:</strong> {user.first_name}</p>
+                  <p className="text-gray-300"><strong>Фамилия:</strong> {user.last_name}</p>
+                  <p className="text-gray-300"><strong>Телефон:</strong> {user.phone || 'Не указан'}</p>
+                  <p className="text-gray-300"><strong>Username:</strong> @{user.username || 'Не указан'}</p>
+                  <button
+                    onClick={() => {
+                      setEditForm({ first_name: user.first_name || '', last_name: user.last_name || '' })
+                      setIsEditing(true)
+                    }}
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md mt-4"
+                  >
+                    Редактировать
+                  </button>
+                  </div>
+                )}
+              </div>
+              
+            {/* Free Hookahs Counter */}
+            <div>
+              <h2 className="text-xl font-semibold text-white mb-4">Бесплатные кальяны</h2>
+              <div className="bg-yellow-900/30 border border-yellow-500/50 rounded-lg p-4">
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-yellow-400 mb-2">
+                    {unusedFreeHookahs.length}
+                  </div>
+                  <p className="text-yellow-200">Доступно бесплатных кальянов</p>
+                  {hasUnusedFreeHookah && (
+                      <button
+                      onClick={claimFreeHookah}
+                      disabled={isClaiming}
+                      className="mt-4 bg-yellow-600 hover:bg-yellow-700 disabled:bg-yellow-400 text-white px-6 py-2 rounded-md font-medium"
+                      >
+                      {isClaiming ? '⏳ Получаем...' : '🎁 Получить бесплатный кальян'}
+                      </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
         {/* Slots Panel */}
         <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-700 p-6">
           <h2 className="text-2xl font-bold text-white mb-4">🎯 Акция &ldquo;5+1 кальян&rdquo;</h2>
           
-          {stock ? (
-            <div className="space-y-4">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-white mb-2">
-                  {stock.progress}%
+          <div className="space-y-4">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-white mb-2">
+                {stock ? stock.progress : 0}%
+              </div>
+              <div className="w-full bg-gray-700 rounded-full h-4 mb-2">
+                <div 
+                  className="bg-gradient-to-r from-blue-500 to-purple-600 h-4 rounded-full transition-all duration-500"
+                  style={{ width: `${stock ? stock.progress : 0}%` }}
+                ></div>
+              </div>
+              <p className="text-gray-300">
+                Заполнено слотов: {Math.floor((stock ? stock.progress : 0) / 20)}/5
+              </p>
+            </div>
+                
+            {/* Slots */}
+            <div className="grid grid-cols-5 gap-2">
+              {[1, 2, 3, 4, 5].map((slot) => (
+                <div
+                  key={slot}
+                  className={`h-16 rounded-lg border-2 flex items-center justify-center text-white font-bold ${
+                    Math.floor((stock ? stock.progress : 0) / 20) >= slot
+                      ? 'bg-green-600 border-green-500'
+                      : 'bg-gray-700 border-gray-600'
+                  }`}
+                >
+                  {Math.floor((stock ? stock.progress : 0) / 20) >= slot ? '✅' : slot}
                 </div>
-                <div className="w-full bg-gray-700 rounded-full h-4 mb-2">
-                  <div 
-                    className="bg-gradient-to-r from-blue-500 to-purple-600 h-4 rounded-full transition-all duration-500"
-                    style={{ width: `${stock.progress}%` }}
-                  ></div>
-                </div>
-                <p className="text-gray-300">
-                  Заполнено слотов: {Math.floor(stock.progress / 20)}/5
+              ))}
+            </div>
+                
+            {stock && stock.progress >= 100 && (
+              <div className="text-center p-4 bg-green-900/30 border border-green-500/50 rounded-lg">
+                <p className="text-green-200 font-semibold">
+                  🎉 Акция завершена! Бесплатный кальян добавлен!
                 </p>
-                    </div>
-                    
-              {/* Slots */}
-              <div className="grid grid-cols-5 gap-2">
-                {[1, 2, 3, 4, 5].map((slot) => (
-                  <div
-                    key={slot}
-                    className={`h-16 rounded-lg border-2 flex items-center justify-center text-white font-bold ${
-                      Math.floor(stock.progress / 20) >= slot
-                        ? 'bg-green-600 border-green-500'
-                        : 'bg-gray-700 border-gray-600'
-                    }`}
-                  >
-                    {Math.floor(stock.progress / 20) >= slot ? '✅' : slot}
-                  </div>
-                ))}
-                    </div>
-                    
-              {stock.progress >= 100 && (
-                <div className="text-center p-4 bg-green-900/30 border border-green-500/50 rounded-lg">
-                  <p className="text-green-200 font-semibold">
-                    🎉 Акция завершена! Бесплатный кальян добавлен!
-                  </p>
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="text-center text-gray-300">
-              <p>Акция еще не начата</p>
-            </div>
-          )}
+              </div>
+            )}
+          </div>
 
           {/* QR Code Panel */}
           <div className="mt-6">
