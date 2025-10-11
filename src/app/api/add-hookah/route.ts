@@ -70,6 +70,32 @@ export async function POST(request: NextRequest) {
       'admin_add' // scanMethod
     )
 
+    // Проверяем, заполнены ли все слоты (100% прогресса)
+    if (newProgress >= 100) {
+      // Сбрасываем прогресс на 0
+      await db.updateStockProgress(stock.id, 0)
+      
+      // Создаем бесплатный кальян автоматически
+      console.log(`🎁 Creating free hookah for user ${user.id} after promotion completion`)
+      const freeHookah = await db.createFreeHookah(user.id)
+      console.log(`✅ Free hookah created:`, freeHookah)
+      
+      // Добавляем запись в историю о получении бесплатного кальяна
+      try {
+        await db.addHookahToHistory(
+          user.id,
+          'free',
+          undefined, // slot_number
+          stock.id,
+          admin.id, // adminId
+          'promotion_completed' // scanMethod
+        )
+        console.log(`✅ Free hookah added to history`)
+      } catch (historyError) {
+        console.error(`❌ Error adding free hookah to history:`, historyError)
+      }
+    }
+
     return NextResponse.json({
       success: true,
       message: 'Кальян успешно добавлен пользователю',

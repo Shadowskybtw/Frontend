@@ -1,6 +1,5 @@
 "use client"
 import React, { useEffect, useState, useCallback } from 'react'
-import QRScanner from '@/components/QRScanner'
 import Navigation from '@/components/Navigation'
 import { useUser } from '@/contexts/UserContext'
 
@@ -45,7 +44,6 @@ export default function ProfilePage() {
   const [stocks, setStocks] = useState<Stock[]>([])
   const [freeHookahs, setFreeHookahs] = useState<FreeHookah[]>([])
   const [history, setHistory] = useState<HookahHistoryItem[]>([])
-  const [showQRScanner, setShowQRScanner] = useState(false)
   const [isClaiming, setIsClaiming] = useState(false)
   const [showReviewModal, setShowReviewModal] = useState(false)
   const [selectedHookahForReview, setSelectedHookahForReview] = useState<HookahHistoryItem | null>(null)
@@ -97,7 +95,6 @@ export default function ProfilePage() {
         setIsAdmin(adminData.is_admin || false)
       }
 
-      // Load user QR code will be called separately
     } catch (error) {
       console.error('Error loading profile data:', error)
     }
@@ -163,32 +160,6 @@ export default function ProfilePage() {
     }
   }
 
-  // Handle QR scan
-  const handleQRScan = async (qrData: string) => {
-    if (!user?.tg_id) return
-
-    try {
-      const response = await fetch('/api/scan-qr', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          qrData,
-          tg_id: user.tg_id
-        })
-      })
-
-      const data = await response.json()
-      if (data.success) {
-        alert(data.message)
-        loadProfileData() // Reload data
-      } else {
-        alert('Ошибка: ' + data.message)
-      }
-    } catch (error) {
-      console.error('Error scanning QR:', error)
-      alert('Ошибка при сканировании QR кода')
-    }
-  }
 
   // Handle review submission
   const submitReview = async () => {
@@ -731,13 +702,6 @@ export default function ProfilePage() {
         </div>
       </main>
       
-      {/* QR Scanner Modal */}
-      {showQRScanner && (
-        <QRScanner
-          onScan={handleQRScan}
-          onClose={() => setShowQRScanner(false)}
-        />
-      )}
 
       {/* Review Modal */}
       {showReviewModal && selectedHookahForReview && (
