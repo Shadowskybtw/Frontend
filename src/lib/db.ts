@@ -27,7 +27,7 @@ initializeDatabase()
 // Database types
 export interface User {
   id: number
-  tg_id: bigint
+  tg_id: number
   first_name: string
   last_name: string
   phone: string
