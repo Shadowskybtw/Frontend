@@ -43,34 +43,32 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Получаем акцию пользователя
-    const stocks = await db.getUserStocks(user.id)
-    const stock = stocks.find(s => s.stock_name === '5+1 кальян')
+    // Получаем или создаем акцию пользователя
+    let stocks = await db.getUserStocks(user.id)
+    let stock = stocks.find(s => s.stock_name === '5+1 кальян')
     
-    if (!stock || stock.progress <= 0) {
-      return NextResponse.json(
-        { success: false, message: 'У пользователя нет кальянов для удаления' },
-        { status: 400 }
-      )
+    if (!stock) {
+      // Создаем новую акцию если её нет
+      stock = await db.createStock(user.id, '5+1 кальян', 0)
     }
 
-    // Уменьшаем прогресс на 20% (один слот)
-    const newProgress = Math.max(0, stock.progress - 20)
-    await db.updateStockProgress(stock.id, newProgress)
+    // Увеличиваем прогресс на 20% (один слот)
+    const newProgress = Math.min(100, stock.progress + 20)
+    const updatedStock = await db.updateStockProgress(stock.id, newProgress)
 
-    // Добавляем запись в историю об удалении
+    // Добавляем запись в историю
     await db.addHookahToHistory(
       user.id,
       'regular',
-      Math.floor(newProgress / 20) + 1, // slot_number
+      Math.floor(newProgress / 20), // slot_number
       stock.id,
       admin.id, // adminId
-      'admin_remove' // scanMethod
+      'admin_add' // scanMethod
     )
 
     return NextResponse.json({
       success: true,
-      message: 'Кальян успешно удален у пользователя',
+      message: 'Кальян успешно добавлен пользователю',
       user: {
         id: user.id,
         first_name: user.first_name,
@@ -80,7 +78,7 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Error removing hookah:', error)
+    console.error('Error adding hookah:', error)
     return NextResponse.json(
       { success: false, message: 'Ошибка сервера' },
       { status: 500 }

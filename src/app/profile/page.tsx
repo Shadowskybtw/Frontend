@@ -331,12 +331,12 @@ export default function ProfilePage() {
 
     setIsAddingHookah(true)
     try {
-      const response = await fetch('/api/scan-qr', {
+      const response = await fetch('/api/add-hookah', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          qrData: `admin_add_${searchedUser.user.tg_id}`,
-          tg_id: user.tg_id
+          user_tg_id: searchedUser.user.tg_id,
+          admin_tg_id: user.tg_id
         })
       })
 
