@@ -28,18 +28,6 @@ export default function Navigation({ className = "" }: NavigationProps) {
       label: 'Статистика',
       icon: '📈',
       active: pathname === '/statistics'
-    },
-    {
-      href: '/test-telegram',
-      label: 'Тест',
-      icon: '🔧',
-      active: pathname === '/test-telegram'
-    },
-    {
-      href: '/debug-history',
-      label: 'Debug',
-      icon: '🔍',
-      active: pathname === '/debug-history'
     }
   ]
 
@@ -55,7 +43,7 @@ export default function Navigation({ className = "" }: NavigationProps) {
         
         {/* Кнопки навигации под логотипом */}
         <div className="flex justify-center items-center pb-4">
-                 <div className="grid grid-cols-5 gap-1 w-full max-w-3xl">
+                 <div className="grid grid-cols-3 gap-1 w-full max-w-2xl">
             {navItems.map((item) => (
               <Link
                 key={item.href}

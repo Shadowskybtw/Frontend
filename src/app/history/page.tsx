@@ -291,53 +291,26 @@ export default function HistoryPage() {
 
             {/* Пагинация */}
             {totalPages > 1 && (
-              <div className="flex justify-center items-center space-x-2 mt-8 px-4">
+              <div className="flex justify-between items-center mt-8 px-4">
                 <button
                   onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                   disabled={currentPage === 1 || historyLoading}
-                  className="px-4 py-2 bg-gradient-to-r from-gray-700 to-gray-600 text-white rounded-xl hover:from-gray-600 hover:to-gray-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center space-x-1 shadow-lg text-sm"
+                  className="w-12 h-12 bg-gradient-to-r from-gray-700 to-gray-600 text-white rounded-full hover:from-gray-600 hover:to-gray-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center shadow-lg text-2xl"
                 >
-                  <span>←</span>
-                  <span>Назад</span>
+                  ←
                 </button>
                 
-                <div className="flex items-center space-x-1">
-                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                    let pageNum;
-                    if (totalPages <= 5) {
-                      pageNum = i + 1;
-                    } else if (currentPage <= 3) {
-                      pageNum = i + 1;
-                    } else if (currentPage >= totalPages - 2) {
-                      pageNum = totalPages - 4 + i;
-                    } else {
-                      pageNum = currentPage - 2 + i;
-                    }
-                    
-                    return (
-                      <button
-                        key={pageNum}
-                        onClick={() => setCurrentPage(pageNum)}
-                        disabled={historyLoading}
-                        className={`w-8 h-8 rounded-lg font-bold transition-all duration-200 text-sm ${
-                          currentPage === pageNum
-                            ? 'bg-gradient-to-r from-red-600 to-red-500 text-white shadow-lg scale-110'
-                            : 'bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white'
-                        }`}
-                      >
-                        {pageNum}
-                      </button>
-                    );
-                  })}
+                <div className="text-center">
+                  <span className="text-gray-300 text-sm">Страница</span>
+                  <div className="text-white font-bold text-lg">{currentPage} из {totalPages}</div>
                 </div>
                 
                 <button
                   onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                   disabled={currentPage === totalPages || historyLoading}
-                  className="px-4 py-2 bg-gradient-to-r from-gray-700 to-gray-600 text-white rounded-xl hover:from-gray-600 hover:to-gray-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center space-x-1 shadow-lg text-sm"
+                  className="w-12 h-12 bg-gradient-to-r from-gray-700 to-gray-600 text-white rounded-full hover:from-gray-600 hover:to-gray-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center shadow-lg text-2xl"
                 >
-                  <span>Далее</span>
-                  <span>→</span>
+                  →
                 </button>
               </div>
             )}
