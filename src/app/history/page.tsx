@@ -32,33 +32,54 @@ export default function HistoryPage() {
   const { user, loading, error, isInitialized } = useUser()
 
   const fetchHistory = useCallback(async (tgId: number, page: number = 1) => {
+    console.log('📊 fetchHistory called:', { tgId, page })
     setHistoryLoading(true)
     try {
       const limit = 50
       const offset = (page - 1) * limit
-      const response = await fetch(`/api/history/${tgId}?withReviews=true&limit=${limit}&offset=${offset}`)
+      const url = `/api/history/${tgId}?withReviews=true&limit=${limit}&offset=${offset}`
+      console.log('📊 Fetching URL:', url)
+      
+      const response = await fetch(url)
+      console.log('📊 Response status:', response.status, response.statusText)
 
       const data = await response.json()
+      console.log('📊 Response data:', data)
 
       if (data.success) {
-        setHistory(data.history || data.items || [])
+        const historyData = data.history || data.items || []
+        console.log('📊 Setting history:', historyData.length, 'items')
+        setHistory(historyData)
         // Calculate total pages based on total count
-        const totalPages = Math.ceil((data.total || data.history?.length || 0) / limit)
+        const totalPages = Math.ceil((data.total || historyData.length || 0) / limit)
         setTotalPages(totalPages)
       } else {
-        console.error('Failed to fetch history:', data.message)
+        console.error('❌ Failed to fetch history:', data.message)
       }
     } catch (error) {
-      console.error('Error fetching history:', error)
+      console.error('❌ Error fetching history:', error)
     } finally {
       setHistoryLoading(false)
     }
   }, [])
 
   useEffect(() => {
+    console.log('📊 History page useEffect triggered:', {
+      isInitialized,
+      hasUser: !!user,
+      tgId: user?.tg_id,
+      currentPage
+    })
+    
     if (isInitialized && user?.tg_id) {
       console.log('📊 Loading history for user:', user.tg_id, 'page:', currentPage)
       fetchHistory(user.tg_id, currentPage)
+    } else {
+      console.log('📊 Not loading history:', {
+        isInitialized,
+        hasUser: !!user,
+        tgId: user?.tg_id
+      })
     }
   }, [isInitialized, user?.tg_id, currentPage, fetchHistory])
 

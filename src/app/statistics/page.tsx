@@ -43,18 +43,30 @@ export default function StatisticsPage() {
 
   // Load statistics data
   const loadStatistics = useCallback(async () => {
-    if (!user?.tg_id) return
+    console.log('📈 loadStatistics called:', { tgId: user?.tg_id })
+    if (!user?.tg_id) {
+      console.log('📈 No tg_id, skipping statistics load')
+      return
+    }
 
     setIsLoading(true)
     try {
       // Load history with reviews
-      const historyResponse = await fetch(`/api/history/${user.tg_id}?withReviews=true`)
+      const url = `/api/history/${user.tg_id}?withReviews=true`
+      console.log('📈 Fetching URL:', url)
+      
+      const historyResponse = await fetch(url)
+      console.log('📈 Response status:', historyResponse.status, historyResponse.statusText)
+      
       if (!historyResponse.ok) {
         throw new Error('Failed to load history')
       }
 
       const historyData = await historyResponse.json()
+      console.log('📈 History data:', historyData)
+      
       const history: HookahHistory[] = historyData.history || []
+      console.log('📈 History items:', history.length)
 
       // Calculate statistics
       const totalHookahs = history.length
