@@ -45,7 +45,7 @@ export default function DebugHistoryPage() {
       
       console.log('🧪 API Test Result:', data)
     } catch (error) {
-      setApiTest({ error: error.message })
+      setApiTest({ error: error instanceof Error ? error.message : 'Unknown error' })
       console.error('🧪 API Test Error:', error)
     }
   }

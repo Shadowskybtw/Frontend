@@ -81,7 +81,7 @@ export default function HistoryPage() {
         tgId: user?.tg_id
       })
     }
-  }, [isInitialized, user?.tg_id, currentPage, fetchHistory])
+  }, [isInitialized, user?.tg_id, currentPage, fetchHistory, user])
 
   // Handle review submission
   const submitReview = async () => {
