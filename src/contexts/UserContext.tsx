@@ -64,7 +64,7 @@ export function UserProvider({ children }: UserProviderProps) {
       return
     }
     
-    if (isInitialized && user && user.tg_id === tgUser.id && !loading) {
+    if (isInitialized && user && user.tg_id === tgUser.id) {
       console.log('⚠️ User already initialized with same ID, skipping duplicate call')
       return
     }
@@ -176,8 +176,8 @@ export function UserProvider({ children }: UserProviderProps) {
 
   useEffect(() => {
     const checkTelegramWebApp = () => {
-      // Защита от повторной инициализации только если уже есть пользователь и не загружается
-      if (hasTriedInitialization && user && !loading) {
+      // Защита от повторной инициализации только если уже есть пользователь
+      if (hasTriedInitialization && user) {
         console.log('⚠️ Initialization already attempted and user exists, skipping')
         return
       }
@@ -302,7 +302,7 @@ export function UserProvider({ children }: UserProviderProps) {
 
         // Запускаем проверку сразу
         checkTelegramWebApp()
-      }, [checkOrRegisterUser, tryToGetUserFromUrl, hasTriedInitialization, user])
+      }, [checkOrRegisterUser, tryToGetUserFromUrl, hasTriedInitialization])
 
   const value = {
     user,
