@@ -37,6 +37,14 @@ export default function HistoryPage() {
     try {
       const limit = 8
       const offset = (page - 1) * limit
+      
+      // First, get total count
+      const totalResponse = await fetch(`/api/history/${tgId}?limit=1000&offset=0`)
+      const totalData = await totalResponse.json()
+      const totalCount = totalData.success ? (totalData.history || []).length : 0
+      console.log('📊 Total history count:', totalCount)
+      
+      // Then get current page data
       const url = `/api/history/${tgId}?limit=${limit}&offset=${offset}`
       console.log('📊 Fetching URL:', url)
       
@@ -51,8 +59,9 @@ export default function HistoryPage() {
         console.log('📊 Setting history:', historyData.length, 'items')
         setHistory(historyData)
         // Calculate total pages based on total count
-        const totalPages = Math.ceil((data.total || historyData.length || 0) / limit)
+        const totalPages = Math.ceil(totalCount / limit)
         setTotalPages(totalPages)
+        console.log('📊 Total pages calculated:', totalPages, 'from total count:', totalCount)
       } else {
         console.error('❌ Failed to fetch history:', data.message)
       }

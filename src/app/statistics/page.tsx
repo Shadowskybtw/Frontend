@@ -96,7 +96,7 @@ export default function StatisticsPage() {
     setIsLoading(true)
     try {
       // Load history with reviews
-      const url = `/api/history/${Number(user.tg_id)}`
+      const url = `/api/history/${Number(user.tg_id)}?withReviews=true`
       console.log('📈 Fetching URL:', url)
       
       const historyResponse = await fetch(url)
@@ -109,8 +109,17 @@ export default function StatisticsPage() {
       const historyData = await historyResponse.json()
       console.log('📈 History data:', historyData)
       
-      const history: HookahHistory[] = historyData.history || []
+      let history: HookahHistory[] = historyData.history || []
       console.log('📈 History items:', history.length)
+      
+      // If withReviews failed and we got empty history, try without reviews
+      if (history.length === 0) {
+        console.log('📈 withReviews returned empty, trying without reviews...')
+        const fallbackResponse = await fetch(`/api/history/${Number(user.tg_id)}`)
+        const fallbackData = await fallbackResponse.json()
+        history = fallbackData.history || []
+        console.log('📈 Fallback history items:', history.length)
+      }
 
       // Calculate statistics
       const totalHookahs = history.length
@@ -120,9 +129,13 @@ export default function StatisticsPage() {
       // Calculate reviews statistics
       const reviews = history.filter(h => h.review).map(h => h.review!)
       const totalReviews = reviews.length
+      console.log('📈 Reviews found:', totalReviews)
+      console.log('📈 Reviews data:', reviews)
+      
       const averageRating = totalReviews > 0 
         ? reviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews 
         : 0
+      console.log('📈 Average rating calculated:', averageRating)
 
       // Calculate monthly statistics
       const monthlyStats = calculateMonthlyStats(history)
