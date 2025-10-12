@@ -48,9 +48,20 @@ export async function GET(
       // Используем функцию с отзывами
       const page = Math.floor(offset / limit) + 1
       console.log('📊 Using withReviews, page:', page, 'limit:', limit, 'offset:', offset)
-      const historyWithReviews = await db.getHookahHistoryWithReviews(user.id, page, limit)
-      history = historyWithReviews.history
-      console.log('📊 History with reviews found:', history.length, 'records')
+      console.log('📊 User ID for withReviews:', user.id)
+      
+      try {
+        const historyWithReviews = await db.getHookahHistoryWithReviews(user.id, page, limit)
+        history = historyWithReviews.history
+        console.log('📊 History with reviews found:', history.length, 'records')
+        console.log('📊 History with reviews details:', history)
+      } catch (error) {
+        console.error('❌ Error in getHookahHistoryWithReviews:', error)
+        // Fallback to regular history if withReviews fails
+        history = await db.getHookahHistory(user.id)
+        history = history.slice(offset, offset + limit)
+        console.log('📊 Fallback to regular history:', history.length, 'records')
+      }
     } else {
       // Используем обычную функцию
       history = await db.getHookahHistory(user.id)
