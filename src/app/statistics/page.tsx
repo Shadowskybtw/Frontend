@@ -333,25 +333,25 @@ export default function StatisticsPage() {
               </div>
 
               {/* Распределение оценок */}
-              {statistics.ratingDistribution.length > 0 && (
-                <div className="bg-gradient-to-br from-gray-800/40 to-gray-700/30 backdrop-blur-sm rounded-3xl shadow-2xl border border-gray-600/30 p-8">
-                  <div className="flex items-center mb-6">
-                    <div className="bg-yellow-500/20 p-3 rounded-2xl mr-4">
-                      <span className="text-3xl">🎯</span>
-                    </div>
-                    <h2 className="text-2xl font-bold text-white">Распределение оценок</h2>
+              <div className="bg-gradient-to-br from-gray-800/40 to-gray-700/30 backdrop-blur-sm rounded-3xl shadow-2xl border border-gray-600/30 p-8">
+                <div className="flex items-center mb-6">
+                  <div className="bg-yellow-500/20 p-3 rounded-2xl mr-4">
+                    <span className="text-3xl">🎯</span>
                   </div>
-                  <div className="grid grid-cols-5 gap-3">
-                    {statistics.ratingDistribution.map((rating, index) => (
-                      <div key={index} className="text-center bg-gradient-to-br from-gray-700/50 to-gray-600/40 rounded-2xl p-4 border border-gray-600/30 hover:border-yellow-500/50 transition-all duration-300 hover:scale-105">
-                        <div className="text-2xl mb-2">{'⭐'.repeat(rating.rating)}</div>
-                        <p className="text-xl font-bold text-white mb-1">{rating.count}</p>
-                        <p className="text-xs text-gray-400">{rating.rating} звезд</p>
-                      </div>
-                    ))}
-                  </div>
+                  <h2 className="text-2xl font-bold text-white">Распределение оценок</h2>
                 </div>
-              )}
+                <div className="space-y-3">
+                  {statistics.ratingDistribution.map((rating, index) => (
+                    <div key={index} className="flex items-center justify-between bg-gradient-to-br from-gray-700/50 to-gray-600/40 rounded-xl p-4 border border-gray-600/30 hover:border-yellow-500/50 transition-all duration-300">
+                      <div className="flex items-center space-x-3">
+                        <span className="text-2xl">⭐</span>
+                        <span className="text-lg font-semibold text-white">{rating.rating} звезд</span>
+                      </div>
+                      <div className="text-xl font-bold text-yellow-400">{rating.count}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
 
             {/* Активность по месяцам */}

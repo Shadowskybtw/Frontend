@@ -291,17 +291,17 @@ export default function HistoryPage() {
 
             {/* Пагинация */}
             {totalPages > 1 && (
-              <div className="flex justify-center items-center space-x-4 mt-8">
+              <div className="flex justify-center items-center space-x-2 mt-8 px-4">
                 <button
                   onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                   disabled={currentPage === 1 || historyLoading}
-                  className="px-6 py-3 bg-gradient-to-r from-gray-700 to-gray-600 text-white rounded-2xl hover:from-gray-600 hover:to-gray-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center space-x-2 shadow-lg"
+                  className="px-4 py-2 bg-gradient-to-r from-gray-700 to-gray-600 text-white rounded-xl hover:from-gray-600 hover:to-gray-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center space-x-1 shadow-lg text-sm"
                 >
                   <span>←</span>
-                  <span>Предыдущая</span>
+                  <span>Назад</span>
                 </button>
                 
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-1">
                   {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                     let pageNum;
                     if (totalPages <= 5) {
@@ -319,7 +319,7 @@ export default function HistoryPage() {
                         key={pageNum}
                         onClick={() => setCurrentPage(pageNum)}
                         disabled={historyLoading}
-                        className={`w-10 h-10 rounded-xl font-bold transition-all duration-200 ${
+                        className={`w-8 h-8 rounded-lg font-bold transition-all duration-200 text-sm ${
                           currentPage === pageNum
                             ? 'bg-gradient-to-r from-red-600 to-red-500 text-white shadow-lg scale-110'
                             : 'bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white'
@@ -334,9 +334,9 @@ export default function HistoryPage() {
                 <button
                   onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                   disabled={currentPage === totalPages || historyLoading}
-                  className="px-6 py-3 bg-gradient-to-r from-gray-700 to-gray-600 text-white rounded-2xl hover:from-gray-600 hover:to-gray-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center space-x-2 shadow-lg"
+                  className="px-4 py-2 bg-gradient-to-r from-gray-700 to-gray-600 text-white rounded-xl hover:from-gray-600 hover:to-gray-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center space-x-1 shadow-lg text-sm"
                 >
-                  <span>Следующая</span>
+                  <span>Далее</span>
                   <span>→</span>
                 </button>
               </div>
