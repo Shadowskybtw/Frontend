@@ -1,55 +1,57 @@
-import { NextResponse } from 'next/server'
-import { db } from '@/lib/db'
+import { NextRequest, NextResponse } from 'next/server'
+import { PrismaClient } from '@prisma/client'
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
-    console.log('Test DB API called')
+    console.log('🔍 Testing database connection...')
+    console.log('📋 DATABASE_URL:', process.env.DATABASE_URL ? 'SET' : 'NOT SET')
+    console.log('📋 NODE_ENV:', process.env.NODE_ENV)
     
-    // Тестируем подключение к базе данных
-    const isConnected = db.isConnected()
-    console.log('Database connected:', isConnected)
+    const prisma = new PrismaClient()
     
-    // Тестируем получение пользователя
-    const testTgId = 937011437
-    console.log('Testing user lookup for TG ID:', testTgId)
-    const user = await db.getUserByTgId(testTgId)
-    console.log('User lookup result:', user)
+    // Тестируем подключение
+    await prisma.$connect()
+    console.log('✅ Database connected')
     
-    // Тестируем создание пользователя если его нет
-    if (!user) {
-      console.log('Creating test user')
-      const newUser = await db.createUser({
-        tg_id: testTgId,
-        first_name: 'Тест',
-        last_name: 'Пользователь',
-        phone: '+1234567890',
-        username: 'test_user'
-      })
-      console.log('Test user created:', newUser)
-    }
+    // Получаем количество пользователей
+    const userCount = await prisma.user.count()
+    console.log('👥 Users count:', userCount)
     
-    return NextResponse.json({ 
-      success: true, 
-      isConnected,
-      user: user ? {
-        id: user.id,
-        tg_id: Number(user.tg_id),
-        first_name: user.first_name,
-        last_name: user.last_name,
-        phone: user.phone,
-        username: user.username,
-        created_at: user.created_at,
-        updated_at: user.updated_at
-      } : 'User not found',
-      message: 'Database test completed'
+    // Получаем количество записей истории
+    const historyCount = await prisma.hookahHistory.count()
+    console.log('📝 History count:', historyCount)
+    
+    // Получаем первые 3 записи истории
+    const firstHistory = await prisma.hookahHistory.findMany({
+      take: 3,
+      orderBy: { created_at: 'desc' }
+    })
+    console.log('📝 First 3 history records:', firstHistory)
+    
+    await prisma.$disconnect()
+    
+    return NextResponse.json({
+      success: true,
+      message: 'Database test completed',
+      data: {
+        databaseUrl: process.env.DATABASE_URL ? 'SET' : 'NOT SET',
+        nodeEnv: process.env.NODE_ENV,
+        userCount,
+        historyCount,
+        firstHistory
+      }
     })
     
   } catch (error) {
-    console.error('Database test error:', error)
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-    return NextResponse.json(
-      { success: false, error: errorMessage },
-      { status: 500 }
-    )
+    console.error('❌ Database test failed:', error)
+    return NextResponse.json({
+      success: false,
+      message: 'Database test failed',
+      error: error instanceof Error ? error.message : 'Unknown error',
+      details: {
+        databaseUrl: process.env.DATABASE_URL ? 'SET' : 'NOT SET',
+        nodeEnv: process.env.NODE_ENV
+      }
+    }, { status: 500 })
   }
 }
