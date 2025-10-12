@@ -34,13 +34,17 @@ export default function HistoryPage() {
   const fetchHistory = useCallback(async (tgId: number, page: number = 1) => {
     setHistoryLoading(true)
     try {
-      const response = await fetch(`/api/history/${tgId}?withReviews=true&page=${page}`)
+      const limit = 50
+      const offset = (page - 1) * limit
+      const response = await fetch(`/api/history/${tgId}?withReviews=true&limit=${limit}&offset=${offset}`)
 
       const data = await response.json()
 
       if (data.success) {
-        setHistory(data.history || [])
-        setTotalPages(data.totalPages || 1)
+        setHistory(data.history || data.items || [])
+        // Calculate total pages based on total count
+        const totalPages = Math.ceil((data.total || data.history?.length || 0) / limit)
+        setTotalPages(totalPages)
       } else {
         console.error('Failed to fetch history:', data.message)
       }

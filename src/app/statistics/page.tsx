@@ -3,15 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Navigation from '@/components/Navigation'
-
-interface User {
-  tg_id: number
-  first_name: string
-  last_name: string
-  username?: string
-  phone: string
-  is_admin: boolean
-}
+import { useUser } from '@/contexts/UserContext'
 
 interface HookahHistory {
   id: number
@@ -43,34 +35,11 @@ interface Statistics {
 }
 
 export default function StatisticsPage() {
-  const [user, setUser] = useState<User | null>(null)
-  const [isInitialized, setIsInitialized] = useState(false)
   const [statistics, setStatistics] = useState<Statistics | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const router = useRouter()
-
-  // Initialize user from Telegram
-  const initializeUser = useCallback(async () => {
-    try {
-      const response = await fetch('/api/webapp/init')
-      if (response.ok) {
-        const data = await response.json()
-        if (data.success && data.user) {
-          setUser(data.user)
-          setIsInitialized(true)
-        } else {
-          console.error('Failed to initialize user:', data)
-          router.push('/register')
-        }
-      } else {
-        console.error('Failed to initialize user, status:', response.status)
-        router.push('/register')
-      }
-    } catch (error) {
-      console.error('Error initializing user:', error)
-      router.push('/register')
-    }
-  }, [router])
+  
+  const { user, loading, error, isInitialized } = useUser()
 
   // Load statistics data
   const loadStatistics = useCallback(async () => {
@@ -175,21 +144,33 @@ export default function StatisticsPage() {
   }
 
   useEffect(() => {
-    initializeUser()
-  }, [initializeUser])
-
-  useEffect(() => {
     if (isInitialized && user?.tg_id) {
       loadStatistics()
     }
   }, [isInitialized, user?.tg_id, loadStatistics])
 
-  if (!isInitialized) {
+  if (loading || !isInitialized) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black flex items-center justify-center">
         <div className="text-white text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
           <p>Инициализация...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error || !user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black flex items-center justify-center">
+        <div className="text-white text-center">
+          <p className="text-red-400 mb-4">Ошибка загрузки пользователя</p>
+          <button 
+            onClick={() => router.push('/register')}
+            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
+          >
+            Перейти к регистрации
+          </button>
         </div>
       </div>
     )
