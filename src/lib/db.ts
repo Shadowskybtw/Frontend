@@ -199,7 +199,10 @@ export const db = {
       console.log('Getting stocks for user:', userId)
       const stocks = await prisma.stock.findMany({
         where: { user_id: userId },
-        orderBy: { created_at: 'desc' }
+        orderBy: [
+          { stock_name: 'asc' }, // Сначала "5+1 кальян", потом остальные
+          { created_at: 'desc' }
+        ]
       })
       console.log('Stocks found:', stocks)
       return stocks as Stock[]

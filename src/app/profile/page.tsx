@@ -671,38 +671,6 @@ export default function ProfilePage() {
 
                         </div>
 
-        {/* Hookah Statistics */}
-        <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-700 p-6">
-          <h2 className="text-2xl font-bold text-white mb-4">📊 Статистика кальянов</h2>
-          
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-blue-900/30 border border-blue-500/50 rounded-lg p-4 text-center">
-              <div className="text-3xl font-bold text-blue-400 mb-2">
-                {history.filter(item => item.hookah_type === 'regular').length}
-              </div>
-              <p className="text-blue-200 font-semibold">Обычные кальяны</p>
-              <p className="text-blue-300 text-sm">В акции</p>
-            </div>
-            
-            <div className="bg-green-900/30 border border-green-500/50 rounded-lg p-4 text-center">
-              <div className="text-3xl font-bold text-green-400 mb-2">
-                {history.filter(item => item.hookah_type === 'free').length}
-              </div>
-              <p className="text-green-200 font-semibold">Бесплатные кальяны</p>
-              <p className="text-green-300 text-sm">Получено</p>
-            </div>
-          </div>
-          
-          <div className="mt-4 bg-gray-700/50 rounded-lg p-4 border border-gray-600">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-yellow-400 mb-2">
-                {history.length}
-              </div>
-              <p className="text-yellow-200 font-semibold">Всего кальянов</p>
-              <p className="text-gray-300 text-sm">За все время</p>
-            </div>
-          </div>
-        </div>
       </main>
       
 
