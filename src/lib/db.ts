@@ -193,7 +193,7 @@ export const db = {
     console.log('User created:', user)
     return {
       id: user.id,
-      tg_id: user.tg_id,
+      tg_id: Number(user.tg_id),
       first_name: user.first_name,
       last_name: user.last_name,
       phone: user.phone,

@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
     if (action === 'get_users') {
       // Получаем всех пользователей с Telegram ID
       const users = await db.getAllUsers()
-      const usersWithTgId = users.filter(user => user.tg_id && user.tg_id !== BigInt(0))
+      const usersWithTgId = users.filter(user => user.tg_id && user.tg_id !== 0)
       
       return NextResponse.json({
         success: true,
