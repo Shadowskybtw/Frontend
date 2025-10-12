@@ -14,12 +14,12 @@ model User {
   last_name               String
   phone                   String
   username                String?
-  created_at              DateTime        @default(now()) @map("created_at")
-  updated_at              DateTime        @default(now()) @updatedAt @map("updated_at")
+  created_at              DateTime        @default(now())
+  updated_at              DateTime        @default(now()) @updatedAt
   is_admin                Boolean         @default(false)
-  total_purchases         Int?            @default(0)
-  total_regular_purchases Int?            @default(0)
-  total_free_purchases    Int?            @default(0)
+  total_purchases         Int             @default(0)
+  total_regular_purchases Int             @default(0)
+  total_free_purchases    Int             @default(0)
   free_hookahs            FreeHookah[]
   hookah_history          HookahHistory[]
   stocks                  Stock[]
@@ -37,8 +37,8 @@ model Stock {
   stock_name           String
   progress             Int      @default(0)
   promotion_completed  Boolean  @default(false)
-  created_at           DateTime @default(now()) @map("created_at")
-  updated_at           DateTime @default(now()) @updatedAt @map("updated_at")
+  created_at           DateTime @default(now())
+  updated_at           DateTime @default(now()) @updatedAt
   user                 User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
   free_hookah_requests FreeHookahRequest[]
 
@@ -50,7 +50,7 @@ model FreeHookah {
   user_id    Int
   used       Boolean   @default(false)
   used_at    DateTime?
-  created_at DateTime  @default(now()) @map("created_at")
+  created_at DateTime  @default(now())
   user       User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@map("free_hookahs")
@@ -61,11 +61,11 @@ model HookahHistory {
   user_id     Int
   hookah_type String
   slot_number Int?
-  created_at  DateTime? @default(now()) @map("created_at")
+  created_at  DateTime? @default(now())
   user        User      @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
-  @@index([created_at], map: "idx_hookah_history_created_at")
-  @@index([user_id], map: "idx_hookah_history_user_id")
+  @@index([created_at])
+  @@index([user_id])
   @@map("hookah_history")
 }
 
@@ -73,7 +73,7 @@ model Admin {
   id         Int      @id @default(autoincrement())
   user_id    Int      @unique
   granted_by Int      // ID админа, который выдал права
-  created_at DateTime @default(now()) @map("created_at")
+  created_at DateTime @default(now())
 
   // Relations
   user User @relation("AdminUser", fields: [user_id], references: [id], onDelete: Cascade)
@@ -86,7 +86,7 @@ model Admin {
 model AdminList {
   id         Int      @id @default(autoincrement())
   tg_id      Int      @unique
-  created_at DateTime @default(now()) @map("created_at")
+  created_at DateTime @default(now())
 
   @@map("admin_list")
 }
@@ -97,8 +97,8 @@ model FreeHookahRequest {
   stock_id   Int
   status     String   @default("pending") // pending, approved, rejected
   approved_by Int?    // ID админа, который подтвердил
-  created_at DateTime @default(now()) @map("created_at")
-  updated_at DateTime @default(now()) @updatedAt @map("updated_at")
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt
 
   // Relations
   user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
@@ -114,7 +114,7 @@ model HookahReview {
   hookah_id     Int      // ID записи в hookah_history
   rating        Int      // 1-5 звезд
   review_text   String?  // Текст отзыва (опционально)
-  created_at    DateTime @default(now()) @map("created_at")
+  created_at    DateTime @default(now())
 
   // Relations
   user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
