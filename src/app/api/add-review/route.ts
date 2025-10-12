@@ -37,6 +37,8 @@ export async function POST(req: NextRequest) {
       }, { status: 404 })
     }
     
+    console.log('👤 Found user:', { id: user.id, tg_id: user.tg_id, name: `${user.first_name} ${user.last_name}` })
+    
     // Проверяем, существует ли запись истории кальяна
     const hookahHistory = await db.getHookahHistoryById(hookahId)
     if (!hookahHistory) {
@@ -46,8 +48,15 @@ export async function POST(req: NextRequest) {
       }, { status: 404 })
     }
     
+    console.log('📝 Found history record:', { id: hookahHistory.id, user_id: hookahHistory.user_id, hookah_type: hookahHistory.hookah_type })
+    
     // Проверяем, что пользователь является владельцем этой записи
     if (hookahHistory.user_id !== user.id) {
+      console.log('❌ Authorization failed:', { 
+        historyUserId: hookahHistory.user_id, 
+        requestUserId: user.id,
+        tgId: tgId
+      })
       return NextResponse.json({ 
         success: false, 
         message: 'Unauthorized: You can only review your own purchases' 
