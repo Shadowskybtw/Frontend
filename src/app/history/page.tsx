@@ -73,7 +73,7 @@ export default function HistoryPage() {
     
     if (isInitialized && user?.tg_id) {
       console.log('📊 Loading history for user:', user.tg_id, 'page:', currentPage)
-      fetchHistory(user.tg_id, currentPage)
+      fetchHistory(Number(user.tg_id), currentPage)
     } else {
       console.log('📊 Not loading history:', {
         isInitialized,
@@ -109,7 +109,7 @@ export default function HistoryPage() {
         setReviewRating(5)
         // Reload history to show the review
         if (user?.tg_id) {
-          fetchHistory(user.tg_id, currentPage)
+          fetchHistory(Number(user.tg_id), currentPage)
         }
       } else {
         alert('Ошибка: ' + data.message)

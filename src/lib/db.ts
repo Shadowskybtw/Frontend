@@ -27,13 +27,17 @@ initializeDatabase()
 // Database types
 export interface User {
   id: number
-  tg_id: number
+  tg_id: bigint
   first_name: string
   last_name: string
   phone: string
   username: string | null
   created_at: Date
   updated_at: Date
+  is_admin?: boolean
+  total_purchases?: number
+  total_regular_purchases?: number
+  total_free_purchases?: number
 }
 
 export interface Stock {
@@ -91,15 +95,32 @@ export const db = {
       console.log('🔍 Searching for tg_id:', tgId)
       
       const user = await prisma.user.findUnique({
-        where: { tg_id: tgId }
+        where: { tg_id: BigInt(tgId) }
       })
       
       console.log('🔍 Raw user from database:', user)
       console.log('🔍 User tg_id type:', typeof user?.tg_id)
       console.log('🔍 User tg_id value:', user?.tg_id)
       
-      console.log('✅ User found:', user)
-      return user
+      if (!user) return null
+      
+      const mappedUser: User = {
+        id: user.id,
+        tg_id: user.tg_id,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        phone: user.phone,
+        username: user.username,
+        created_at: user.created_at,
+        updated_at: user.updated_at,
+        is_admin: user.is_admin,
+        total_purchases: user.total_purchases,
+        total_regular_purchases: user.total_regular_purchases,
+        total_free_purchases: user.total_free_purchases
+      }
+      
+      console.log('✅ User found:', mappedUser)
+      return mappedUser
     } catch (error) {
       console.error('❌ Error getting user by TG ID:', error)
       return null
@@ -115,7 +136,7 @@ export const db = {
       console.log('Users found:', users.length)
       return users.map(user => ({
         id: user.id,
-        tg_id: Number(user.tg_id),
+        tg_id: user.tg_id,
         first_name: user.first_name,
         last_name: user.last_name,
         phone: user.phone,
@@ -160,7 +181,7 @@ export const db = {
     const now = new Date()
     const user = await prisma.user.create({
       data: {
-        tg_id: userData.tg_id,
+        tg_id: BigInt(userData.tg_id),
         first_name: userData.first_name,
         last_name: userData.last_name,
         phone: userData.phone,
@@ -170,14 +191,27 @@ export const db = {
       }
     })
     console.log('User created:', user)
-    return user
+    return {
+      id: user.id,
+      tg_id: user.tg_id,
+      first_name: user.first_name,
+      last_name: user.last_name,
+      phone: user.phone,
+      username: user.username,
+      created_at: user.created_at,
+      updated_at: user.updated_at,
+      is_admin: user.is_admin,
+      total_purchases: user.total_purchases,
+      total_regular_purchases: user.total_regular_purchases,
+      total_free_purchases: user.total_free_purchases
+    }
   },
 
   async updateUser(tgId: number, updates: Partial<User>): Promise<User | null> {
     try {
       console.log('Updating user:', { tgId, updates })
       const user = await prisma.user.update({
-        where: { tg_id: tgId },
+        where: { tg_id: BigInt(tgId) },
         data: {
           first_name: updates.first_name,
           last_name: updates.last_name,
@@ -186,7 +220,20 @@ export const db = {
         }
       })
       console.log('User updated:', user)
-      return user
+      return {
+        id: user.id,
+        tg_id: user.tg_id,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        phone: user.phone,
+        username: user.username,
+        created_at: user.created_at,
+        updated_at: user.updated_at,
+        is_admin: user.is_admin,
+        total_purchases: user.total_purchases,
+        total_regular_purchases: user.total_regular_purchases,
+        total_free_purchases: user.total_free_purchases
+      }
     } catch (error) {
       console.error('Error updating user:', error)
       return null
@@ -490,23 +537,23 @@ export const db = {
       }
       
       // Fallback: Hardcoded список админов
-      const hardcodedAdmins = [937011437, 1159515006] // Основной админ и Кирилл
-      if (hardcodedAdmins.includes(Number(user.tg_id))) {
+      const hardcodedAdmins = [BigInt(937011437), BigInt(1159515006)] // Основной админ и Кирилл
+      if (hardcodedAdmins.includes(user.tg_id)) {
         console.log(`User ${user.first_name} ${user.last_name} is hardcoded admin (TG ID: ${user.tg_id})`)
         return true
       }
       
       // Fallback: Проверяем по TG ID (основной админ)
-      const adminTgId = parseInt(process.env.ADMIN_TG_ID || '937011437')
-      if (Number(user.tg_id) === adminTgId) {
+      const adminTgId = BigInt(parseInt(process.env.ADMIN_TG_ID || '937011437'))
+      if (user.tg_id === adminTgId) {
         console.log(`User ${user.first_name} ${user.last_name} is main admin (TG ID: ${user.tg_id})`)
         return true
       }
       
       // Fallback: Проверяем по списку админов в переменной окружения
       const adminList = process.env.ADMIN_LIST || '1159515006,937011437'
-      const adminTgIds = adminList.split(',').map(id => parseInt(id.trim())).filter(id => !isNaN(id))
-      if (adminTgIds.includes(Number(user.tg_id))) {
+      const adminTgIds = adminList.split(',').map(id => BigInt(parseInt(id.trim()))).filter(id => id > BigInt(0))
+      if (adminTgIds.includes(user.tg_id)) {
         console.log(`User ${user.first_name} ${user.last_name} is admin from env list (TG ID: ${user.tg_id})`)
         return true
       }
@@ -553,7 +600,7 @@ export const db = {
         
         // Также добавляем в переменную окружения ADMIN_LIST (логируем для отладки)
         const currentAdminList = process.env.ADMIN_LIST || '1159515006,937011437'
-        const newAdminList = currentAdminList ? `${currentAdminList},${user.tg_id}` : `${user.tg_id}`
+        const newAdminList = currentAdminList ? `${currentAdminList},${Number(user.tg_id)}` : `${Number(user.tg_id)}`
         console.log(`Would update ADMIN_LIST to: ${newAdminList}`)
         
         console.log(`✅ Admin rights granted to user ${user.first_name} ${user.last_name} (TG ID: ${user.tg_id}) by user ${grantedBy}`)
@@ -639,13 +686,17 @@ export const db = {
       })
       return admins.map(admin => ({
         id: admin.id,
-        tg_id: Number(admin.tg_id),
+        tg_id: admin.tg_id,
         first_name: admin.first_name,
         last_name: admin.last_name,
         phone: admin.phone,
         username: admin.username,
         created_at: admin.created_at,
-        updated_at: admin.updated_at
+        updated_at: admin.updated_at,
+        is_admin: admin.is_admin,
+        total_purchases: admin.total_purchases,
+        total_regular_purchases: admin.total_regular_purchases,
+        total_free_purchases: admin.total_free_purchases
       })) as User[]
     } catch (error) {
       console.error('Error getting all admins:', error)
@@ -676,13 +727,17 @@ export const db = {
       
       return {
         id: user.id,
-        tg_id: Number(user.tg_id),
+        tg_id: user.tg_id,
         first_name: user.first_name,
         last_name: user.last_name,
         phone: user.phone,
         username: user.username,
         created_at: user.created_at,
-        updated_at: user.updated_at
+        updated_at: user.updated_at,
+        is_admin: user.is_admin,
+        total_purchases: user.total_purchases,
+        total_regular_purchases: user.total_regular_purchases,
+        total_free_purchases: user.total_free_purchases
       } as User
     } catch (error) {
       console.error('Error getting user by ID:', error)
@@ -736,7 +791,7 @@ export const db = {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              userTgId: user.tg_id
+              userTgId: Number(user.tg_id)
             })
           })
           

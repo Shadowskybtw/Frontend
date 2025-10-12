@@ -3,7 +3,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback, Rea
 
 type TgUser = {
   id: number
-  tg_id: number
+  tg_id: number | bigint
   username?: string
   first_name?: string
   last_name?: string
@@ -64,7 +64,7 @@ export function UserProvider({ children }: UserProviderProps) {
       return
     }
     
-    if (isInitialized && user && user.tg_id === tgUser.id) {
+    if (isInitialized && user && Number(user.tg_id) === tgUser.id) {
       console.log('⚠️ User already initialized with same ID, skipping duplicate call')
       return
     }

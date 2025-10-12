@@ -66,14 +66,14 @@ export default function ProfilePage() {
 
     try {
       // Load stocks
-      const stocksResponse = await fetch(`/api/stocks/${user.tg_id}`)
+      const stocksResponse = await fetch(`/api/stocks/${Number(user.tg_id)}`)
       if (stocksResponse.ok) {
         const stocksData = await stocksResponse.json()
         setStocks(stocksData.stocks || [])
       }
 
       // Load free hookahs
-      const freeHookahsResponse = await fetch(`/api/free-hookahs/${user.tg_id}`)
+      const freeHookahsResponse = await fetch(`/api/free-hookahs/${Number(user.tg_id)}`)
       if (freeHookahsResponse.ok) {
         const freeHookahsData = await freeHookahsResponse.json()
         console.log('Free hookahs data:', freeHookahsData)
@@ -81,7 +81,7 @@ export default function ProfilePage() {
       }
 
       // Load history with reviews
-      const historyResponse = await fetch(`/api/history/${user.tg_id}?withReviews=true`)
+      const historyResponse = await fetch(`/api/history/${Number(user.tg_id)}?withReviews=true`)
       if (historyResponse.ok) {
         const historyData = await historyResponse.json()
         console.log('History data loaded:', historyData)
@@ -91,7 +91,7 @@ export default function ProfilePage() {
       }
 
       // Check admin status
-      const adminResponse = await fetch(`/api/admin?tg_id=${user.tg_id}`)
+      const adminResponse = await fetch(`/api/admin?tg_id=${Number(user.tg_id)}`)
       if (adminResponse.ok) {
         const adminData = await adminResponse.json()
         console.log('Admin status check result:', adminData)
@@ -116,7 +116,7 @@ export default function ProfilePage() {
 
     setIsSaving(true)
     try {
-      const response = await fetch(`/api/profile/${user.tg_id}`, {
+      const response = await fetch(`/api/profile/${Number(user.tg_id)}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(editForm)
@@ -145,7 +145,7 @@ export default function ProfilePage() {
       const response = await fetch('/api/claim-free-hookah', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tg_id: user.tg_id })
+        body: JSON.stringify({ tg_id: Number(user.tg_id) })
       })
 
       const data = await response.json()
@@ -245,7 +245,7 @@ export default function ProfilePage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          tg_id: String(user.tg_id),
+          tg_id: String(Number(user.tg_id)),
           target_tg_id: String(tgId),
           action: 'grant_admin',
           admin_key: 'admin123'
@@ -303,8 +303,8 @@ export default function ProfilePage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          user_tg_id: searchedUser.user.tg_id,
-          admin_tg_id: user.tg_id
+          user_tg_id: Number(searchedUser.user.tg_id),
+          admin_tg_id: Number(user.tg_id)
         })
       })
 
@@ -334,8 +334,8 @@ export default function ProfilePage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          user_tg_id: searchedUser.user.tg_id,
-          admin_tg_id: user.tg_id
+          user_tg_id: Number(searchedUser.user.tg_id),
+          admin_tg_id: Number(user.tg_id)
         })
       })
 

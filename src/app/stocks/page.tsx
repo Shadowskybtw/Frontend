@@ -28,9 +28,9 @@ export default function StocksPage() {
   useEffect(() => {
     if (isInitialized && user?.tg_id) {
       console.log('📊 Loading stocks data for user:', user.tg_id)
-      loadStocks(user.tg_id)
-      loadQrCode(user.tg_id)
-      loadFreeHookahs(user.tg_id)
+      loadStocks(Number(user.tg_id))
+      loadQrCode(Number(user.tg_id))
+      loadFreeHookahs(Number(user.tg_id))
     }
   }, [isInitialized, user])
 
@@ -90,7 +90,7 @@ export default function StocksPage() {
     
     setIsUsingHookah(true)
     try {
-      const response = await fetch(`/api/free-hookahs/${user.tg_id}`, {
+      const response = await fetch(`/api/free-hookahs/${Number(user.tg_id)}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -100,8 +100,8 @@ export default function StocksPage() {
       const data = await response.json()
       if (data.success) {
         alert('🎉 Бесплатный кальян успешно получен!')
-        await loadFreeHookahs(user.tg_id) // Перезагружаем бесплатные кальяны
-        await loadStocks(user.tg_id) // Перезагружаем акции
+        await loadFreeHookahs(Number(user.tg_id)) // Перезагружаем бесплатные кальяны
+        await loadStocks(Number(user.tg_id)) // Перезагружаем акции
       } else {
         alert('❌ Ошибка: ' + data.message)
       }
@@ -125,14 +125,14 @@ export default function StocksPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          tg_id: user.tg_id
+          tg_id: Number(user.tg_id)
         })
       })
       
       const data = await response.json()
       if (data.success) {
         alert('⏳ Запрос на бесплатный кальян отправлен администраторам. Ожидайте подтверждения.')
-        await loadStocks(user.tg_id) // Перезагружаем акции
+        await loadStocks(Number(user.tg_id)) // Перезагружаем акции
       } else {
         alert('❌ Ошибка: ' + data.message)
       }
@@ -187,9 +187,9 @@ export default function StocksPage() {
   useEffect(() => {
     if (user?.id && isInTelegram) {
       ensureStockExists(user.id) // Создаем акцию если её нет
-      loadStocks(user.tg_id)
-      loadQrCode(user.tg_id)
-      loadFreeHookahs(user.tg_id) // Загружаем бесплатные кальяны
+      loadStocks(Number(user.tg_id))
+      loadQrCode(Number(user.tg_id))
+      loadFreeHookahs(Number(user.tg_id)) // Загружаем бесплатные кальяны
     }
   }, [user, isInTelegram, ensureStockExists])
 
@@ -198,8 +198,8 @@ export default function StocksPage() {
     if (!user?.id || !isInTelegram) return
 
     const interval = setInterval(() => {
-      loadStocks(user.tg_id)
-      loadFreeHookahs(user.tg_id)
+      loadStocks(Number(user.tg_id))
+      loadFreeHookahs(Number(user.tg_id))
     }, 2000) // Обновляем каждые 2 секунды
 
     return () => clearInterval(interval)
@@ -209,8 +209,8 @@ export default function StocksPage() {
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible' && user?.id && isInTelegram) {
-        loadStocks(user.tg_id)
-        loadFreeHookahs(user.tg_id)
+        loadStocks(Number(user.tg_id))
+        loadFreeHookahs(Number(user.tg_id))
       }
     }
 
