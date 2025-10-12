@@ -15,12 +15,17 @@ export async function GET(request: NextRequest) {
 
     // Получаем всех пользователей
     const allUsers = await db.getAllUsers()
+    console.log('🔍 Search-user API: получено пользователей:', allUsers.length)
     
     // Ищем пользователя по последним 4 цифрам номера телефона
     const user = allUsers.find(u => {
       const phoneDigits = u.phone.replace(/\D/g, '')
-      return phoneDigits.endsWith(phone)
+      const last4 = phoneDigits.slice(-4)
+      console.log(`🔍 Проверяем пользователя ${u.first_name} ${u.last_name}: ${u.phone} -> ${last4} (ищем: ${phone})`)
+      return last4 === phone
     })
+    
+    console.log('🔍 Search-user API: найден пользователь:', user ? `${user.first_name} ${user.last_name}` : 'Нет')
 
     if (!user) {
       return NextResponse.json(

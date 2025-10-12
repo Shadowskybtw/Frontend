@@ -110,7 +110,7 @@ export const db = {
     try {
       console.log('Getting all users')
       const users = await prisma.user.findMany({
-        orderBy: { created_at: 'desc' }
+        orderBy: { id: 'desc' }
       })
       console.log('Users found:', users.length)
       return users.map(user => ({
@@ -121,7 +121,11 @@ export const db = {
         phone: user.phone,
         username: user.username,
         created_at: user.created_at,
-        updated_at: user.updated_at
+        updated_at: user.updated_at,
+        is_admin: user.is_admin,
+        total_purchases: user.total_purchases,
+        total_regular_purchases: user.total_regular_purchases,
+        total_free_purchases: user.total_free_purchases
       }))
     } catch (error) {
       console.error('Error getting all users:', error)
