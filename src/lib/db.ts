@@ -433,6 +433,27 @@ export const db = {
     }
   },
 
+  async getHookahHistoryById(hookahId: number): Promise<HookahHistory | null> {
+    try {
+      console.log('🔍 Getting hookah history by ID:', hookahId)
+      
+      const history = await prisma.hookahHistory.findUnique({
+        where: { id: hookahId }
+      })
+      
+      if (history) {
+        console.log('✅ Hookah history found:', history)
+      } else {
+        console.log('❌ Hookah history not found for ID:', hookahId)
+      }
+      
+      return history
+    } catch (error) {
+      console.error('❌ Error getting hookah history by ID:', error)
+      return null
+    }
+  },
+
   async addHookahToHistory(
     userId: number, 
     hookahType: 'regular' | 'free', 
