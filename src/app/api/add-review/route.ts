@@ -3,14 +3,14 @@ import { db } from '@/lib/db'
 
 export async function POST(req: NextRequest) {
   try {
-    const { userId, hookahId, rating, reviewText } = await req.json()
+    const { tgId, hookahId, rating, reviewText } = await req.json()
     
-    console.log('📝 Adding review:', { userId, hookahId, rating, reviewText })
+    console.log('📝 Adding review:', { tgId, hookahId, rating, reviewText })
     
-    if (!userId || !hookahId || !rating) {
+    if (!tgId || !hookahId || !rating) {
       return NextResponse.json({ 
         success: false, 
-        message: 'Missing required fields: userId, hookahId, rating' 
+        message: 'Missing required fields: tgId, hookahId, rating' 
       }, { status: 400 })
     }
     
@@ -28,6 +28,15 @@ export async function POST(req: NextRequest) {
       }, { status: 500 })
     }
     
+    // Находим пользователя по tg_id
+    const user = await db.getUserByTgId(tgId)
+    if (!user) {
+      return NextResponse.json({ 
+        success: false, 
+        message: 'User not found' 
+      }, { status: 404 })
+    }
+    
     // Проверяем, существует ли запись истории кальяна
     const hookahHistory = await db.getHookahHistoryById(hookahId)
     if (!hookahHistory) {
@@ -38,7 +47,7 @@ export async function POST(req: NextRequest) {
     }
     
     // Проверяем, что пользователь является владельцем этой записи
-    if (hookahHistory.user_id !== userId) {
+    if (hookahHistory.user_id !== user.id) {
       return NextResponse.json({ 
         success: false, 
         message: 'Unauthorized: You can only review your own purchases' 
@@ -46,7 +55,7 @@ export async function POST(req: NextRequest) {
     }
     
     // Добавляем отзыв
-    const success = await db.addHookahReview(userId, hookahId, rating, reviewText)
+    const success = await db.addHookahReview(user.id, hookahId, rating, reviewText)
     
     if (success) {
       return NextResponse.json({ 

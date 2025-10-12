@@ -85,7 +85,7 @@ export default function HistoryPage() {
 
   // Handle review submission
   const submitReview = async () => {
-    if (!selectedHookahForReview || !user?.id) return
+    if (!selectedHookahForReview || !user?.tg_id) return
 
     setIsSubmittingReview(true)
     try {
@@ -93,7 +93,7 @@ export default function HistoryPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          userId: user.id,
+          tgId: user.tg_id,
           hookahId: selectedHookahForReview.id,
           rating: reviewRating,
           reviewText: reviewText || undefined
