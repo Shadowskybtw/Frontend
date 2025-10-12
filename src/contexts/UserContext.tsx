@@ -130,14 +130,31 @@ export function UserProvider({ children }: UserProviderProps) {
   }, [isInitializing, isInitialized, user, hasTriedInitialization])
 
   const loadFallbackData = () => {
-    console.log('🔄 No Telegram user data available - redirecting to register')
-    // Не используем fallback пользователя - перенаправляем на регистрацию
-    setUser(null)
+    console.log('🔄 No Telegram user data available - using fallback for development')
+    
+    // Для разработки используем тестового пользователя
+    const fallbackUser = {
+      id: 1024,
+      tg_id: 937011437,
+      first_name: 'Николай',
+      last_name: 'Шадовский',
+      username: 'shadowskydie',
+      phone: '+79270036642',
+      created_at: '2025-06-06T16:33:45.601Z',
+      updated_at: '2025-10-12T15:00:42.000Z',
+      is_admin: true,
+      total_purchases: 11,
+      total_regular_purchases: 0,
+      total_free_purchases: 0
+    }
+    
+    console.log('🔧 Using fallback user for development:', fallbackUser)
+    setUser(fallbackUser)
     setLoading(false)
     setIsInitialized(true)
     setIsInitializing(false)
     setHasTriedInitialization(true)
-    setError(null) // Сбрасываем ошибку, чтобы не блокировать инициализацию
+    setError(null)
   }
 
   const tryToGetUserFromUrl = useCallback(() => {
