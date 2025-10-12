@@ -46,13 +46,17 @@ export async function GET(
     let history
     if (withReviews) {
       // Используем функцию с отзывами
-      const historyWithReviews = await db.getHookahHistoryWithReviews(user.id, Math.floor(offset / limit) + 1, limit)
+      const page = Math.floor(offset / limit) + 1
+      console.log('📊 Using withReviews, page:', page, 'limit:', limit, 'offset:', offset)
+      const historyWithReviews = await db.getHookahHistoryWithReviews(user.id, page, limit)
       history = historyWithReviews.history
+      console.log('📊 History with reviews found:', history.length, 'records')
     } else {
       // Используем обычную функцию
       history = await db.getHookahHistory(user.id)
       // Применяем пагинацию
       history = history.slice(offset, offset + limit)
+      console.log('📊 History without reviews found:', history.length, 'records')
     }
     
     console.log('📊 History found:', history.length, 'total records')
