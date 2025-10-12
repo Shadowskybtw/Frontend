@@ -27,7 +27,7 @@ initializeDatabase()
 // Database types
 export interface User {
   id: number
-  tg_id: bigint
+  tg_id: number
   first_name: string
   last_name: string
   phone: string
@@ -106,7 +106,7 @@ export const db = {
       
       const mappedUser: User = {
         id: user.id,
-        tg_id: user.tg_id,
+        tg_id: Number(user.tg_id),
         first_name: user.first_name,
         last_name: user.last_name,
         phone: user.phone,
@@ -136,7 +136,7 @@ export const db = {
       console.log('Users found:', users.length)
       return users.map(user => ({
         id: user.id,
-        tg_id: user.tg_id,
+        tg_id: Number(user.tg_id),
         first_name: user.first_name,
         last_name: user.last_name,
         phone: user.phone,
@@ -222,7 +222,7 @@ export const db = {
       console.log('User updated:', user)
       return {
         id: user.id,
-        tg_id: user.tg_id,
+        tg_id: Number(user.tg_id),
         first_name: user.first_name,
         last_name: user.last_name,
         phone: user.phone,
@@ -537,23 +537,23 @@ export const db = {
       }
       
       // Fallback: Hardcoded список админов
-      const hardcodedAdmins = [BigInt(937011437), BigInt(1159515006)] // Основной админ и Кирилл
-      if (hardcodedAdmins.includes(user.tg_id)) {
+      const hardcodedAdmins = [937011437, 1159515006] // Основной админ и Кирилл
+      if (hardcodedAdmins.includes(Number(user.tg_id))) {
         console.log(`User ${user.first_name} ${user.last_name} is hardcoded admin (TG ID: ${user.tg_id})`)
         return true
       }
       
       // Fallback: Проверяем по TG ID (основной админ)
-      const adminTgId = BigInt(parseInt(process.env.ADMIN_TG_ID || '937011437'))
-      if (user.tg_id === adminTgId) {
+      const adminTgId = parseInt(process.env.ADMIN_TG_ID || '937011437')
+      if (Number(user.tg_id) === adminTgId) {
         console.log(`User ${user.first_name} ${user.last_name} is main admin (TG ID: ${user.tg_id})`)
         return true
       }
       
       // Fallback: Проверяем по списку админов в переменной окружения
       const adminList = process.env.ADMIN_LIST || '1159515006,937011437'
-      const adminTgIds = adminList.split(',').map(id => BigInt(parseInt(id.trim()))).filter(id => id > BigInt(0))
-      if (adminTgIds.includes(user.tg_id)) {
+      const adminTgIds = adminList.split(',').map(id => parseInt(id.trim())).filter(id => id > 0)
+      if (adminTgIds.includes(Number(user.tg_id))) {
         console.log(`User ${user.first_name} ${user.last_name} is admin from env list (TG ID: ${user.tg_id})`)
         return true
       }
@@ -686,7 +686,7 @@ export const db = {
       })
       return admins.map(admin => ({
         id: admin.id,
-        tg_id: admin.tg_id,
+        tg_id: Number(admin.tg_id),
         first_name: admin.first_name,
         last_name: admin.last_name,
         phone: admin.phone,
@@ -727,7 +727,7 @@ export const db = {
       
       return {
         id: user.id,
-        tg_id: user.tg_id,
+        tg_id: Number(user.tg_id),
         first_name: user.first_name,
         last_name: user.last_name,
         phone: user.phone,
