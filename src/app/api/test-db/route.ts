@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
     console.log('🔍 Testing database connection...')
     console.log('📋 DATABASE_URL:', process.env.DATABASE_URL ? 'SET' : 'NOT SET')

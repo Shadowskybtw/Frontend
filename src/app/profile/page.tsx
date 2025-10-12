@@ -43,7 +43,6 @@ export default function ProfilePage() {
   const [isSaving, setIsSaving] = useState(false)
   const [stocks, setStocks] = useState<Stock[]>([])
   const [freeHookahs, setFreeHookahs] = useState<FreeHookah[]>([])
-  const [history, setHistory] = useState<HookahHistoryItem[]>([])
   const [isClaiming, setIsClaiming] = useState(false)
   const [showReviewModal, setShowReviewModal] = useState(false)
   const [selectedHookahForReview, setSelectedHookahForReview] = useState<HookahHistoryItem | null>(null)
@@ -85,7 +84,6 @@ export default function ProfilePage() {
       if (historyResponse.ok) {
         const historyData = await historyResponse.json()
         console.log('History data loaded:', historyData)
-        setHistory(historyData.history || [])
       } else {
         console.error('Failed to load history:', historyResponse.status, historyResponse.statusText)
       }

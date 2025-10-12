@@ -20,7 +20,7 @@ interface PurchaseHistory {
 
 export default function HistoryPage() {
   const [history, setHistory] = useState<PurchaseHistory[]>([])
-  const [, setHistoryLoading] = useState(false)
+  const [historyLoading, setHistoryLoading] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [showReviewModal, setShowReviewModal] = useState(false)
