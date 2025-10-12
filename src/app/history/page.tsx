@@ -37,7 +37,7 @@ export default function HistoryPage() {
     try {
       const limit = 50
       const offset = (page - 1) * limit
-      const url = `/api/history/${tgId}?withReviews=true&limit=${limit}&offset=${offset}`
+      const url = `/api/history/${tgId}?limit=${limit}&offset=${offset}`
       console.log('📊 Fetching URL:', url)
       
       const response = await fetch(url)

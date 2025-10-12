@@ -103,7 +103,7 @@ export default function StatisticsPage() {
     setIsLoading(true)
     try {
       // Load history with reviews
-      const url = `/api/history/${Number(user.tg_id)}?withReviews=true`
+      const url = `/api/history/${Number(user.tg_id)}`
       console.log('📈 Fetching URL:', url)
       
       const historyResponse = await fetch(url)
