@@ -2,10 +2,13 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 
 export async function POST(req: NextRequest) {
+  console.log('🚀 POST /api/add-review called')
   try {
-    const { tgId, hookahId, rating, reviewText } = await req.json()
+    const body = await req.json()
+    console.log('📝 Request body:', body)
     
-    console.log('📝 Adding review:', { tgId, hookahId, rating, reviewText })
+    const { tgId, hookahId, rating, reviewText } = body
+    console.log('📝 Parsed data:', { tgId, hookahId, rating, reviewText })
     
     if (!tgId || !hookahId || !rating) {
       return NextResponse.json({ 
@@ -80,10 +83,21 @@ export async function POST(req: NextRequest) {
     
   } catch (error) {
     console.error('❌ Error adding review:', error)
+    console.error('❌ Error stack:', error instanceof Error ? error.stack : 'No stack')
+    console.error('❌ Error details:', {
+      name: error instanceof Error ? error.name : 'Unknown',
+      message: error instanceof Error ? error.message : 'Unknown error',
+      code: (error as any)?.code || 'No code'
+    })
+    
     return NextResponse.json({ 
       success: false, 
       message: 'Internal server error',
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? error.message : 'Unknown error',
+      details: {
+        name: error instanceof Error ? error.name : 'Unknown',
+        code: (error as any)?.code || 'No code'
+      }
     }, { status: 500 })
   }
 }
