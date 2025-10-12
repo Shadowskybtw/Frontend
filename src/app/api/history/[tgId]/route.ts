@@ -1,63 +1,145 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 
-export async function GET(request: NextRequest, { params }: { params: Promise<{ tgId: string }> }) {
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ tgId: string }> }
+) {
   try {
     const resolvedParams = await params
     const tgId = parseInt(resolvedParams.tgId)
-    const url = new URL(request.url)
-    const page = parseInt(url.searchParams.get('page') || '1')
-    const withReviews = url.searchParams.get('withReviews') === 'true'
-
-    if (!tgId || isNaN(tgId)) {
-      return NextResponse.json(
-        { success: false, message: 'Неверный Telegram ID' },
-        { status: 400 }
-      )
+    
+    if (isNaN(tgId)) {
+      return NextResponse.json({ 
+        success: false, 
+        message: 'Invalid Telegram ID' 
+      }, { status: 400 })
     }
 
-    // Получаем пользователя по tg_id
+    // Получаем параметры запроса
+    const { searchParams } = new URL(req.url)
+    const limit = parseInt(searchParams.get('limit') || '50')
+    const offset = parseInt(searchParams.get('offset') || '0')
+    const withReviews = searchParams.get('withReviews') === 'true'
+
+    console.log('🔍 Getting hookah history for tg_id:', tgId, 'limit:', limit, 'offset:', offset, 'withReviews:', withReviews)
+
+    if (!db.isConnected()) {
+      return NextResponse.json({ 
+        success: false, 
+        message: 'Database not configured' 
+      }, { status: 500 })
+    }
+
+    // Находим пользователя по tg_id
     const user = await db.getUserByTgId(tgId)
     if (!user) {
-      return NextResponse.json(
-        { success: false, message: 'Пользователь не найден' },
-        { status: 404 }
-      )
+      return NextResponse.json({ 
+        success: false, 
+        message: 'User not found' 
+      }, { status: 404 })
     }
 
-    // Получаем историю кальянов с отзывами или без
-    let historyData
+    console.log('✅ User found:', user.first_name, user.last_name)
+
+    // Получаем историю кальянов
+    let history
     if (withReviews) {
-      console.log(`Fetching history with reviews for user ${user.id}`)
-      historyData = await db.getHookahHistoryWithReviews(user.id, page, 10)
-      console.log('History with reviews:', historyData)
+      // Используем функцию с отзывами
+      const historyWithReviews = await db.getHookahHistoryWithReviews(user.id, Math.floor(offset / limit) + 1, limit)
+      history = historyWithReviews.history
     } else {
-      console.log(`Fetching history without reviews for user ${user.id}`)
-      const history = await db.getHookahHistory(user.id)
-      console.log('Raw history:', history)
-      const itemsPerPage = 10
-      const offset = (page - 1) * itemsPerPage
-      const paginatedHistory = history.slice(offset, offset + itemsPerPage)
-      
-      historyData = {
-        history: paginatedHistory,
-        totalPages: Math.ceil(history.length / itemsPerPage),
-        currentPage: page
-      }
+      // Используем обычную функцию
+      history = await db.getHookahHistory(user.id)
+      // Применяем пагинацию
+      history = history.slice(offset, offset + limit)
+    }
+    
+    console.log('📊 History found:', history.length, 'total records')
+    console.log('📊 History details:', history)
+
+    const responseData = { 
+      success: true, 
+      items: history,
+      history: history, // Добавляем поле history для совместимости с фронтендом
+      total: history.length,
+      limit,
+      offset,
+      hasMore: withReviews ? false : offset + limit < history.length
     }
 
-    return NextResponse.json({
-      success: true,
-      history: historyData.history,
-      totalPages: historyData.totalPages,
-      currentPage: historyData.currentPage
+    return NextResponse.json(responseData)
+
+  } catch (error) {
+    console.error('❌ Error getting hookah history:', error)
+    return NextResponse.json({ 
+      success: false, 
+      message: 'Database error',
+      error: error instanceof Error ? error.message : 'Unknown error'
+    }, { status: 500 })
+  }
+}
+
+export async function POST(
+  req: NextRequest,
+  { params }: { params: Promise<{ tgId: string }> }
+) {
+  try {
+    const resolvedParams = await params
+    const tgId = parseInt(resolvedParams.tgId)
+    
+    if (isNaN(tgId)) {
+      return NextResponse.json({ 
+        success: false, 
+        message: 'Invalid Telegram ID' 
+      }, { status: 400 })
+    }
+
+    // Получаем данные из запроса
+    const body = await req.json()
+    const { hookah_type, slot_number } = body
+
+    console.log('📝 Adding hookah to history for tg_id:', tgId, 'type:', hookah_type, 'slot:', slot_number)
+
+    if (!db.isConnected()) {
+      return NextResponse.json({ 
+        success: false, 
+        message: 'Database not configured' 
+      }, { status: 500 })
+    }
+
+    // Находим пользователя по tg_id
+    const user = await db.getUserByTgId(tgId)
+    if (!user) {
+      return NextResponse.json({ 
+        success: false, 
+        message: 'User not found' 
+      }, { status: 404 })
+    }
+
+    console.log('✅ User found:', user.first_name, user.last_name)
+
+    // Добавляем запись в историю
+    const historyRecord = await db.addHookahToHistory(
+      user.id, 
+      hookah_type || 'regular', 
+      slot_number
+    )
+
+    console.log('✅ Hookah added to history:', historyRecord)
+
+    return NextResponse.json({ 
+      success: true, 
+      message: 'Hookah added to history successfully',
+      history: historyRecord
     })
 
   } catch (error) {
-    console.error('Error fetching history:', error)
-    return NextResponse.json(
-      { success: false, message: 'Ошибка сервера' },
-      { status: 500 }
-    )
+    console.error('❌ Error adding hookah to history:', error)
+    return NextResponse.json({ 
+      success: false, 
+      message: 'Database error',
+      error: error instanceof Error ? error.message : 'Unknown error'
+    }, { status: 500 })
   }
 }
