@@ -41,13 +41,6 @@ export default function StatisticsPage() {
   
   const { user, loading, error, isInitialized } = useUser()
 
-  // Format month helper
-  const formatMonth = (monthKey: string) => {
-    const [year, month] = monthKey.split('-')
-    const date = new Date(parseInt(year), parseInt(month) - 1)
-    return date.toLocaleDateString('ru-RU', { year: 'numeric', month: 'long' })
-  }
-
   // Calculate monthly statistics
   const calculateMonthlyStats = useCallback((history: HookahHistory[]) => {
     const monthlyData: { [key: string]: { regular: number, free: number, total: number } } = {}
@@ -149,11 +142,17 @@ export default function StatisticsPage() {
 
     } catch (error) {
       console.error('Error loading statistics:', error)
-      setStatistics(null)
     } finally {
       setIsLoading(false)
     }
   }, [user?.tg_id, calculateMonthlyStats, calculateRatingDistribution])
+
+  // Format month helper
+  const formatMonth = (monthKey: string) => {
+    const [year, month] = monthKey.split('-')
+    const date = new Date(parseInt(year), parseInt(month) - 1, 1)
+    return date.toLocaleString('ru-RU', { month: 'long', year: 'numeric' })
+  }
 
   useEffect(() => {
     if (isInitialized && user?.tg_id) {
@@ -214,125 +213,171 @@ export default function StatisticsPage() {
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white">
       <Navigation />
       
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold mb-2 flex items-center justify-center">
-            <span className="mr-3">📈</span>
-            Статистика
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="text-center mb-12">
+          <h1 className="text-5xl font-bold mb-4 flex items-center justify-center">
+            <span className="mr-4 text-6xl">📈</span>
+            Статистика покупок
           </h1>
-          <p className="text-gray-300">Ваша активность и достижения</p>
+          <p className="text-gray-400 text-xl">Анализ вашей активности в кальянной</p>
         </div>
 
         {isLoading ? (
-          <div className="flex items-center justify-center h-64">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
-              <p className="text-gray-300">Загрузка статистики...</p>
-            </div>
+          <div className="flex flex-col items-center justify-center h-64">
+            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-red-500 mb-4"></div>
+            <span className="text-xl text-gray-300">Загрузка статистики...</span>
           </div>
         ) : statistics ? (
-          <div className="space-y-8">
-            {/* Основная статистика */}
+          <div className="space-y-10">
+            {/* Основные метрики */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="bg-blue-600/20 backdrop-blur-sm rounded-2xl p-6 border border-blue-500/30">
-                <div className="flex items-center justify-between">
-                  <div>
+              <div className="bg-gradient-to-br from-blue-900/30 to-blue-800/20 backdrop-blur-sm rounded-3xl shadow-2xl border border-blue-500/30 p-8 hover:border-blue-400/50 transition-all duration-300 hover:scale-105">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="bg-blue-500/20 p-3 rounded-2xl">
+                    <span className="text-3xl">🚬</span>
+                  </div>
+                  <div className="text-right">
                     <h3 className="text-lg font-semibold text-blue-300">Всего кальянов</h3>
-                    <p className="text-3xl font-bold text-white">{statistics.totalHookahs}</p>
+                    <p className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-blue-300 bg-clip-text text-transparent">{statistics.totalHookahs}</p>
                   </div>
-                  <div className="text-4xl">🚬</div>
                 </div>
               </div>
 
-              <div className="bg-green-600/20 backdrop-blur-sm rounded-2xl p-6 border border-green-500/30">
-                <div className="flex items-center justify-between">
-                  <div>
+              <div className="bg-gradient-to-br from-green-900/30 to-green-800/20 backdrop-blur-sm rounded-3xl shadow-2xl border border-green-500/30 p-8 hover:border-green-400/50 transition-all duration-300 hover:scale-105">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="bg-green-500/20 p-3 rounded-2xl">
+                    <span className="text-3xl">💚</span>
+                  </div>
+                  <div className="text-right">
                     <h3 className="text-lg font-semibold text-green-300">Обычные кальяны</h3>
-                    <p className="text-3xl font-bold text-white">{statistics.regularHookahs}</p>
+                    <p className="text-4xl font-bold bg-gradient-to-r from-green-400 to-green-300 bg-clip-text text-transparent">{statistics.regularHookahs}</p>
                   </div>
-                  <div className="text-4xl">💚</div>
                 </div>
               </div>
 
-              <div className="bg-purple-600/20 backdrop-blur-sm rounded-2xl p-6 border border-purple-500/30">
-                <div className="flex items-center justify-between">
-                  <div>
+              <div className="bg-gradient-to-br from-purple-900/30 to-purple-800/20 backdrop-blur-sm rounded-3xl shadow-2xl border border-purple-500/30 p-8 hover:border-purple-400/50 transition-all duration-300 hover:scale-105">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="bg-purple-500/20 p-3 rounded-2xl">
+                    <span className="text-3xl">🎁</span>
+                  </div>
+                  <div className="text-right">
                     <h3 className="text-lg font-semibold text-purple-300">Бесплатные кальяны</h3>
-                    <p className="text-3xl font-bold text-white">{statistics.freeHookahs}</p>
+                    <p className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-300 bg-clip-text text-transparent">{statistics.freeHookahs}</p>
                   </div>
-                  <div className="text-4xl">🎁</div>
                 </div>
               </div>
 
-              <div className="bg-orange-600/20 backdrop-blur-sm rounded-2xl p-6 border border-orange-500/30">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-lg font-semibold text-orange-300">Средняя оценка</h3>
-                    <p className="text-3xl font-bold text-white">{statistics.averageRating.toFixed(1)}</p>
+              <div className="bg-gradient-to-br from-yellow-900/30 to-orange-800/20 backdrop-blur-sm rounded-3xl shadow-2xl border border-yellow-500/30 p-8 hover:border-yellow-400/50 transition-all duration-300 hover:scale-105">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="bg-yellow-500/20 p-3 rounded-2xl">
+                    <span className="text-3xl">⭐</span>
                   </div>
-                  <div className="text-4xl">⭐</div>
+                  <div className="text-right">
+                    <h3 className="text-lg font-semibold text-yellow-300">Средняя оценка</h3>
+                    <p className="text-4xl font-bold bg-gradient-to-r from-yellow-400 to-orange-300 bg-clip-text text-transparent">{statistics.averageRating.toFixed(1)}</p>
+                    <p className="text-sm text-gray-400">{statistics.totalReviews} отзывов</p>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Месячная статистика */}
-            {statistics.monthlyStats.length > 0 && (
-              <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-700">
-                <h2 className="text-2xl font-bold mb-6 flex items-center">
-                  <span className="mr-3">📅</span>
-                  Активность по месяцам
-                </h2>
-                <div className="space-y-4">
-                  {statistics.monthlyStats.slice(0, 6).map((month, index) => (
-                    <div key={index} className="flex items-center justify-between p-4 bg-gray-700/50 rounded-lg">
-                      <div className="flex items-center">
-                        <span className="text-lg font-semibold text-white">{month.month}</span>
-                      </div>
-                      <div className="flex items-center space-x-6">
-                        <div className="text-center">
-                          <p className="text-sm text-gray-300">Всего</p>
-                          <p className="text-xl font-bold text-white">{month.total}</p>
-                        </div>
-                        <div className="text-center">
-                          <p className="text-sm text-gray-300">Обычные</p>
-                          <p className="text-xl font-bold text-green-400">{month.regular}</p>
-                        </div>
-                        <div className="text-center">
-                          <p className="text-sm text-gray-300">Бесплатные</p>
-                          <p className="text-xl font-bold text-purple-400">{month.free}</p>
-                        </div>
-                      </div>
+            {/* Дополнительная статистика */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Процентное соотношение */}
+              <div className="bg-gradient-to-br from-gray-800/40 to-gray-700/30 backdrop-blur-sm rounded-3xl shadow-2xl border border-gray-600/30 p-8">
+                <div className="flex items-center mb-6">
+                  <div className="bg-gray-500/20 p-3 rounded-2xl mr-4">
+                    <span className="text-3xl">📊</span>
+                  </div>
+                  <h2 className="text-2xl font-bold text-white">Соотношение покупок</h2>
+                </div>
+                <div className="space-y-6">
+                  <div className="space-y-3">
+                    <div className="flex justify-between text-lg">
+                      <span className="text-gray-300">Обычные кальяны</span>
+                      <span className="text-green-400 font-bold">{((statistics.regularHookahs / statistics.totalHookahs) * 100).toFixed(1)}%</span>
                     </div>
-                  ))}
+                    <div className="w-full bg-gray-700 rounded-full h-4">
+                      <div 
+                        className="bg-gradient-to-r from-green-500 to-green-400 h-4 rounded-full transition-all duration-1000 ease-out"
+                        style={{ width: `${(statistics.regularHookahs / statistics.totalHookahs) * 100}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex justify-between text-lg">
+                      <span className="text-gray-300">Бесплатные кальяны</span>
+                      <span className="text-purple-400 font-bold">{((statistics.freeHookahs / statistics.totalHookahs) * 100).toFixed(1)}%</span>
+                    </div>
+                    <div className="w-full bg-gray-700 rounded-full h-4">
+                      <div 
+                        className="bg-gradient-to-r from-purple-500 to-pink-400 h-4 rounded-full transition-all duration-1000 ease-out"
+                        style={{ width: `${(statistics.freeHookahs / statistics.totalHookahs) * 100}%` }}
+                      ></div>
+                    </div>
+                  </div>
                 </div>
               </div>
-            )}
 
-            {/* Распределение оценок */}
-            {statistics.ratingDistribution.length > 0 && (
-              <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-700">
-                <h2 className="text-2xl font-bold mb-6 flex items-center">
-                  <span className="mr-3">⭐</span>
-                  Распределение оценок
-                </h2>
-                <div className="grid grid-cols-5 gap-4">
-                  {statistics.ratingDistribution.map((rating, index) => (
-                    <div key={index} className="text-center p-4 bg-gray-700/50 rounded-lg">
-                      <div className="text-2xl mb-2">{'⭐'.repeat(rating.rating)}</div>
-                      <p className="text-lg font-bold text-white">{rating.count}</p>
-                      <p className="text-sm text-gray-300">{rating.rating} звезд</p>
+              {/* Распределение оценок */}
+              {statistics.ratingDistribution.length > 0 && (
+                <div className="bg-gradient-to-br from-gray-800/40 to-gray-700/30 backdrop-blur-sm rounded-3xl shadow-2xl border border-gray-600/30 p-8">
+                  <div className="flex items-center mb-6">
+                    <div className="bg-yellow-500/20 p-3 rounded-2xl mr-4">
+                      <span className="text-3xl">🎯</span>
                     </div>
-                  ))}
+                    <h2 className="text-2xl font-bold text-white">Распределение оценок</h2>
+                  </div>
+                  <div className="grid grid-cols-5 gap-3">
+                    {statistics.ratingDistribution.map((rating, index) => (
+                      <div key={index} className="text-center bg-gradient-to-br from-gray-700/50 to-gray-600/40 rounded-2xl p-4 border border-gray-600/30 hover:border-yellow-500/50 transition-all duration-300 hover:scale-105">
+                        <div className="text-2xl mb-2">{'⭐'.repeat(rating.rating)}</div>
+                        <p className="text-xl font-bold text-white mb-1">{rating.count}</p>
+                        <p className="text-xs text-gray-400">{rating.rating} звезд</p>
+                      </div>
+                    ))}
+                  </div>
                 </div>
+              )}
+            </div>
+
+            {/* Активность по месяцам */}
+            <div className="bg-gradient-to-br from-gray-800/40 to-gray-700/30 backdrop-blur-sm rounded-3xl shadow-2xl border border-gray-600/30 p-8">
+              <div className="flex items-center mb-8">
+                <div className="bg-blue-500/20 p-3 rounded-2xl mr-4">
+                  <span className="text-3xl">📅</span>
+                </div>
+                <h2 className="text-2xl font-bold text-white">Активность по месяцам</h2>
               </div>
-            )}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {statistics.monthlyStats.map((month, index) => (
+                  <div key={index} className="bg-gradient-to-br from-gray-700/50 to-gray-600/40 rounded-2xl p-6 border border-gray-600/30 hover:border-blue-500/50 transition-all duration-300 hover:scale-105">
+                    <h3 className="font-bold text-white mb-4 text-lg">{month.month}</h3>
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center py-2 px-3 bg-gray-600/40 rounded-lg">
+                        <span className="text-gray-300">Всего</span>
+                        <span className="font-bold text-white text-lg">{month.total}</span>
+                      </div>
+                      <div className="flex justify-between items-center py-2 px-3 bg-green-500/20 rounded-lg border border-green-500/30">
+                        <span className="text-green-300">Обычные</span>
+                        <span className="font-bold text-green-400">{month.regular}</span>
+                      </div>
+                      <div className="flex justify-between items-center py-2 px-3 bg-purple-500/20 rounded-lg border border-purple-500/30">
+                        <span className="text-purple-300">Бесплатные</span>
+                        <span className="font-bold text-purple-400">{month.free}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         ) : (
-          <div className="flex items-center justify-center h-64">
-            <div className="text-center">
-              <div className="text-6xl mb-4">📊</div>
-              <p className="text-xl text-gray-300 mb-2">Статистика недоступна</p>
-              <p className="text-gray-400">Данные для статистики не найдены</p>
+          <div className="text-center py-16">
+            <div className="bg-gradient-to-br from-gray-800/40 to-gray-700/30 backdrop-blur-sm rounded-3xl shadow-2xl border border-gray-600/30 p-12">
+              <span className="text-6xl mb-4 block">📊</span>
+              <p className="text-2xl text-gray-400 mb-2">Статистика недоступна</p>
+              <p className="text-gray-500">Попробуйте обновить страницу</p>
             </div>
           </div>
         )}

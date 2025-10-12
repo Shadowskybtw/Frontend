@@ -35,7 +35,7 @@ export default function HistoryPage() {
     console.log('📊 fetchHistory called:', { tgId, page })
     setHistoryLoading(true)
     try {
-      const limit = 50
+      const limit = 8
       const offset = (page - 1) * limit
       const url = `/api/history/${tgId}?limit=${limit}&offset=${offset}`
       console.log('📊 Fetching URL:', url)
@@ -282,25 +282,53 @@ export default function HistoryPage() {
 
             {/* Пагинация */}
             {totalPages > 1 && (
-              <div className="mt-6 flex justify-center space-x-2">
+              <div className="flex justify-center items-center space-x-4 mt-8">
                 <button
                   onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                  disabled={currentPage === 1 || loading}
-                  className="px-4 py-2 bg-gray-700 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-600"
+                  disabled={currentPage === 1 || historyLoading}
+                  className="px-6 py-3 bg-gradient-to-r from-gray-700 to-gray-600 text-white rounded-2xl hover:from-gray-600 hover:to-gray-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center space-x-2 shadow-lg"
                 >
-                  ← Назад
+                  <span>←</span>
+                  <span>Предыдущая</span>
                 </button>
                 
-                <span className="px-4 py-2 text-gray-300">
-                  {currentPage} / {totalPages}
-                </span>
+                <div className="flex items-center space-x-2">
+                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                    let pageNum;
+                    if (totalPages <= 5) {
+                      pageNum = i + 1;
+                    } else if (currentPage <= 3) {
+                      pageNum = i + 1;
+                    } else if (currentPage >= totalPages - 2) {
+                      pageNum = totalPages - 4 + i;
+                    } else {
+                      pageNum = currentPage - 2 + i;
+                    }
+                    
+                    return (
+                      <button
+                        key={pageNum}
+                        onClick={() => setCurrentPage(pageNum)}
+                        disabled={historyLoading}
+                        className={`w-10 h-10 rounded-xl font-bold transition-all duration-200 ${
+                          currentPage === pageNum
+                            ? 'bg-gradient-to-r from-red-600 to-red-500 text-white shadow-lg scale-110'
+                            : 'bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white'
+                        }`}
+                      >
+                        {pageNum}
+                      </button>
+                    );
+                  })}
+                </div>
                 
                 <button
                   onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                  disabled={currentPage === totalPages || loading}
-                  className="px-4 py-2 bg-gray-700 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-600"
+                  disabled={currentPage === totalPages || historyLoading}
+                  className="px-6 py-3 bg-gradient-to-r from-gray-700 to-gray-600 text-white rounded-2xl hover:from-gray-600 hover:to-gray-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center space-x-2 shadow-lg"
                 >
-                  Вперед →
+                  <span>Следующая</span>
+                  <span>→</span>
                 </button>
               </div>
             )}
