@@ -530,12 +530,8 @@ export default function ProfilePage() {
 
         {/* Profile Info */}
         <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-700 p-6">
-          <div className="flex justify-between items-center mb-6">
+          <div className="mb-6">
             <h1 className="text-3xl font-bold text-white">👤 Профиль</h1>
-            {/* Debug info - remove in production */}
-            <div className="text-xs text-gray-500">
-              Admin: {isAdmin ? 'Yes' : 'No'} | TG ID: {user?.tg_id}
-            </div>
           </div>
           
           <div className="grid md:grid-cols-2 gap-6">
