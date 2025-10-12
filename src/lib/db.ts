@@ -839,9 +839,9 @@ export const db = {
   // Review operations
   async addHookahReview(userId: number, hookahId: number, rating: number, reviewText?: string): Promise<boolean> {
     try {
-      console.log('Adding hookah review:', { userId, hookahId, rating, reviewText })
+      console.log('📝 Adding hookah review:', { userId, hookahId, rating, reviewText })
       
-      await prisma.hookahReview.create({
+      const review = await prisma.hookahReview.create({
         data: {
           user_id: userId,
           hookah_id: hookahId,
@@ -850,10 +850,16 @@ export const db = {
         }
       })
       
-      console.log('✅ Hookah review added successfully')
+      console.log('✅ Hookah review added successfully:', review)
       return true
     } catch (error) {
-      console.error('Error adding hookah review:', error)
+      console.error('❌ Error adding hookah review:', error)
+      console.error('❌ Error details:', {
+        name: error instanceof Error ? error.name : 'Unknown',
+        message: error instanceof Error ? error.message : 'Unknown error',
+        code: (error as any)?.code || 'No code',
+        meta: (error as any)?.meta || 'No meta'
+      })
       return false
     }
   },
