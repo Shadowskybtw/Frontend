@@ -406,7 +406,7 @@ export default function ProfilePage() {
 
         {/* Admin Panel */}
         {isAdmin && adminPanelOpen && (
-          <div className="bg-gray-900 rounded-2xl shadow-2xl border-2 border-gray-800 p-6 hover:border-blue-500 hover:shadow-blue-500/50 transition-all duration-300">
+          <div className="bg-gray-900 rounded-2xl border-2 border-gray-800 p-6 hover:border-purple-500 hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-300">
             <h2 className="text-2xl font-bold text-white mb-6">👑 Админская панель</h2>
             
             <div className="space-y-6">
@@ -529,7 +529,7 @@ export default function ProfilePage() {
         )}
 
         {/* Profile Info */}
-        <div className="bg-gray-900 rounded-2xl shadow-2xl border-2 border-gray-800 p-6 hover:border-green-500 hover:shadow-green-500/50 transition-all duration-300">
+        <div className="bg-gray-900 rounded-2xl border-2 border-gray-800 p-6 hover:border-purple-500 hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-300">
                  <div className="mb-6">
                    <h1 className="text-3xl font-bold text-white">👤 Профиль</h1>
                    {/* Стабильная версия без оптимизаций */}
@@ -620,7 +620,7 @@ export default function ProfilePage() {
 
 
         {/* Slots Panel */}
-        <div className="bg-gray-900 rounded-2xl shadow-2xl border-2 border-gray-800 p-6 hover:border-green-500 hover:shadow-green-500/50 transition-all duration-300">
+        <div className="bg-gray-900 rounded-2xl border-2 border-gray-800 p-6 hover:border-purple-500 hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-300">
           <h2 className="text-2xl font-bold text-white mb-4">🎯 Акция &ldquo;5+1 кальян&rdquo;</h2>
           
           <div className="space-y-4">

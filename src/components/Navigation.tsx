@@ -36,7 +36,7 @@ export default function Navigation({ className = "" }: NavigationProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Логотип по центру */}
         <div className="flex justify-center items-center h-16">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 bg-clip-text text-transparent tracking-wider">
+          <h1 className="text-3xl font-bold text-white tracking-wider">
             DUNGEON
           </h1>
         </div>

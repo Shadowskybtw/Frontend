@@ -174,7 +174,7 @@ export default function HistoryPage() {
       
       <main className="flex-1 p-4">
         <div className="max-w-4xl mx-auto">
-          <div className="bg-gray-900 rounded-2xl shadow-2xl border-2 border-gray-800 p-6 hover:border-purple-500 hover:shadow-purple-500/50 transition-all duration-300">
+          <div className="bg-gray-900 rounded-2xl border-2 border-gray-800 p-6 hover:border-purple-500 hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-300">
             <div className="flex items-center justify-between mb-6">
               <h1 className="text-2xl font-bold text-white flex items-center">
                 <span className="text-3xl mr-3">📊</span>
