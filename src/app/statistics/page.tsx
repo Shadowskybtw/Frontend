@@ -262,7 +262,7 @@ export default function StatisticsPage() {
                     <span className="text-3xl">💚</span>
                   </div>
                   <div className="text-right">
-                    <h3 className="text-lg font-semibold text-green-300">Обычные кальяны</h3>
+                    <h3 className="text-lg font-semibold text-green-300">Платные кальяны</h3>
                     <p className="text-4xl font-bold bg-gradient-to-r from-green-400 to-green-300 bg-clip-text text-transparent">{statistics.regularHookahs}</p>
                   </div>
                 </div>
@@ -307,7 +307,7 @@ export default function StatisticsPage() {
                 <div className="space-y-6">
                   <div className="space-y-3">
                     <div className="flex justify-between text-lg">
-                      <span className="text-gray-300">Обычные кальяны</span>
+                      <span className="text-gray-300">Платные кальяны</span>
                       <span className="text-green-400 font-bold">{((statistics.regularHookahs / statistics.totalHookahs) * 100).toFixed(1)}%</span>
                     </div>
                     <div className="w-full bg-gray-700 rounded-full h-4">
@@ -372,7 +372,7 @@ export default function StatisticsPage() {
                         <span className="font-bold text-white text-lg">{month.total}</span>
                       </div>
                       <div className="flex justify-between items-center py-2 px-3 bg-green-500/20 rounded-lg border border-green-500/30">
-                        <span className="text-green-300">Обычные</span>
+                        <span className="text-green-300">Платные</span>
                         <span className="font-bold text-green-400">{month.regular}</span>
                       </div>
                       <div className="flex justify-between items-center py-2 px-3 bg-purple-500/20 rounded-lg border border-purple-500/30">
