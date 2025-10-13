@@ -32,27 +32,28 @@ export default function Navigation({ className = "" }: NavigationProps) {
   ]
 
   return (
-    <nav className={`bg-black/50 backdrop-blur-sm border-b border-gray-700 ${className}`}>
+    <nav className={`bg-black border-b-2 border-gray-800 ${className}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Логотип по центру */}
         <div className="flex justify-center items-center h-16">
-          <h1 className="text-3xl font-bold text-white tracking-wider">
-            <span className="text-red-500">D</span>UNGEON
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 bg-clip-text text-transparent tracking-wider">
+            DUNGEON
           </h1>
         </div>
         
         {/* Кнопки навигации под логотипом */}
         <div className="flex justify-center items-center pb-4">
-                 <div className="grid grid-cols-3 gap-1 w-full max-w-2xl">
+          <div className="grid grid-cols-3 gap-2 w-full max-w-2xl">
             {navItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
                 className={`
                   px-4 py-3 rounded-lg font-medium transition-all duration-300 flex items-center justify-center space-x-2 text-center
+                  border-2
                   ${item.active 
-                    ? 'bg-red-600 text-white shadow-lg shadow-red-500/25' 
-                    : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+                    ? 'bg-purple-600 text-white border-purple-500 shadow-lg shadow-purple-500/50' 
+                    : 'bg-gray-900 text-gray-400 border-gray-800 hover:text-white hover:border-purple-500 hover:shadow-lg hover:shadow-purple-500/50'
                   }
                 `}
               >

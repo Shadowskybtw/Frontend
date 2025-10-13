@@ -141,7 +141,7 @@ export default function HistoryPage() {
 
   if (loading || !isInitialized) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
+      <div className="min-h-screen bg-black">
         <Navigation />
         <main className="flex-1 flex items-center justify-center p-4">
           <div className="text-center">
@@ -155,7 +155,7 @@ export default function HistoryPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
+      <div className="min-h-screen bg-black">
         <Navigation />
         <main className="flex-1 flex items-center justify-center p-4">
           <div className="max-w-md w-full bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-700 p-8 text-center">
@@ -169,12 +169,12 @@ export default function HistoryPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
+    <div className="min-h-screen bg-black">
       <Navigation />
       
       <main className="flex-1 p-4">
         <div className="max-w-4xl mx-auto">
-          <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-700 p-6">
+          <div className="bg-gray-900 rounded-2xl shadow-2xl border-2 border-gray-800 p-6 hover:border-purple-500 hover:shadow-purple-500/50 transition-all duration-300">
             <div className="flex items-center justify-between mb-6">
               <h1 className="text-2xl font-bold text-white flex items-center">
                 <span className="text-3xl mr-3">📊</span>
@@ -295,7 +295,7 @@ export default function HistoryPage() {
                 <button
                   onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                   disabled={currentPage === 1 || historyLoading}
-                  className="w-12 h-12 bg-gradient-to-r from-gray-700 to-gray-600 text-white rounded-full hover:from-gray-600 hover:to-gray-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center shadow-lg text-2xl"
+                  className="w-12 h-12 bg-gray-800 text-white rounded-full border-2 border-gray-700 hover:border-purple-500 hover:shadow-lg hover:shadow-purple-500/50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center text-2xl"
                 >
                   ←
                 </button>
@@ -308,7 +308,7 @@ export default function HistoryPage() {
                 <button
                   onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                   disabled={currentPage === totalPages || historyLoading}
-                  className="w-12 h-12 bg-gradient-to-r from-gray-700 to-gray-600 text-white rounded-full hover:from-gray-600 hover:to-gray-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center shadow-lg text-2xl"
+                  className="w-12 h-12 bg-gray-800 text-white rounded-full border-2 border-gray-700 hover:border-purple-500 hover:shadow-lg hover:shadow-purple-500/50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center text-2xl"
                 >
                   →
                 </button>

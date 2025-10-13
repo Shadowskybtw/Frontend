@@ -356,7 +356,7 @@ export default function ProfilePage() {
 
   if (loading || !isInitialized) {
   return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black flex items-center justify-center">
+      <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500 mx-auto mb-4"></div>
           <p className="text-gray-300">Загрузка профиля...</p>
@@ -367,7 +367,7 @@ export default function ProfilePage() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black flex items-center justify-center">
+      <div className="min-h-screen bg-black flex items-center justify-center">
           <div className="text-center">
           <p className="text-gray-300 mb-4">Пользователь не найден</p>
                       <button
@@ -386,7 +386,7 @@ export default function ProfilePage() {
   const hasUnusedFreeHookah = unusedFreeHookahs.length > 0
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
+    <div className="min-h-screen bg-black">
       <Navigation />
       
       <main className="max-w-4xl mx-auto p-4 space-y-6">
@@ -406,7 +406,7 @@ export default function ProfilePage() {
 
         {/* Admin Panel */}
         {isAdmin && adminPanelOpen && (
-          <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-700 p-6">
+          <div className="bg-gray-900 rounded-2xl shadow-2xl border-2 border-gray-800 p-6 hover:border-blue-500 hover:shadow-blue-500/50 transition-all duration-300">
             <h2 className="text-2xl font-bold text-white mb-6">👑 Админская панель</h2>
             
             <div className="space-y-6">
@@ -529,7 +529,7 @@ export default function ProfilePage() {
         )}
 
         {/* Profile Info */}
-        <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-700 p-6">
+        <div className="bg-gray-900 rounded-2xl shadow-2xl border-2 border-gray-800 p-6 hover:border-green-500 hover:shadow-green-500/50 transition-all duration-300">
                  <div className="mb-6">
                    <h1 className="text-3xl font-bold text-white">👤 Профиль</h1>
                    {/* Стабильная версия без оптимизаций */}
@@ -620,7 +620,7 @@ export default function ProfilePage() {
 
 
         {/* Slots Panel */}
-        <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-700 p-6">
+        <div className="bg-gray-900 rounded-2xl shadow-2xl border-2 border-gray-800 p-6 hover:border-green-500 hover:shadow-green-500/50 transition-all duration-300">
           <h2 className="text-2xl font-bold text-white mb-4">🎯 Акция &ldquo;5+1 кальян&rdquo;</h2>
           
           <div className="space-y-4">

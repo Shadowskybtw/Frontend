@@ -223,16 +223,16 @@ export default function StatisticsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white">
+    <div className="min-h-screen bg-black text-white">
       <Navigation />
       
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold mb-4 flex items-center justify-center">
+          <h1 className="text-5xl font-bold mb-4 flex items-center justify-center bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 bg-clip-text text-transparent">
             <span className="mr-4 text-6xl">📈</span>
             Статистика покупок
           </h1>
-          <p className="text-gray-400 text-xl">Анализ вашей активности в кальянной</p>
+          <p className="text-gray-500 text-xl">Анализ вашей активности в кальянной</p>
         </div>
 
         {isLoading ? (
@@ -244,51 +244,51 @@ export default function StatisticsPage() {
           <div className="space-y-10">
             {/* Основные метрики */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="bg-gradient-to-br from-blue-900/30 to-blue-800/20 backdrop-blur-sm rounded-3xl shadow-2xl border border-blue-500/30 p-8 hover:border-blue-400/50 transition-all duration-300 hover:scale-105">
+              <div className="bg-gray-900 rounded-3xl shadow-2xl border-2 border-gray-800 p-8 hover:border-blue-500 hover:shadow-blue-500/50 transition-all duration-300 hover:scale-105 hover:shadow-2xl">
                 <div className="flex items-center justify-between mb-4">
-                  <div className="bg-blue-500/20 p-3 rounded-2xl">
+                  <div className="bg-blue-500/10 p-3 rounded-2xl">
                     <span className="text-3xl">🚬</span>
                   </div>
                   <div className="text-right">
-                    <h3 className="text-lg font-semibold text-blue-300">Всего кальянов</h3>
-                    <p className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-blue-300 bg-clip-text text-transparent">{statistics.totalHookahs}</p>
+                    <h3 className="text-lg font-semibold text-gray-400">Всего кальянов</h3>
+                    <p className="text-4xl font-bold text-white">{statistics.totalHookahs}</p>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-gradient-to-br from-green-900/30 to-green-800/20 backdrop-blur-sm rounded-3xl shadow-2xl border border-green-500/30 p-8 hover:border-green-400/50 transition-all duration-300 hover:scale-105">
+              <div className="bg-gray-900 rounded-3xl shadow-2xl border-2 border-gray-800 p-8 hover:border-green-500 hover:shadow-green-500/50 transition-all duration-300 hover:scale-105 hover:shadow-2xl">
                 <div className="flex items-center justify-between mb-4">
-                  <div className="bg-green-500/20 p-3 rounded-2xl">
+                  <div className="bg-green-500/10 p-3 rounded-2xl">
                     <span className="text-3xl">💚</span>
                   </div>
                   <div className="text-right">
-                    <h3 className="text-lg font-semibold text-green-300">Платные кальяны</h3>
-                    <p className="text-4xl font-bold bg-gradient-to-r from-green-400 to-green-300 bg-clip-text text-transparent">{statistics.regularHookahs}</p>
+                    <h3 className="text-lg font-semibold text-gray-400">Платные кальяны</h3>
+                    <p className="text-4xl font-bold text-white">{statistics.regularHookahs}</p>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-gradient-to-br from-purple-900/30 to-purple-800/20 backdrop-blur-sm rounded-3xl shadow-2xl border border-purple-500/30 p-8 hover:border-purple-400/50 transition-all duration-300 hover:scale-105">
+              <div className="bg-gray-900 rounded-3xl shadow-2xl border-2 border-gray-800 p-8 hover:border-purple-500 hover:shadow-purple-500/50 transition-all duration-300 hover:scale-105 hover:shadow-2xl">
                 <div className="flex items-center justify-between mb-4">
-                  <div className="bg-purple-500/20 p-3 rounded-2xl">
+                  <div className="bg-purple-500/10 p-3 rounded-2xl">
                     <span className="text-3xl">🎁</span>
                   </div>
                   <div className="text-right">
-                    <h3 className="text-lg font-semibold text-purple-300">Бесплатные кальяны</h3>
-                    <p className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-300 bg-clip-text text-transparent">{statistics.freeHookahs}</p>
+                    <h3 className="text-lg font-semibold text-gray-400">Бесплатные кальяны</h3>
+                    <p className="text-4xl font-bold text-white">{statistics.freeHookahs}</p>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-gradient-to-br from-yellow-900/30 to-orange-800/20 backdrop-blur-sm rounded-3xl shadow-2xl border border-yellow-500/30 p-8 hover:border-yellow-400/50 transition-all duration-300 hover:scale-105">
+              <div className="bg-gray-900 rounded-3xl shadow-2xl border-2 border-gray-800 p-8 hover:border-yellow-500 hover:shadow-yellow-500/50 transition-all duration-300 hover:scale-105 hover:shadow-2xl">
                 <div className="flex items-center justify-between mb-4">
-                  <div className="bg-yellow-500/20 p-3 rounded-2xl">
+                  <div className="bg-yellow-500/10 p-3 rounded-2xl">
                     <span className="text-3xl">⭐</span>
                   </div>
                   <div className="text-right">
-                    <h3 className="text-lg font-semibold text-yellow-300">Средняя оценка</h3>
-                    <p className="text-4xl font-bold bg-gradient-to-r from-yellow-400 to-orange-300 bg-clip-text text-transparent">{statistics.averageRating.toFixed(1)}</p>
-                    <p className="text-sm text-gray-400">{statistics.totalReviews} отзывов</p>
+                    <h3 className="text-lg font-semibold text-gray-400">Средняя оценка</h3>
+                    <p className="text-4xl font-bold text-white">{statistics.averageRating.toFixed(1)}</p>
+                    <p className="text-sm text-gray-500">{statistics.totalReviews} отзывов</p>
                   </div>
                 </div>
               </div>
@@ -297,9 +297,9 @@ export default function StatisticsPage() {
             {/* Дополнительная статистика */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Процентное соотношение */}
-              <div className="bg-gradient-to-br from-gray-800/40 to-gray-700/30 backdrop-blur-sm rounded-3xl shadow-2xl border border-gray-600/30 p-8">
+              <div className="bg-gray-900 rounded-3xl shadow-2xl border-2 border-gray-800 p-8 hover:border-pink-500 hover:shadow-pink-500/50 transition-all duration-300">
                 <div className="flex items-center mb-6">
-                  <div className="bg-gray-500/20 p-3 rounded-2xl mr-4">
+                  <div className="bg-pink-500/10 p-3 rounded-2xl mr-4">
                     <span className="text-3xl">📊</span>
                   </div>
                   <h2 className="text-2xl font-bold text-white">Соотношение покупок</h2>
@@ -307,24 +307,24 @@ export default function StatisticsPage() {
                 <div className="space-y-6">
                   <div className="space-y-3">
                     <div className="flex justify-between text-lg">
-                      <span className="text-gray-300">Платные кальяны</span>
+                      <span className="text-gray-400">Платные кальяны</span>
                       <span className="text-green-400 font-bold">{((statistics.regularHookahs / statistics.totalHookahs) * 100).toFixed(1)}%</span>
                     </div>
-                    <div className="w-full bg-gray-700 rounded-full h-4">
+                    <div className="w-full bg-gray-800 rounded-full h-4">
                       <div 
-                        className="bg-gradient-to-r from-green-500 to-green-400 h-4 rounded-full transition-all duration-1000 ease-out"
+                        className="bg-gradient-to-r from-green-500 to-green-400 h-4 rounded-full transition-all duration-1000 ease-out shadow-lg shadow-green-500/50"
                         style={{ width: `${(statistics.regularHookahs / statistics.totalHookahs) * 100}%` }}
                       ></div>
                     </div>
                   </div>
                   <div className="space-y-3">
                     <div className="flex justify-between text-lg">
-                      <span className="text-gray-300">Бесплатные кальяны</span>
+                      <span className="text-gray-400">Бесплатные кальяны</span>
                       <span className="text-purple-400 font-bold">{((statistics.freeHookahs / statistics.totalHookahs) * 100).toFixed(1)}%</span>
                     </div>
-                    <div className="w-full bg-gray-700 rounded-full h-4">
+                    <div className="w-full bg-gray-800 rounded-full h-4">
                       <div 
-                        className="bg-gradient-to-r from-purple-500 to-pink-400 h-4 rounded-full transition-all duration-1000 ease-out"
+                        className="bg-gradient-to-r from-purple-500 to-pink-400 h-4 rounded-full transition-all duration-1000 ease-out shadow-lg shadow-purple-500/50"
                         style={{ width: `${(statistics.freeHookahs / statistics.totalHookahs) * 100}%` }}
                       ></div>
                     </div>
@@ -333,19 +333,19 @@ export default function StatisticsPage() {
               </div>
 
               {/* Распределение оценок */}
-              <div className="bg-gradient-to-br from-gray-800/40 to-gray-700/30 backdrop-blur-sm rounded-3xl shadow-2xl border border-gray-600/30 p-8">
+              <div className="bg-gray-900 rounded-3xl shadow-2xl border-2 border-gray-800 p-8 hover:border-orange-500 hover:shadow-orange-500/50 transition-all duration-300">
                 <div className="flex items-center mb-6">
-                  <div className="bg-yellow-500/20 p-3 rounded-2xl mr-4">
+                  <div className="bg-orange-500/10 p-3 rounded-2xl mr-4">
                     <span className="text-3xl">🎯</span>
                   </div>
                   <h2 className="text-2xl font-bold text-white">Распределение оценок</h2>
                 </div>
                 <div className="space-y-3">
                   {statistics.ratingDistribution.map((rating, index) => (
-                    <div key={index} className="flex items-center justify-between bg-gradient-to-br from-gray-700/50 to-gray-600/40 rounded-xl p-4 border border-gray-600/30 hover:border-yellow-500/50 transition-all duration-300">
+                    <div key={index} className="flex items-center justify-between bg-gray-800 rounded-xl p-4 border-2 border-gray-700 hover:border-yellow-500 hover:shadow-lg hover:shadow-yellow-500/50 transition-all duration-300">
                       <div className="flex items-center space-x-3">
                         <span className="text-2xl">⭐</span>
-                        <span className="text-lg font-semibold text-white">{rating.rating} звезд</span>
+                        <span className="text-lg font-semibold text-gray-300">{rating.rating} звезд</span>
                       </div>
                       <div className="text-xl font-bold text-yellow-400">{rating.count}</div>
                     </div>
@@ -355,28 +355,28 @@ export default function StatisticsPage() {
             </div>
 
             {/* Активность по месяцам */}
-            <div className="bg-gradient-to-br from-gray-800/40 to-gray-700/30 backdrop-blur-sm rounded-3xl shadow-2xl border border-gray-600/30 p-8">
+            <div className="bg-gray-900 rounded-3xl shadow-2xl border-2 border-gray-800 p-8 hover:border-cyan-500 hover:shadow-cyan-500/50 transition-all duration-300">
               <div className="flex items-center mb-8">
-                <div className="bg-blue-500/20 p-3 rounded-2xl mr-4">
+                <div className="bg-cyan-500/10 p-3 rounded-2xl mr-4">
                   <span className="text-3xl">📅</span>
                 </div>
                 <h2 className="text-2xl font-bold text-white">Активность по месяцам</h2>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {statistics.monthlyStats.map((month, index) => (
-                  <div key={index} className="bg-gradient-to-br from-gray-700/50 to-gray-600/40 rounded-2xl p-6 border border-gray-600/30 hover:border-blue-500/50 transition-all duration-300 hover:scale-105">
+                  <div key={index} className="bg-gray-800 rounded-2xl p-6 border-2 border-gray-700 hover:border-cyan-500 hover:shadow-lg hover:shadow-cyan-500/50 transition-all duration-300 hover:scale-105">
                     <h3 className="font-bold text-white mb-4 text-lg">{month.month}</h3>
                     <div className="space-y-3">
-                      <div className="flex justify-between items-center py-2 px-3 bg-gray-600/40 rounded-lg">
-                        <span className="text-gray-300">Всего</span>
+                      <div className="flex justify-between items-center py-2 px-3 bg-gray-700 rounded-lg">
+                        <span className="text-gray-400">Всего</span>
                         <span className="font-bold text-white text-lg">{month.total}</span>
                       </div>
-                      <div className="flex justify-between items-center py-2 px-3 bg-green-500/20 rounded-lg border border-green-500/30">
-                        <span className="text-green-300">Платные</span>
+                      <div className="flex justify-between items-center py-2 px-3 bg-green-500/10 rounded-lg border-2 border-green-500/30 hover:border-green-500 hover:bg-green-500/20 transition-all duration-200">
+                        <span className="text-green-400">Платные</span>
                         <span className="font-bold text-green-400">{month.regular}</span>
                       </div>
-                      <div className="flex justify-between items-center py-2 px-3 bg-purple-500/20 rounded-lg border border-purple-500/30">
-                        <span className="text-purple-300">Бесплатные</span>
+                      <div className="flex justify-between items-center py-2 px-3 bg-purple-500/10 rounded-lg border-2 border-purple-500/30 hover:border-purple-500 hover:bg-purple-500/20 transition-all duration-200">
+                        <span className="text-purple-400">Бесплатные</span>
                         <span className="font-bold text-purple-400">{month.free}</span>
                       </div>
                     </div>
