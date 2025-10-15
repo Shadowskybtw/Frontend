@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 
+// Ensure this mutation route is never cached or statically optimized
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export async function POST(request: NextRequest) {
   try {
     const { user_tg_id, admin_tg_id, hookah_type, count } = await request.json()
@@ -78,7 +82,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    return NextResponse.json({
+    const res = NextResponse.json({
       success: true,
       message: type === 'regular' ? 'Платный кальян удален у пользователя' : 'Бесплатный кальян удален у пользователя',
       user: {
@@ -88,6 +92,10 @@ export async function POST(request: NextRequest) {
       },
       newProgress
     })
+    res.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate')
+    res.headers.set('Pragma', 'no-cache')
+    res.headers.set('Expires', '0')
+    return res
 
   } catch (error) {
     console.error('Error removing hookah:', error)
