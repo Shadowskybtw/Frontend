@@ -99,7 +99,7 @@ export default function StatisticsPage() {
       const url = `/api/history/${Number(user.tg_id)}?withReviews=true`
       console.log('📈 Fetching URL:', url)
       
-      const historyResponse = await fetch(url)
+      const historyResponse = await fetch(url, { cache: 'no-store' })
       console.log('📈 Response status:', historyResponse.status, historyResponse.statusText)
       
       if (!historyResponse.ok) {
@@ -115,7 +115,7 @@ export default function StatisticsPage() {
       // If withReviews failed and we got empty history, try without reviews
       if (history.length === 0) {
         console.log('📈 withReviews returned empty, trying without reviews...')
-        const fallbackResponse = await fetch(`/api/history/${Number(user.tg_id)}`)
+        const fallbackResponse = await fetch(`/api/history/${Number(user.tg_id)}`, { cache: 'no-store' })
         const fallbackData = await fallbackResponse.json()
         history = fallbackData.history || []
         console.log('📈 Fallback history items:', history.length)

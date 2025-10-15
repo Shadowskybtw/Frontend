@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 
+// Disable caching for this route to ensure statistics update immediately
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ tgId: string }> }
@@ -83,7 +87,12 @@ export async function GET(
       hasMore: withReviews ? false : offset + limit < history.length
     }
 
-    return NextResponse.json(responseData)
+    const res = NextResponse.json(responseData)
+    // Extra safety: explicit no-store headers
+    res.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate')
+    res.headers.set('Pragma', 'no-cache')
+    res.headers.set('Expires', '0')
+    return res
 
   } catch (error) {
     console.error('❌ Error getting hookah history:', error)
