@@ -92,6 +92,23 @@ export default function HistoryPage() {
     }
   }, [isInitialized, user?.tg_id, currentPage, fetchHistory, user])
 
+  // Auto-refresh history when page regains focus/visibility
+  useEffect(() => {
+    const onFocus = () => {
+      if (isInitialized && user?.tg_id) {
+        fetchHistory(Number(user.tg_id), currentPage)
+      }
+    }
+    window.addEventListener('focus', onFocus)
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') onFocus()
+    })
+    return () => {
+      window.removeEventListener('focus', onFocus)
+      document.removeEventListener('visibilitychange', onFocus as any)
+    }
+  }, [isInitialized, user?.tg_id, currentPage, fetchHistory])
+
   // Handle review submission
   const submitReview = async () => {
     if (!selectedHookahForReview || !user?.tg_id) return

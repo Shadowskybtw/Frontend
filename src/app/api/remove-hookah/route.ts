@@ -3,7 +3,7 @@ import { db } from '@/lib/db'
 
 export async function POST(request: NextRequest) {
   try {
-    const { user_tg_id, admin_tg_id, hookah_type } = await request.json()
+    const { user_tg_id, admin_tg_id, hookah_type, count } = await request.json()
 
     if (!user_tg_id || !admin_tg_id) {
       return NextResponse.json(
@@ -46,6 +46,7 @@ export async function POST(request: NextRequest) {
     const type: 'regular' | 'free' = hookah_type === 'free' ? 'free' : 'regular'
 
     let newProgress: number | undefined
+    const removeCount = Math.max(1, parseInt(String(count || '1')) || 1)
 
     if (type === 'regular') {
       // Получаем акцию пользователя только для платных кальянов
@@ -59,16 +60,22 @@ export async function POST(request: NextRequest) {
         )
       }
 
-      // Уменьшаем прогресс на 20% (один слот)
-      newProgress = Math.max(0, stock.progress - 20)
-
-      // Удаляем последнюю запись из истории (если есть)
-      await db.removeHookahFromHistory(user.id, stock.id, 'regular')
-
+      // Удаляем N последних regular из истории и уменьшаем прогресс на 20*N
+      let removed = 0
+      for (let i = 0; i < removeCount; i++) {
+        const ok = await db.removeHookahFromHistory(user.id, stock.id, 'regular')
+        if (ok) removed++
+        else break
+      }
+      const delta = removed * 20
+      newProgress = Math.max(0, stock.progress - delta)
       await db.updateStockProgress(stock.id, newProgress)
     } else {
-      // Удаляем последнюю запись бесплатного кальяна
-      await db.removeHookahFromHistory(user.id, 0, 'free')
+      // Удаляем N последних бесплатных кальянов
+      for (let i = 0; i < removeCount; i++) {
+        const ok = await db.removeHookahFromHistory(user.id, 0, 'free')
+        if (!ok) break
+      }
     }
 
     return NextResponse.json({
