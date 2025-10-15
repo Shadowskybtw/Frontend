@@ -1,9 +1,13 @@
 "use client"
 import React, { useState } from 'react'
+import { useUser } from '@/contexts/UserContext'
 
 export default function AdminPage() {
   const [qrData, setQrData] = useState('')
+  const [targetTgId, setTargetTgId] = useState('')
   const [isScanning, setIsScanning] = useState(false)
+  const [isRemoving, setIsRemoving] = useState(false)
+  const { user } = useUser()
   const [result, setResult] = useState<{
     success: boolean
     message: string
@@ -55,6 +59,41 @@ export default function AdminPage() {
     }
   }
 
+  const removeLastPurchase = async () => {
+    if (!targetTgId.trim()) {
+      alert('Укажите TG ID пользователя')
+      return
+    }
+    if (!user?.tg_id) {
+      alert('Не удалось определить TG ID администратора')
+      return
+    }
+    setIsRemoving(true)
+    try {
+      const res = await fetch('/api/remove-hookah', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_tg_id: Number(targetTgId),
+          admin_tg_id: Number(user.tg_id),
+          hookah_type: 'regular',
+          count: 1
+        })
+      })
+      const data = await res.json()
+      if (data.success) {
+        alert('Последняя покупка удалена')
+      } else {
+        alert('Ошибка: ' + (data.message || 'не удалось удалить'))
+      }
+    } catch (e) {
+      console.error(e)
+      alert('Сбой запроса на удаление')
+    } finally {
+      setIsRemoving(false)
+    }
+  }
+
   return (
     <main className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
       <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
@@ -67,6 +106,25 @@ export default function AdminPage() {
           </p>
 
           <div className="space-y-4">
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-left">
+              <h3 className="font-semibold text-gray-900 mb-2">Управление покупками</h3>
+              <label className="block text-sm font-medium text-gray-700 mb-2">TG ID пользователя</label>
+              <input
+                value={targetTgId}
+                onChange={(e) => setTargetTgId(e.target.value)}
+                placeholder="Например, 937011437"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 mb-3"
+              />
+              <button
+                onClick={removeLastPurchase}
+                disabled={isRemoving}
+                className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 text-white font-semibold py-3 px-6 rounded-lg transition duration-200"
+              >
+                {isRemoving ? '⏳ Удаление...' : '🗑️ Удалить последнюю покупку (regular)'}
+              </button>
+              <p className="mt-2 text-xs text-gray-500">После удаления данные в Истории/Статистике обновятся при открытии страницы или возврате фокуса.</p>
+            </div>
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Данные QR кода
