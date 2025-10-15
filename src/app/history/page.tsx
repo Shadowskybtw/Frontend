@@ -39,7 +39,7 @@ export default function HistoryPage() {
       const offset = (page - 1) * limit
       
       // First, get total count
-      const totalResponse = await fetch(`/api/history/${tgId}?limit=1000&offset=0`)
+      const totalResponse = await fetch(`/api/history/${tgId}?limit=1000&offset=0`, { cache: 'no-store' })
       const totalData = await totalResponse.json()
       const totalCount = totalData.success ? (totalData.history || []).length : 0
       console.log('📊 Total history count:', totalCount)
@@ -48,7 +48,7 @@ export default function HistoryPage() {
       const url = `/api/history/${tgId}?limit=${limit}&offset=${offset}`
       console.log('📊 Fetching URL:', url)
       
-      const response = await fetch(url)
+      const response = await fetch(url, { cache: 'no-store' })
       console.log('📊 Response status:', response.status, response.statusText)
 
       const data = await response.json()
