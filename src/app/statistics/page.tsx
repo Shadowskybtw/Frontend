@@ -95,8 +95,8 @@ export default function StatisticsPage() {
 
     setIsLoading(true)
     try {
-      // Load history with reviews
-      const url = `/api/history/${Number(user.tg_id)}?withReviews=true`
+      // Load history with reviews (request large limit to avoid default 50 cap)
+      const url = `/api/history/${Number(user.tg_id)}?withReviews=true&limit=1000&offset=0`
       console.log('📈 Fetching URL:', url)
       
       const historyResponse = await fetch(url, { cache: 'no-store' })
@@ -115,7 +115,7 @@ export default function StatisticsPage() {
       // If withReviews failed and we got empty history, try without reviews
       if (history.length === 0) {
         console.log('📈 withReviews returned empty, trying without reviews...')
-        const fallbackResponse = await fetch(`/api/history/${Number(user.tg_id)}`, { cache: 'no-store' })
+        const fallbackResponse = await fetch(`/api/history/${Number(user.tg_id)}?limit=1000&offset=0`, { cache: 'no-store' })
         const fallbackData = await fallbackResponse.json()
         history = fallbackData.history || []
         console.log('📈 Fallback history items:', history.length)
