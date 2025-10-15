@@ -518,7 +518,7 @@ export const db = {
           user_id: userId,
           hookah_type: 'regular'
         },
-        orderBy: { created_at: 'desc' }
+        orderBy: { id: 'desc' }
       })
       
       if (!lastRegularHookah) {
@@ -959,9 +959,7 @@ export const db = {
           user_id: userId,
           hookah_type: hookahType
         },
-        orderBy: {
-          created_at: 'desc'
-        }
+        orderBy: { id: 'desc' }
       })
 
       if (lastHistoryRecord) {

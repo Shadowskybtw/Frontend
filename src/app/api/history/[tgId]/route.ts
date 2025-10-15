@@ -50,7 +50,7 @@ export async function GET(
     let history
     if (withReviews) {
       // Используем функцию с отзывами
-      const page = Math.floor(offset / limit) + 1
+      const page = Math.max(1, Math.floor(offset / limit) + 1)
       console.log('📊 Using withReviews, page:', page, 'limit:', limit, 'offset:', offset)
       console.log('📊 User ID for withReviews:', user.id)
       
@@ -69,7 +69,7 @@ export async function GET(
     } else {
       // Используем обычную функцию
       history = await db.getHookahHistory(user.id)
-      // Применяем пагинацию
+      // Применяем пагинацию поверх свежей истории
       history = history.slice(offset, offset + limit)
       console.log('📊 History without reviews found:', history.length, 'records')
     }
