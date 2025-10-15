@@ -175,6 +175,23 @@ export default function StatisticsPage() {
     }
   }, [isInitialized, user, loadStatistics, router])
 
+  // Auto-refresh when page gets focus or becomes visible
+  useEffect(() => {
+    const onFocus = () => {
+      if (isInitialized && user?.tg_id) {
+        loadStatistics()
+      }
+    }
+    window.addEventListener('focus', onFocus)
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') onFocus()
+    })
+    return () => {
+      window.removeEventListener('focus', onFocus)
+      document.removeEventListener('visibilitychange', onFocus as any)
+    }
+  }, [isInitialized, user?.tg_id, loadStatistics])
+
   if (loading || !isInitialized) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white">
@@ -232,7 +249,14 @@ export default function StatisticsPage() {
             <span className="mr-3 text-4xl">📈</span>
             Статистика покупок
           </h1>
-          <p className="text-gray-500 text-sm">Анализ вашей активности в кальянной</p>
+          <p className="text-gray-500 text-sm mb-4">Анализ вашей активности в кальянной</p>
+          <button
+            onClick={() => loadStatistics()}
+            disabled={isLoading}
+            className="px-4 py-2 rounded-lg border-2 border-gray-800 bg-gray-900 text-gray-200 hover:border-purple-500 hover:shadow-lg hover:shadow-purple-500/30 disabled:opacity-50 transition-all"
+          >
+            {isLoading ? 'Обновление...' : 'Обновить данные'}
+          </button>
         </div>
 
         {isLoading ? (
