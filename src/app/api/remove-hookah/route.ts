@@ -3,7 +3,7 @@ import { db } from '@/lib/db'
 
 export async function POST(request: NextRequest) {
   try {
-    const { user_tg_id, admin_tg_id } = await request.json()
+    const { user_tg_id, admin_tg_id, hookah_type } = await request.json()
 
     if (!user_tg_id || !admin_tg_id) {
       return NextResponse.json(
@@ -43,28 +43,37 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Получаем акцию пользователя
-    const stocks = await db.getUserStocks(user.id)
-    const stock = stocks.find(s => s.stock_name === '5+1 кальян')
-    
-    if (!stock || stock.progress <= 0) {
-      return NextResponse.json(
-        { success: false, message: 'У пользователя нет кальянов для удаления' },
-        { status: 400 }
-      )
-    }
+    const type: 'regular' | 'free' = hookah_type === 'free' ? 'free' : 'regular'
 
-    // Уменьшаем прогресс на 20% (один слот)
-    const newProgress = Math.max(0, stock.progress - 20)
-    
-    // Удаляем последнюю запись из истории (если есть)
-    await db.removeHookahFromHistory(user.id, stock.id, 'regular')
-    
-    await db.updateStockProgress(stock.id, newProgress)
+    let newProgress: number | undefined
+
+    if (type === 'regular') {
+      // Получаем акцию пользователя только для платных кальянов
+      const stocks = await db.getUserStocks(user.id)
+      const stock = stocks.find(s => s.stock_name === '5+1 кальян')
+      
+      if (!stock || stock.progress <= 0) {
+        return NextResponse.json(
+          { success: false, message: 'У пользователя нет платных кальянов для удаления' },
+          { status: 400 }
+        )
+      }
+
+      // Уменьшаем прогресс на 20% (один слот)
+      newProgress = Math.max(0, stock.progress - 20)
+
+      // Удаляем последнюю запись из истории (если есть)
+      await db.removeHookahFromHistory(user.id, stock.id, 'regular')
+
+      await db.updateStockProgress(stock.id, newProgress)
+    } else {
+      // Удаляем последнюю запись бесплатного кальяна
+      await db.removeHookahFromHistory(user.id, 0, 'free')
+    }
 
     return NextResponse.json({
       success: true,
-      message: 'Кальян успешно удален у пользователя',
+      message: type === 'regular' ? 'Платный кальян удален у пользователя' : 'Бесплатный кальян удален у пользователя',
       user: {
         id: user.id,
         first_name: user.first_name,
