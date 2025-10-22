@@ -122,3 +122,89 @@ model HookahReview {
   @@unique([user_id, hookah_id]) // Один отзыв на кальян от пользователя
   @@map("hookah_reviews")
 }
+
+// New Loyalty System Models
+
+model Campaign {
+  id             Int            @id @default(autoincrement())
+  name           String
+  slots_required Int            @default(5)
+  active         Boolean        @default(true)
+  started_at     DateTime       @default(now())
+  ended_at       DateTime?
+  created_at     DateTime       @default(now())
+  updated_at     DateTime       @default(now()) @updatedAt
+  
+  loyalty_slots  LoyaltySlot[]
+  rewards        Reward[]
+  reward_states  RewardState[]
+
+  @@index([active])
+  @@map("campaigns")
+}
+
+model LoyaltySlot {
+  id          Int       @id @default(autoincrement())
+  user_id     Int
+  campaign_id Int
+  slot_index  Int       // 1-based slot numbering
+  filled_at   DateTime?
+  created_at  DateTime  @default(now())
+  
+  campaign    Campaign  @relation(fields: [campaign_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, campaign_id, slot_index])
+  @@index([user_id, campaign_id])
+  @@index([filled_at])
+  @@map("loyalty_slots")
+}
+
+model Reward {
+  id          Int      @id @default(autoincrement())
+  campaign_id Int
+  reward_type String   // 'free_hookah', 'discount', 'bonus_item'
+  title       String
+  description String?
+  created_at  DateTime @default(now())
+  
+  campaign      Campaign      @relation(fields: [campaign_id], references: [id], onDelete: Cascade)
+  reward_states RewardState[]
+
+  @@index([campaign_id])
+  @@map("rewards")
+}
+
+model RewardState {
+  id           Int       @id @default(autoincrement())
+  user_id      Int
+  campaign_id  Int
+  reward_id    Int?
+  status       String    @default("available") // 'available', 'claimed', 'consumed', 'expired'
+  available_at DateTime?
+  claimed_at   DateTime?
+  consumed_at  DateTime?
+  meta         Json      @default("{}")
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @default(now()) @updatedAt
+  
+  campaign Campaign @relation(fields: [campaign_id], references: [id], onDelete: Cascade)
+  reward   Reward?  @relation(fields: [reward_id], references: [id], onDelete: SetNull)
+
+  @@unique([user_id, campaign_id, reward_id])
+  @@index([user_id, status])
+  @@index([campaign_id])
+  @@map("reward_states")
+}
+
+model EventsAudit {
+  id         Int      @id @default(autoincrement())
+  user_id    Int?
+  event_type String
+  payload    Json     @default("{}")
+  created_at DateTime @default(now())
+
+  @@index([user_id])
+  @@index([event_type])
+  @@index([created_at(sort: Desc)])
+  @@map("events_audit")
+}
