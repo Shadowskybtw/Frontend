@@ -956,21 +956,25 @@ export const db = {
     try {
       console.log('🗑️ Removing hookah from history:', { userId, hookahType })
       
-      // Находим последнюю запись указанного типа
+      // Находим последнюю запись указанного типа (по дате создания)
       const lastHistoryRecord = await prisma.hookahHistory.findFirst({
         where: {
           user_id: userId,
           hookah_type: hookahType
         },
-        orderBy: { id: 'desc' }
+        orderBy: { created_at: 'desc' } // Используем created_at как в рабочей версии
       })
 
       if (!lastHistoryRecord) {
-        console.log('❌ No matching history record found')
+        console.log('❌ No matching history record found for', { userId, hookahType })
         return false
       }
 
-      console.log('📍 Found record to delete:', lastHistoryRecord)
+      console.log('📍 Found record to delete:', {
+        id: lastHistoryRecord.id,
+        type: lastHistoryRecord.hookah_type,
+        created_at: lastHistoryRecord.created_at
+      })
 
       // Удаляем связанный отзыв, если он есть
       const deletedReviews = await prisma.hookahReview.deleteMany({
@@ -979,7 +983,9 @@ export const db = {
           hookah_id: lastHistoryRecord.id
         }
       })
-      console.log(`🗑️ Deleted ${deletedReviews.count} reviews`)
+      if (deletedReviews.count > 0) {
+        console.log(`🗑️ Deleted ${deletedReviews.count} review(s)`)
+      }
 
       // Удаляем запись из истории
       await prisma.hookahHistory.delete({
@@ -988,7 +994,7 @@ export const db = {
         }
       })
 
-      console.log('✅ Hookah record removed from history:', lastHistoryRecord.id)
+      console.log('✅ Hookah record removed from history successfully:', lastHistoryRecord.id)
       return true
     } catch (error) {
       console.error('❌ Error removing hookah from history:', error)

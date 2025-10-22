@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
           removed++
           console.log(`✅ Removed hookah ${i + 1}/${removeCount}`)
         } else {
-          console.log(`❌ Failed to remove hookah ${i + 1}/${removeCount}`)
+          console.log(`⚠️ No more hookahs to remove after ${removed}`)
           break
         }
       }
@@ -88,6 +88,7 @@ export async function POST(request: NextRequest) {
         )
       }
 
+      // Обновляем прогресс независимо от текущего значения
       const delta = removed * 20
       newProgress = Math.max(0, stock.progress - delta)
       await db.updateStockProgress(stock.id, newProgress)
@@ -101,7 +102,7 @@ export async function POST(request: NextRequest) {
           removed++
           console.log(`✅ Removed free hookah ${i + 1}/${removeCount}`)
         } else {
-          console.log(`❌ Failed to remove free hookah ${i + 1}/${removeCount}`)
+          console.log(`⚠️ No more free hookahs to remove after ${removed}`)
           break
         }
       }
