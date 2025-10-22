@@ -949,11 +949,11 @@ export const db = {
   },
 
   // Удаление записи из истории кальянов
-  async removeHookahFromHistory(userId: number, stockId: number, hookahType: 'regular' | 'free' = 'regular'): Promise<boolean> {
+  async removeHookahFromHistory(userId: number, hookahType: 'regular' | 'free' = 'regular'): Promise<boolean> {
     try {
-      console.log('Removing hookah from history:', { userId, stockId, hookahType })
+      console.log('🗑️ Removing hookah from history:', { userId, hookahType })
       
-      // Находим последнюю запись с указанными параметрами (без stock_id, так как его нет в схеме)
+      // Находим последнюю запись указанного типа
       const lastHistoryRecord = await prisma.hookahHistory.findFirst({
         where: {
           user_id: userId,
@@ -962,30 +962,33 @@ export const db = {
         orderBy: { id: 'desc' }
       })
 
-      if (lastHistoryRecord) {
-        // Удаляем связанный отзыв, если он есть
-        await prisma.hookahReview.deleteMany({
-          where: {
-            user_id: userId,
-            hookah_id: lastHistoryRecord.id
-          }
-        })
-
-        // Удаляем запись из истории
-        await prisma.hookahHistory.delete({
-          where: {
-            id: lastHistoryRecord.id
-          }
-        })
-
-        console.log('✅ Hookah record removed from history:', lastHistoryRecord.id)
-        return true
-      } else {
-        console.log('No matching history record found')
+      if (!lastHistoryRecord) {
+        console.log('❌ No matching history record found')
         return false
       }
+
+      console.log('📍 Found record to delete:', lastHistoryRecord)
+
+      // Удаляем связанный отзыв, если он есть
+      const deletedReviews = await prisma.hookahReview.deleteMany({
+        where: {
+          user_id: userId,
+          hookah_id: lastHistoryRecord.id
+        }
+      })
+      console.log(`🗑️ Deleted ${deletedReviews.count} reviews`)
+
+      // Удаляем запись из истории
+      await prisma.hookahHistory.delete({
+        where: {
+          id: lastHistoryRecord.id
+        }
+      })
+
+      console.log('✅ Hookah record removed from history:', lastHistoryRecord.id)
+      return true
     } catch (error) {
-      console.error('Error removing hookah from history:', error)
+      console.error('❌ Error removing hookah from history:', error)
       return false
     }
   },

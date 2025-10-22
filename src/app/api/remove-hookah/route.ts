@@ -52,33 +52,65 @@ export async function POST(request: NextRequest) {
     let newProgress: number | undefined
     const removeCount = Math.max(1, parseInt(String(count || '1')) || 1)
 
+    console.log('🔍 Processing remove request:', { user_tg_id, type, removeCount })
+
     if (type === 'regular') {
       // Получаем акцию пользователя только для платных кальянов
       const stocks = await db.getUserStocks(user.id)
       const stock = stocks.find(s => s.stock_name === '5+1 кальян')
       
-      if (!stock || stock.progress <= 0) {
+      if (!stock) {
+        return NextResponse.json(
+          { success: false, message: 'У пользователя нет активной акции 5+1' },
+          { status: 400 }
+        )
+      }
+
+      console.log('📊 Current stock:', stock)
+
+      // Удаляем N последних regular из истории и уменьшаем прогресс на 20*N
+      let removed = 0
+      for (let i = 0; i < removeCount; i++) {
+        const ok = await db.removeHookahFromHistory(user.id, 'regular')
+        if (ok) {
+          removed++
+          console.log(`✅ Removed hookah ${i + 1}/${removeCount}`)
+        } else {
+          console.log(`❌ Failed to remove hookah ${i + 1}/${removeCount}`)
+          break
+        }
+      }
+
+      if (removed === 0) {
         return NextResponse.json(
           { success: false, message: 'У пользователя нет платных кальянов для удаления' },
           { status: 400 }
         )
       }
 
-      // Удаляем N последних regular из истории и уменьшаем прогресс на 20*N
-      let removed = 0
-      for (let i = 0; i < removeCount; i++) {
-        const ok = await db.removeHookahFromHistory(user.id, stock.id, 'regular')
-        if (ok) removed++
-        else break
-      }
       const delta = removed * 20
       newProgress = Math.max(0, stock.progress - delta)
       await db.updateStockProgress(stock.id, newProgress)
+      console.log(`📉 Updated progress: ${stock.progress} -> ${newProgress} (removed ${removed} hookahs)`)
     } else {
       // Удаляем N последних бесплатных кальянов
+      let removed = 0
       for (let i = 0; i < removeCount; i++) {
-        const ok = await db.removeHookahFromHistory(user.id, 0, 'free')
-        if (!ok) break
+        const ok = await db.removeHookahFromHistory(user.id, 'free')
+        if (ok) {
+          removed++
+          console.log(`✅ Removed free hookah ${i + 1}/${removeCount}`)
+        } else {
+          console.log(`❌ Failed to remove free hookah ${i + 1}/${removeCount}`)
+          break
+        }
+      }
+
+      if (removed === 0) {
+        return NextResponse.json(
+          { success: false, message: 'У пользователя нет бесплатных кальянов для удаления' },
+          { status: 400 }
+        )
       }
     }
 
