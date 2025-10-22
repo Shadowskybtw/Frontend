@@ -309,9 +309,16 @@ export default function ProfilePage() {
       const data = await response.json()
       if (data.success) {
         alert('✅ Кальян успешно добавлен пользователю')
-        loadProfileData()
-        setSearchedUser(null)
-        setSearchPhone('')
+        // Перезагружаем данные пользователя
+        const searchResponse = await fetch(`/api/search-user?phone=${searchPhone}`)
+        const searchData = await searchResponse.json()
+        if (searchData.success && searchData.user) {
+          setSearchedUser(searchData)
+        } else {
+          setSearchedUser(null)
+          setSearchPhone('')
+        }
+        loadProfileData() // Обновляем данные админа
       } else {
         alert('Ошибка: ' + data.message)
       }
@@ -333,16 +340,25 @@ export default function ProfilePage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           user_tg_id: Number(searchedUser.user.tg_id),
-          admin_tg_id: Number(user.tg_id)
+          admin_tg_id: Number(user.tg_id),
+          hookah_type: 'regular', // Указываем тип кальяна
+          count: 1
         })
       })
 
       const data = await response.json()
       if (data.success) {
         alert('✅ Кальян успешно удален у пользователя')
-        loadProfileData()
-        setSearchedUser(null)
-        setSearchPhone('')
+        // Перезагружаем данные пользователя
+        const searchResponse = await fetch(`/api/search-user?phone=${searchPhone}`)
+        const searchData = await searchResponse.json()
+        if (searchData.success && searchData.user) {
+          setSearchedUser(searchData)
+        } else {
+          setSearchedUser(null)
+          setSearchPhone('')
+        }
+        loadProfileData() // Обновляем данные админа
       } else {
         alert('Ошибка: ' + data.message)
       }
