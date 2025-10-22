@@ -48,6 +48,8 @@ export async function GET(
 
     // Получаем историю кальянов
     let history
+    let totalCount = 0
+    
     if (withReviews) {
       // Используем функцию с отзывами
       const page = Math.max(1, Math.floor(offset / limit) + 1)
@@ -57,34 +59,36 @@ export async function GET(
       try {
         const historyWithReviews = await db.getHookahHistoryWithReviews(user.id, page, limit)
         history = historyWithReviews.history
-        console.log('📊 History with reviews found:', history.length, 'records')
+        totalCount = historyWithReviews.totalCount || history.length
+        console.log('📊 History with reviews found:', history.length, 'records, total:', totalCount)
         console.log('📊 History with reviews details:', history)
       } catch (error) {
         console.error('❌ Error in getHookahHistoryWithReviews:', error)
         // Fallback to regular history if withReviews fails
-        history = await db.getHookahHistory(user.id)
-        history = history.slice(offset, offset + limit)
-        console.log('📊 Fallback to regular history:', history.length, 'records')
+        const fullHistory = await db.getHookahHistory(user.id)
+        totalCount = fullHistory.length
+        history = fullHistory.slice(offset, offset + limit)
+        console.log('📊 Fallback to regular history:', history.length, 'records, total:', totalCount)
       }
     } else {
       // Используем обычную функцию
-      history = await db.getHookahHistory(user.id)
+      const fullHistory = await db.getHookahHistory(user.id)
+      totalCount = fullHistory.length
       // Применяем пагинацию поверх свежей истории
-      history = history.slice(offset, offset + limit)
-      console.log('📊 History without reviews found:', history.length, 'records')
+      history = fullHistory.slice(offset, offset + limit)
+      console.log('📊 History without reviews found:', history.length, 'records, total:', totalCount)
     }
     
-    console.log('📊 History found:', history.length, 'total records')
-    console.log('📊 History details:', history)
+    console.log('📊 Final history:', history.length, 'page records, total:', totalCount)
 
     const responseData = { 
       success: true, 
       items: history,
       history: history, // Добавляем поле history для совместимости с фронтендом
-      total: history.length,
+      total: totalCount, // Возвращаем общее количество записей, а не только на странице
       limit,
       offset,
-      hasMore: withReviews ? false : offset + limit < history.length
+      hasMore: offset + limit < totalCount
     }
 
     const res = NextResponse.json(responseData)

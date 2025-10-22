@@ -1,54 +1,69 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 
-export async function POST(request: NextRequest) {
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
+export async function GET(request: NextRequest) {
   try {
-    const { tg_id } = await request.json()
-    
-    if (!tg_id) {
-      return NextResponse.json({ success: false, message: 'TG ID is required' }, { status: 400 })
+    const { searchParams } = new URL(request.url)
+    const tgId = searchParams.get('tg_id')
+
+    if (!tgId) {
+      return NextResponse.json(
+        { success: false, message: 'TG ID is required' },
+        { status: 400 }
+      )
     }
 
-    console.log('🔍 Debug: Looking up user with tg_id:', tg_id)
-    
-    // Get user from database
-    const user = await db.getUserByTgId(tg_id)
-    console.log('🔍 Debug: Raw user from database:', user)
-    
+    const user = await db.getUserByTgId(parseInt(tgId))
     if (!user) {
-      return NextResponse.json({ 
-        success: false, 
-        message: 'User not found' 
-      })
+      return NextResponse.json(
+        { success: false, message: 'User not found' },
+        { status: 404 }
+      )
     }
 
-    // Return detailed user information
-    return NextResponse.json({ 
-      success: true, 
+    // Get all user data
+    const stocks = await db.getUserStocks(user.id)
+    const history = await db.getHookahHistory(user.id)
+    const freeHookahs = await db.getFreeHookahs(user.id)
+
+    return NextResponse.json({
+      success: true,
       user: {
         id: user.id,
         tg_id: user.tg_id,
         first_name: user.first_name,
         last_name: user.last_name,
-        phone: user.phone,
-        username: user.username,
-        created_at: user.created_at,
-        updated_at: user.updated_at
+        phone: user.phone
       },
-      phoneDetails: {
-        phone: user.phone,
-        phoneType: typeof user.phone,
-        phoneLength: user.phone ? user.phone.length : 0,
-        isPhoneEmpty: !user.phone || user.phone.trim() === '',
-        isPhoneNull: user.phone === null,
-        isPhoneUndefined: user.phone === undefined
+      stocks,
+      history: history.map(h => ({
+        id: h.id,
+        hookah_type: h.hookah_type,
+        slot_number: h.slot_number,
+        created_at: h.created_at
+      })),
+      freeHookahs,
+      stats: {
+        totalHookahs: history.length,
+        regularHookahs: history.filter(h => h.hookah_type === 'regular').length,
+        freeHookahs: history.filter(h => h.hookah_type === 'free').length,
+        unusedFreeHookahs: freeHookahs.filter(h => !h.used).length
       }
+    }, {
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0',
+      },
     })
 
   } catch (error) {
-    console.error('Error in debug-user API:', error)
+    console.error('Error in debug-user:', error)
     return NextResponse.json(
-      { success: false, message: 'Internal server error' },
+      { success: false, message: 'Server error', error: String(error) },
       { status: 500 }
     )
   }

@@ -893,6 +893,7 @@ export const db = {
     history: Array<HookahHistory & { review?: { rating: number; review_text?: string } }>
     totalPages: number
     currentPage: number
+    totalCount: number
   }> {
     try {
       const offset = (page - 1) * limit
@@ -936,14 +937,16 @@ export const db = {
       return {
         history: historyWithReviews,
         totalPages,
-        currentPage: page
+        currentPage: page,
+        totalCount
       }
     } catch (error) {
       console.error('Error getting hookah history with reviews:', error)
       return {
         history: [],
         totalPages: 0,
-        currentPage: 1
+        currentPage: 1,
+        totalCount: 0
       }
     }
   },

@@ -38,17 +38,17 @@ export default function HistoryPage() {
       const limit = 8
       const offset = (page - 1) * limit
       
-      // First, get total count
-      const totalResponse = await fetch(`/api/history/${tgId}?limit=1000&offset=0`, { cache: 'no-store' })
-      const totalData = await totalResponse.json()
-      const totalCount = totalData.success ? (totalData.history || []).length : 0
-      console.log('📊 Total history count:', totalCount)
-      
-      // Then get current page data
-      const url = `/api/history/${tgId}?limit=${limit}&offset=${offset}`
+      // Fetch current page with total count
+      const url = `/api/history/${tgId}?limit=${limit}&offset=${offset}&timestamp=${Date.now()}`
       console.log('📊 Fetching URL:', url)
       
-      const response = await fetch(url, { cache: 'no-store' })
+      const response = await fetch(url, { 
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      })
       console.log('📊 Response status:', response.status, response.statusText)
 
       const data = await response.json()
@@ -56,17 +56,22 @@ export default function HistoryPage() {
 
       if (data.success) {
         const historyData = data.history || data.items || []
-        console.log('📊 Setting history:', historyData.length, 'items')
+        const totalCount = data.total || historyData.length
+        console.log('📊 Setting history:', historyData.length, 'items, total:', totalCount)
         setHistory(historyData)
-        // Calculate total pages based on total count
-        const totalPages = Math.ceil(totalCount / limit)
+        // Calculate total pages based on total count from API
+        const totalPages = Math.max(1, Math.ceil(totalCount / limit))
         setTotalPages(totalPages)
-        console.log('📊 Total pages calculated:', totalPages, 'from total count:', totalCount)
+        console.log('📊 Total pages calculated:', totalPages)
       } else {
         console.error('❌ Failed to fetch history:', data.message)
+        setHistory([])
+        setTotalPages(1)
       }
     } catch (error) {
       console.error('❌ Error fetching history:', error)
+      setHistory([])
+      setTotalPages(1)
     } finally {
       setHistoryLoading(false)
     }
