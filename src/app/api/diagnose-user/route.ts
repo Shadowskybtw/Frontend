@@ -50,8 +50,11 @@ export async function GET(request: NextRequest) {
       other: history.filter(h => h.hookah_type !== 'regular' && h.hookah_type !== 'free')
     }
 
-    // Calculate what progress should be
-    const expectedProgress = Math.min(100, historyByType.regular.length * 20)
+    // Calculate what progress should be (CYCLIC: 0-100%)
+    const regularCount = historyByType.regular.length
+    const currentCycleCount = regularCount % 5
+    const expectedProgress = currentCycleCount * 20
+    const completedCycles = Math.floor(regularCount / 5)
     const actualProgress = stock ? stock.progress : 0
 
     // If OTHER types exist, get them
@@ -84,9 +87,11 @@ export async function GET(request: NextRequest) {
       analysis: {
         expectedProgress,
         actualProgress,
+        completedCycles,
+        currentCycleCount,
         mismatch: expectedProgress !== actualProgress,
         difference: actualProgress - expectedProgress,
-        issue: historyByType.regular.length === 0 && actualProgress > 0 
+        issue: historyByType.regular.length === 0 && actualProgress > 0
           ? 'CRITICAL: No regular hookahs in history but progress > 0'
           : historyByType.regular.length > 0 && actualProgress === 0
           ? 'WARNING: Has regular hookahs but progress = 0'
