@@ -81,24 +81,36 @@ export async function POST(request: NextRequest) {
         expectedFromProgress: Math.floor(stock.progress / 20)
       })
 
-      // Если progress > 0, но нет записей regular в истории - это несоответствие
-      if (stock.progress > 0 && regularHookahs.length === 0) {
-        console.log('⚠️ MISMATCH DETECTED: Stock progress is', stock.progress, 'but no regular hookahs in history!')
-        console.log('⚠️ This means stock.progress is out of sync with hookah_history table')
+      // КРИТИЧНО: Если progress не соответствует истории - исправляем НЕМЕДЛЕННО
+      const correctProgress = Math.min(100, regularHookahs.length * 20)
+      
+      if (stock.progress !== correctProgress) {
+        console.log('⚠️ CRITICAL MISMATCH DETECTED!')
+        console.log(`   Stock progress: ${stock.progress}%`)
+        console.log(`   History count: ${regularHookahs.length} hookahs`)
+        console.log(`   Expected progress: ${correctProgress}%`)
+        console.log('🔧 Auto-fixing...')
         
-        // В этом случае просто сбрасываем progress до 0
-        await db.updateStockProgress(stock.id, 0)
-        console.log('✅ Reset stock progress to 0 to match history')
+        // Автоматически исправляем progress
+        await db.updateStockProgress(stock.id, correctProgress)
+        console.log(`✅ Fixed! Progress updated from ${stock.progress}% to ${correctProgress}%`)
         
-        return NextResponse.json({
-          success: false,
-          message: 'Обнаружено несоответствие данных. Прогресс был сброшен до 0. Попробуйте снова.',
-          debug: {
-            stockProgress: stock.progress,
-            historyCount: regularHookahs.length,
-            action: 'progress_reset_to_zero'
-          }
-        }, { status: 400 })
+        // Если после исправления нет кальянов для удаления
+        if (regularHookahs.length === 0) {
+          return NextResponse.json({
+            success: false,
+            message: `Обнаружено критическое несоответствие! Прогресс был ${stock.progress}%, но в истории 0 кальянов. Данные исправлены. Теперь прогресс: ${correctProgress}%`,
+            debug: {
+              oldProgress: stock.progress,
+              newProgress: correctProgress,
+              historyCount: regularHookahs.length,
+              action: 'critical_mismatch_fixed'
+            }
+          }, { status: 400 })
+        }
+        
+        // Обновляем stock объект для дальнейшей работы
+        stock.progress = correctProgress
       }
 
       // Удаляем N последних regular из истории и уменьшаем прогресс на 20*N

@@ -56,7 +56,33 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Увеличиваем прогресс на 20% (один слот)
+    // ВАЖНО: Проверяем реальное количество кальянов в истории
+    const currentHistory = await db.getHookahHistory(user.id)
+    const regularCount = currentHistory.filter(h => h.hookah_type === 'regular').length
+    const correctProgress = Math.min(100, regularCount * 20)
+    
+    // Если есть несоответствие - исправляем перед добавлением
+    if (stock.progress !== correctProgress) {
+      console.log(`⚠️ Fixing progress mismatch before add: ${stock.progress}% -> ${correctProgress}%`)
+      await db.updateStockProgress(stock.id, correctProgress)
+      stock.progress = correctProgress
+    }
+
+    // Проверяем, можно ли добавить кальян (не больше 5 в одном цикле)
+    const currentSlot = Math.floor(stock.progress / 20)
+    if (currentSlot >= 5 && stock.progress >= 100) {
+      console.log('⚠️ Cannot add: campaign already completed, waiting for reset')
+      return NextResponse.json({
+        success: false,
+        message: 'Акция уже завершена. Дождитесь сброса прогресса после получения бесплатного кальяна.',
+        debug: {
+          currentSlot,
+          progress: stock.progress
+        }
+      }, { status: 400 })
+    }
+
+    // Увеличиваем прогресс на 20% (один слот), но не больше 100%
     const newProgress = Math.min(100, stock.progress + 20)
     await db.updateStockProgress(stock.id, newProgress)
 
