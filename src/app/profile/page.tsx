@@ -134,13 +134,13 @@ export default function ProfilePage() {
     }
   }
 
-  // Claim free hookah
+  // Request free hookah (send request to admins)
   const claimFreeHookah = async () => {
     if (!user?.tg_id || isClaiming) return
 
     setIsClaiming(true)
     try {
-      const response = await fetch('/api/claim-free-hookah', {
+      const response = await fetch('/api/free-hookah-requests/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ tg_id: Number(user.tg_id) })
@@ -148,14 +148,32 @@ export default function ProfilePage() {
 
       const data = await response.json()
       if (data.success) {
-        alert('🎉 Вы получили бесплатный кальян! Покажите это сообщение администратору.')
+        // Show success notification
+        const notification = document.createElement('div')
+        notification.className = 'fixed top-4 right-4 bg-green-600 text-white px-6 py-4 rounded-lg shadow-lg z-50 animate-slideUp max-w-sm'
+        notification.innerHTML = `
+          <div class="flex items-start">
+            <span class="text-2xl mr-3">✅</span>
+            <div>
+              <div class="font-bold mb-1">Запрос отправлен!</div>
+              <div class="text-sm text-green-100">Администратор подтвердит получение кальяна в ближайшее время.</div>
+            </div>
+          </div>
+        `
+        document.body.appendChild(notification)
+        setTimeout(() => {
+          notification.style.opacity = '0'
+          notification.style.transition = 'opacity 0.3s'
+          setTimeout(() => notification.remove(), 300)
+        }, 5000)
+
         loadProfileData() // Reload data
       } else {
-        alert('Ошибка: ' + data.message)
+        alert('❌ ' + data.message)
       }
     } catch (error) {
-      console.error('Error claiming free hookah:', error)
-      alert('Ошибка при получении бесплатного кальяна')
+      console.error('Error requesting free hookah:', error)
+      alert('❌ Ошибка при отправке запроса')
     } finally {
       setIsClaiming(false)
     }
@@ -629,7 +647,7 @@ export default function ProfilePage() {
                       disabled={isClaiming}
                       className="mt-4 bg-yellow-600 hover:bg-yellow-700 disabled:bg-yellow-400 text-white px-6 py-2 rounded-md font-medium"
                       >
-                      {isClaiming ? '⏳ Получаем...' : '🎁 Получить бесплатный кальян'}
+                      {isClaiming ? '⏳ Отправляем запрос...' : '🎁 Запросить бесплатный кальян'}
                       </button>
                   )}
                 </div>
