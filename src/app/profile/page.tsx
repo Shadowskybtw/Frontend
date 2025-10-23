@@ -470,16 +470,20 @@ export default function ProfilePage() {
                         <h5 className="font-semibold text-blue-300 mb-2">Статистика кальянов:</h5>
                         <div className="grid grid-cols-2 gap-2 text-sm">
                           <div className="bg-blue-700/50 rounded p-2">
-                            <div className="text-blue-200">Заполнено слотов:</div>
+                            <div className="text-blue-200 text-xs">Текущий цикл:</div>
                             <div className="text-white font-bold text-lg">{searchedUser.stats.slotsFilled}/5</div>
                           </div>
                           <div className="bg-blue-700/50 rounded p-2">
-                            <div className="text-blue-200">Осталось до бесплатного:</div>
+                            <div className="text-blue-200 text-xs">Осталось:</div>
                             <div className="text-white font-bold text-lg">{searchedUser.stats.slotsRemaining}</div>
                           </div>
                         </div>
+                        <div className="bg-blue-700/30 rounded p-2 mt-2 text-xs">
+                          <div className="text-blue-200">Всего кальянов: <span className="text-white font-semibold">{searchedUser.stats.totalHookahs || 0}</span></div>
+                          <div className="text-blue-300 mt-1">Завершено циклов: <span className="text-white font-semibold">{searchedUser.stats.completedCycles || 0}</span></div>
+                        </div>
                         <div className="mt-2">
-                          <div className="text-blue-200 text-sm">Прогресс: {searchedUser.stats.progress}%</div>
+                          <div className="text-blue-200 text-sm">Прогресс цикла: {searchedUser.stats.progress}%</div>
                           <div className="w-full bg-blue-600 rounded-full h-2 mt-1">
                             <div 
                               className="bg-blue-300 h-2 rounded-full transition-all duration-300" 

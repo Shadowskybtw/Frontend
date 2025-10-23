@@ -45,9 +45,13 @@ export async function GET(request: NextRequest) {
     const regularCount = history.filter(h => h.hookah_type === 'regular').length
     const freeCount = history.filter(h => h.hookah_type === 'free').length
     
-    // Вычисляем что должно быть по истории
-    const expectedProgress = regularCount * 20
+    // CYCLIC PROGRESS: (count % 5) * 20
+    const currentCycleCount = regularCount % 5
+    const expectedProgress = currentCycleCount * 20
+    const completedCycles = Math.floor(regularCount / 5)
     const actualProgress = stock ? stock.progress : 0
+    
+    console.log(`📊 Search-user progress calculation: ${regularCount} hookahs = ${completedCycles} cycles + ${currentCycleCount} in current = ${expectedProgress}%`)
     
     // Если есть несоответствие - логируем
     if (expectedProgress !== actualProgress) {
@@ -55,17 +59,21 @@ export async function GET(request: NextRequest) {
         user: `${user.first_name} ${user.last_name}`,
         expectedProgress,
         actualProgress,
-        regularInHistory: regularCount
+        regularInHistory: regularCount,
+        currentCycleCount,
+        completedCycles
       })
     }
 
     const stats = {
-      slotsFilled: regularCount, // Используем реальное количество из истории
-      slotsRemaining: Math.max(0, 5 - regularCount),
-      progress: expectedProgress, // Показываем что должно быть по истории
-      actualStockProgress: actualProgress, // Добавляем для отладки
+      slotsFilled: currentCycleCount, // Слоты в ТЕКУЩЕМ цикле (0-4)
+      slotsRemaining: 5 - currentCycleCount, // Осталось до завершения ТЕКУЩЕГО цикла
+      progress: expectedProgress, // Прогресс текущего цикла (0%, 20%, 40%, 60%, 80%)
+      totalHookahs: regularCount, // Всего кальянов
+      completedCycles, // Завершенных циклов
+      actualStockProgress: actualProgress, // Для отладки
       hasFreeHookah: unusedFreeHookahs.length > 0,
-      mismatch: expectedProgress !== actualProgress // Флаг несоответствия
+      mismatch: expectedProgress !== actualProgress
     }
 
     return NextResponse.json({
