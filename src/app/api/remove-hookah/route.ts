@@ -81,8 +81,14 @@ export async function POST(request: NextRequest) {
         expectedFromProgress: Math.floor(stock.progress / 20)
       })
 
-      // КРИТИЧНО: Если progress не соответствует истории - исправляем НЕМЕДЛЕННО
-      const correctProgress = Math.min(100, regularHookahs.length * 20)
+      // КРИТИЧНО: Progress должен быть цикличным (0-100)
+      // regularHookahs.length % 5 дает количество кальянов в текущем цикле (0-4)
+      // progress = (count % 5) * 20 дает 0%, 20%, 40%, 60%, 80%
+      const currentCycleCount = regularHookahs.length % 5
+      const correctProgress = currentCycleCount * 20
+      const completedCycles = Math.floor(regularHookahs.length / 5)
+      
+      console.log(`📊 Progress calculation: ${regularHookahs.length} hookahs = ${completedCycles} completed cycles + ${currentCycleCount} in current cycle = ${correctProgress}%`)
       
       if (stock.progress !== correctProgress) {
         console.log('⚠️ CRITICAL MISMATCH DETECTED!')
