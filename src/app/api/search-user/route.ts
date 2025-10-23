@@ -39,12 +39,33 @@ export async function GET(request: NextRequest) {
     const stock = stocks.find(s => s.stock_name === '5+1 кальян')
     const freeHookahs = await db.getFreeHookahs(user.id)
     const unusedFreeHookahs = freeHookahs.filter(h => !h.used)
+    
+    // ВАЖНО: Проверяем реальное количество кальянов в истории
+    const history = await db.getHookahHistory(user.id)
+    const regularCount = history.filter(h => h.hookah_type === 'regular').length
+    const freeCount = history.filter(h => h.hookah_type === 'free').length
+    
+    // Вычисляем что должно быть по истории
+    const expectedProgress = regularCount * 20
+    const actualProgress = stock ? stock.progress : 0
+    
+    // Если есть несоответствие - логируем
+    if (expectedProgress !== actualProgress) {
+      console.log('⚠️ MISMATCH in search-user:', {
+        user: `${user.first_name} ${user.last_name}`,
+        expectedProgress,
+        actualProgress,
+        regularInHistory: regularCount
+      })
+    }
 
     const stats = {
-      slotsFilled: stock ? Math.floor(stock.progress / 20) : 0,
-      slotsRemaining: stock ? 5 - Math.floor(stock.progress / 20) : 5,
-      progress: stock ? stock.progress : 0,
-      hasFreeHookah: unusedFreeHookahs.length > 0
+      slotsFilled: regularCount, // Используем реальное количество из истории
+      slotsRemaining: Math.max(0, 5 - regularCount),
+      progress: expectedProgress, // Показываем что должно быть по истории
+      actualStockProgress: actualProgress, // Добавляем для отладки
+      hasFreeHookah: unusedFreeHookahs.length > 0,
+      mismatch: expectedProgress !== actualProgress // Флаг несоответствия
     }
 
     return NextResponse.json({

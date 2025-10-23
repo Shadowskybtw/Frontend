@@ -68,6 +68,39 @@ export async function POST(request: NextRequest) {
 
       console.log('📊 Current stock:', stock)
 
+      // ВАЖНО: Проверяем реальное состояние истории перед удалением
+      const currentHistory = await db.getHookahHistory(user.id)
+      const regularHookahs = currentHistory.filter(h => h.hookah_type === 'regular')
+      const freeHookahs = currentHistory.filter(h => h.hookah_type === 'free')
+      
+      console.log('📜 Current history state:', {
+        total: currentHistory.length,
+        regular: regularHookahs.length,
+        free: freeHookahs.length,
+        stockProgress: stock.progress,
+        expectedFromProgress: Math.floor(stock.progress / 20)
+      })
+
+      // Если progress > 0, но нет записей regular в истории - это несоответствие
+      if (stock.progress > 0 && regularHookahs.length === 0) {
+        console.log('⚠️ MISMATCH DETECTED: Stock progress is', stock.progress, 'but no regular hookahs in history!')
+        console.log('⚠️ This means stock.progress is out of sync with hookah_history table')
+        
+        // В этом случае просто сбрасываем progress до 0
+        await db.updateStockProgress(stock.id, 0)
+        console.log('✅ Reset stock progress to 0 to match history')
+        
+        return NextResponse.json({
+          success: false,
+          message: 'Обнаружено несоответствие данных. Прогресс был сброшен до 0. Попробуйте снова.',
+          debug: {
+            stockProgress: stock.progress,
+            historyCount: regularHookahs.length,
+            action: 'progress_reset_to_zero'
+          }
+        }, { status: 400 })
+      }
+
       // Удаляем N последних regular из истории и уменьшаем прогресс на 20*N
       let removed = 0
       for (let i = 0; i < removeCount; i++) {
