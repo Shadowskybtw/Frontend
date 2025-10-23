@@ -72,26 +72,24 @@ export async function POST(request: NextRequest) {
     )
     console.log(`✅ Synced ${usersData.length} users`)
 
-    // 2. Синхронизация админов
-    const admins = await prisma.admin.findMany({
-      include: {
-        user: true
-      },
+    // 2. Синхронизация админов (используем поле is_admin из таблицы users)
+    const adminUsers = await prisma.user.findMany({
+      where: { is_admin: true },
       orderBy: { id: 'asc' }
     })
 
-    const adminsData = admins.map(admin => [
-      admin.id,
-      admin.user.tg_id.toString(),
-      admin.user.first_name,
-      admin.user.last_name,
-      new Date(admin.created_at).toLocaleString('ru-RU')
+    const adminsData = adminUsers.map(user => [
+      user.id,
+      user.tg_id.toString(),
+      user.first_name,
+      user.last_name,
+      new Date(user.created_at).toLocaleString('ru-RU')
     ])
 
     await batchUpdateSheet(
       SHEETS.ADMINS, 
       adminsData,
-      ['ID', 'Telegram ID', 'Имя', 'Фамилия', 'Дата назначения']
+      ['ID', 'Telegram ID', 'Имя', 'Фамилия', 'Дата регистрации']
     )
     console.log(`✅ Synced ${adminsData.length} admins`)
 
