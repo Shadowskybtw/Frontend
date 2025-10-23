@@ -47,7 +47,19 @@ export async function POST(request: NextRequest) {
     const results = {
       constraints_added: 0,
       users_fixed: 0,
+      invalid_types_deleted: 0,
       errors: [] as string[]
+    }
+
+    // Step 0: Delete invalid hookah_type records (e.g. "removed")
+    try {
+      const deleteResult = await prisma.$executeRaw`
+        DELETE FROM hookah_history WHERE hookah_type NOT IN ('regular', 'free')
+      `
+      results.invalid_types_deleted = Number(deleteResult)
+      console.log(`🗑️ Deleted ${deleteResult} records with invalid hookah_type`)
+    } catch (error: any) {
+      results.errors.push(`Delete invalid types: ${error.message}`)
     }
 
     // Step 1: Add progress constraint (0-100)
@@ -110,7 +122,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: `Rebuild complete: ${results.users_fixed} users fixed, ${results.constraints_added} constraints added`,
+      message: `Rebuild complete: ${results.users_fixed} users fixed, ${results.constraints_added} constraints added, ${results.invalid_types_deleted} invalid records deleted`,
       results
     })
 
