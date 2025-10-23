@@ -56,6 +56,7 @@ export default function ProfilePage() {
   const [isAddingHookah, setIsAddingHookah] = useState(false)
   const [isRemovingHookah, setIsRemovingHookah] = useState(false)
   const [searchPhone, setSearchPhone] = useState('')
+  const [isSyncingSheets, setIsSyncingSheets] = useState(false)
   const [searchedUser, setSearchedUser] = useState<any>(null)
   const [isSearchingUser, setIsSearchingUser] = useState(false)
 
@@ -282,6 +283,39 @@ export default function ProfilePage() {
       alert('❌ Ошибка при предоставлении админских прав')
     } finally {
       setIsGrantingAdmin(false)
+    }
+  }
+
+  const syncToGoogleSheets = async () => {
+    if (!user?.tg_id) {
+      alert('Ошибка: пользователь не найден')
+      return
+    }
+
+    if (!confirm('🔄 Начать синхронизацию всех данных с Google Sheets?\n\nЭто может занять несколько секунд.')) {
+      return
+    }
+
+    setIsSyncingSheets(true)
+    try {
+      const response = await fetch('/api/sync-to-sheets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ admin_tg_id: user.tg_id })
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        alert(`✅ Синхронизация успешно завершена!\n\n📊 Статистика:\n• Пользователей: ${data.stats.users}\n• Админов: ${data.stats.admins}\n• Платных кальянов: ${data.stats.regularHookahs}\n• Бесплатных кальянов: ${data.stats.freeHookahs}`)
+      } else {
+        alert('❌ Ошибка: ' + data.message)
+      }
+    } catch (error) {
+      console.error('Error syncing to Google Sheets:', error)
+      alert('❌ Ошибка при синхронизации с Google Sheets')
+    } finally {
+      setIsSyncingSheets(false)
     }
   }
 
@@ -559,6 +593,23 @@ export default function ProfilePage() {
                     className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 text-white py-2 px-4 rounded-md text-sm font-medium"
                   >
                     {isGrantingAdmin ? '⏳ Назначаем...' : '👑 Назначить админа'}
+                  </button>
+                </div>
+              </div>
+
+              {/* Sync to Google Sheets */}
+              <div className="bg-green-900/30 border border-green-500/50 rounded-lg p-4">
+                <h3 className="font-semibold text-green-300 mb-3">📊 Google Sheets</h3>
+                <div className="space-y-3">
+                  <p className="text-sm text-green-200">
+                    Выгрузить все данные в Google Таблицы: пользователей, админов, кальяны и оценки.
+                  </p>
+                  <button
+                    onClick={syncToGoogleSheets}
+                    disabled={isSyncingSheets}
+                    className="w-full bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white py-2 px-4 rounded-md text-sm font-medium"
+                  >
+                    {isSyncingSheets ? '⏳ Синхронизация...' : '📊 Синхронизировать с Google Sheets'}
                   </button>
                 </div>
               </div>

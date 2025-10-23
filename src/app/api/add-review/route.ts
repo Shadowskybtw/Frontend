@@ -70,6 +70,29 @@ export async function POST(req: NextRequest) {
     const success = await db.addHookahReview(user.id, hookahId, rating, reviewText)
     
     if (success) {
+      // Обновляем оценку в Google Sheets (не блокируем ответ)
+      try {
+        const sheetsResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/update-review-in-sheets`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            hookah_id: hookahId,
+            hookah_type: hookahHistory.hookah_type,
+            rating,
+            comment: reviewText || ''
+          })
+        })
+        
+        if (sheetsResponse.ok) {
+          console.log('✅ Review updated in Google Sheets')
+        } else {
+          console.log('⚠️ Failed to update Google Sheets, but review was saved')
+        }
+      } catch (sheetsError) {
+        console.error('⚠️ Error updating Google Sheets:', sheetsError)
+        // Не возвращаем ошибку пользователю, так как отзыв уже сохранен
+      }
+      
       return NextResponse.json({ 
         success: true, 
         message: 'Review added successfully' 
