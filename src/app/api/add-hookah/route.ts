@@ -94,25 +94,13 @@ export async function POST(request: NextRequest) {
       // Устанавливаем флаг promotion_completed
       await db.updateStockPromotionCompleted(stock.id, true)
       
-      // Создаем бесплатный кальян автоматически
+      // Создаем бесплатный кальян автоматически (только запись в free_hookahs, БЕЗ истории)
       console.log(`🎁 Creating free hookah for user ${user.id} after promotion completion`)
       const freeHookah = await db.createFreeHookah(user.id)
-      console.log(`✅ Free hookah created:`, freeHookah)
+      console.log(`✅ Free hookah created (ID: ${freeHookah.id}). User must claim it to add to history.`)
       
-      // Добавляем запись в историю о получении бесплатного кальяна
-      try {
-        await db.addHookahToHistory(
-          user.id,
-          'free',
-          undefined, // slot_number
-          stock.id,
-          admin.id, // adminId
-          'promotion_completed' // scanMethod
-        )
-        console.log(`✅ Free hookah added to history`)
-      } catch (historyError) {
-        console.error(`❌ Error adding free hookah to history:`, historyError)
-      }
+      // ❌ НЕ добавляем в историю здесь! История обновится только когда пользователь нажмет "Получить"
+      // История будет добавлена через /api/claim-free-hookah при клейме
       
       // Сбрасываем прогресс на 0 после создания бесплатного кальяна
       await db.updateStockProgress(stock.id, 0)
