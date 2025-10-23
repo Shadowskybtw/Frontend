@@ -98,7 +98,7 @@ export default function Navigation({ className = "" }: NavigationProps) {
                   >
                     <span className="text-lg">{item.icon}</span>
                     <span className="text-sm font-semibold">{item.label}</span>
-                    {item.badge && item.badge > 0 && (
+                    {item.badge !== undefined && item.badge > 0 && (
                       <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center shadow-lg animate-pulse">
                         {item.badge > 9 ? '9+' : item.badge}
                       </span>
