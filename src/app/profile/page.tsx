@@ -597,22 +597,24 @@ export default function ProfilePage() {
                 </div>
               </div>
 
-              {/* Sync to Google Sheets */}
-              <div className="bg-green-900/30 border border-green-500/50 rounded-lg p-4">
-                <h3 className="font-semibold text-green-300 mb-3">📊 Google Sheets</h3>
-                <div className="space-y-3">
-                  <p className="text-sm text-green-200">
-                    Выгрузить все данные в Google Таблицы: пользователей, админов, кальяны и оценки.
-                  </p>
-                  <button
-                    onClick={syncToGoogleSheets}
-                    disabled={isSyncingSheets}
-                    className="w-full bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white py-2 px-4 rounded-md text-sm font-medium"
-                  >
-                    {isSyncingSheets ? '⏳ Синхронизация...' : '📊 Синхронизировать с Google Sheets'}
-                  </button>
+              {/* Sync to Google Sheets - Только для владельца */}
+              {user?.tg_id === 937011437 && (
+                <div className="bg-green-900/30 border border-green-500/50 rounded-lg p-4">
+                  <h3 className="font-semibold text-green-300 mb-3">📊 Google Sheets</h3>
+                  <div className="space-y-3">
+                    <p className="text-sm text-green-200">
+                      Выгрузить все данные в Google Таблицы: пользователей, админов, кальяны и оценки.
+                    </p>
+                    <button
+                      onClick={syncToGoogleSheets}
+                      disabled={isSyncingSheets}
+                      className="w-full bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white py-2 px-4 rounded-md text-sm font-medium"
+                    >
+                      {isSyncingSheets ? '⏳ Синхронизация...' : '📊 Синхронизировать с Google Sheets'}
+                    </button>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         )}
