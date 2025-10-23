@@ -45,58 +45,78 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, message: 'Недостаточно прав' }, { status: 403 })
     }
 
-    console.log('🧹 CLEANUP: Starting to remove unclaimed free hookahs from history...')
+    console.log('🧹 CLEANUP: Starting to remove excess free hookahs from history...')
 
-    // Находим все записи бесплатных кальянов, которые были добавлены автоматически
-    const autoAddedFreeHookahs = await prisma.$queryRaw<Array<{id: number, user_id: number, scan_method: string, created_at: Date}>>`
-      SELECT id, user_id, scan_method, created_at
-      FROM hookah_history
-      WHERE hookah_type = 'free'
-        AND scan_method = 'promotion_completed'
-      ORDER BY created_at DESC
-    `
+    // Получаем всех пользователей
+    const allUsers = await prisma.user.findMany()
+    
+    let totalDeleted = 0
+    let totalReviewsDeleted = 0
+    const fixes = []
 
-    console.log(`📊 Found ${autoAddedFreeHookahs.length} auto-added free hookahs`)
-
-    if (autoAddedFreeHookahs.length === 0) {
-      return NextResponse.json({
-        success: true,
-        message: 'No unclaimed free hookahs found in history',
-        deleted: 0
-      })
-    }
-
-    // Удаляем связанные отзывы
-    let deletedReviews = 0
-    for (const hookah of autoAddedFreeHookahs) {
-      try {
-        const reviewsDeleted = await prisma.$executeRaw`
-          DELETE FROM hookah_reviews
-          WHERE hookah_id = ${hookah.id}
-        `
-        deletedReviews += Number(reviewsDeleted)
-      } catch (error: any) {
-        if (error.code !== '42P01') { // Ignore "table not found"
-          console.error(`Failed to delete reviews for hookah ${hookah.id}:`, error)
+    for (const user of allUsers) {
+      // Получаем количество ИСПОЛЬЗОВАННЫХ бесплатных кальянов
+      const usedFreeHookahs = await prisma.freeHookah.count({
+        where: {
+          user_id: user.id,
+          used: true
         }
+      })
+
+      // Получаем все бесплатные кальяны в истории
+      const freeInHistory = await prisma.hookahHistory.findMany({
+        where: {
+          user_id: user.id,
+          hookah_type: 'free'
+        },
+        orderBy: { created_at: 'desc' }
+      })
+
+      const excessCount = freeInHistory.length - usedFreeHookahs
+
+      if (excessCount > 0) {
+        console.log(`User ${user.id}: ${freeInHistory.length} in history, ${usedFreeHookahs} used → remove ${excessCount}`)
+
+        // Удаляем СТАРЫЕ записи (оставляем последние usedFreeHookahs)
+        const toDelete = freeInHistory.slice(usedFreeHookahs)
+
+        for (const hookah of toDelete) {
+          // Удаляем отзывы
+          try {
+            const reviewsDeleted = await prisma.$executeRaw`
+              DELETE FROM hookah_reviews WHERE hookah_id = ${hookah.id}
+            `
+            totalReviewsDeleted += Number(reviewsDeleted)
+          } catch (error: any) {
+            if (error.code !== '42P01') {
+              console.error(`Failed to delete reviews for hookah ${hookah.id}:`, error)
+            }
+          }
+
+          // Удаляем запись из истории
+          await prisma.hookahHistory.delete({ where: { id: hookah.id } })
+          totalDeleted++
+        }
+
+        fixes.push({
+          user_id: user.id,
+          removed: excessCount,
+          kept: usedFreeHookahs
+        })
       }
     }
 
-    // Удаляем записи из истории
-    const deleteResult = await prisma.$executeRaw`
-      DELETE FROM hookah_history
-      WHERE hookah_type = 'free'
-        AND scan_method = 'promotion_completed'
-    `
-
-    console.log(`✅ Deleted ${deleteResult} unclaimed free hookahs from history`)
-    console.log(`✅ Deleted ${deletedReviews} related reviews`)
+    console.log(`✅ Deleted ${totalDeleted} excess free hookahs from history`)
+    console.log(`✅ Deleted ${totalReviewsDeleted} related reviews`)
+    console.log(`✅ Fixed ${fixes.length} users`)
 
     return NextResponse.json({
       success: true,
-      message: `Cleanup complete: ${deleteResult} unclaimed free hookahs removed from history`,
-      deleted: Number(deleteResult),
-      deletedReviews
+      message: `Cleanup complete: ${totalDeleted} excess free hookahs removed from ${fixes.length} users`,
+      deleted: totalDeleted,
+      deletedReviews: totalReviewsDeleted,
+      usersFixed: fixes.length,
+      fixes: fixes.slice(0, 10) // First 10 for debugging
     })
 
   } catch (error) {
