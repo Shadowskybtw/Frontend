@@ -133,21 +133,33 @@ export default function HistoryPage() {
 
       const data = await response.json()
       if (data.success) {
-        alert('✅ Отзыв успешно добавлен!')
+        // Close modal first
         setShowReviewModal(false)
         setSelectedHookahForReview(null)
         setReviewText('')
         setReviewRating(5)
+        
+        // Show success notification
+        const notification = document.createElement('div')
+        notification.className = 'fixed top-4 right-4 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-slideUp'
+        notification.innerHTML = '✅ Отзыв успешно добавлен!'
+        document.body.appendChild(notification)
+        setTimeout(() => {
+          notification.style.opacity = '0'
+          notification.style.transition = 'opacity 0.3s'
+          setTimeout(() => notification.remove(), 300)
+        }, 3000)
+        
         // Reload history to show the review
         if (user?.tg_id) {
           fetchHistory(Number(user.tg_id), currentPage)
         }
       } else {
-        alert('Ошибка: ' + data.message)
+        alert('❌ Ошибка: ' + data.message)
       }
     } catch (error) {
       console.error('Error submitting review:', error)
-      alert('Ошибка при отправке отзыва')
+      alert('❌ Ошибка при отправке отзыва')
     } finally {
       setIsSubmittingReview(false)
     }
@@ -286,22 +298,36 @@ export default function HistoryPage() {
                               </div>
                             )}
                             {item.review && (
-                              <div className="flex items-center justify-end gap-1 mb-2">
-                                <span className="text-yellow-400 text-sm">
-                                  {Array.from({ length: item.review.rating }, () => '★').join('')}
-                                </span>
-                                {item.review.review_text && (
-                                  <span className="text-gray-300 text-xs ml-2">
-                                    &ldquo;{item.review.review_text}&rdquo;
+                              <div className="mb-2 bg-gray-800/50 rounded-lg p-2 border border-gray-700">
+                                <div className="flex items-center gap-1 mb-1">
+                                  {Array.from({ length: 5 }, (_, i) => (
+                                    <span 
+                                      key={i}
+                                      className={`text-lg ${i < item.review!.rating ? 'text-yellow-400' : 'text-gray-600'}`}
+                                    >
+                                      ★
+                                    </span>
+                                  ))}
+                                  <span className="text-gray-400 text-xs ml-1">
+                                    ({item.review.rating}/5)
                                   </span>
+                                </div>
+                                {item.review.review_text && (
+                                  <p className="text-gray-300 text-xs italic">
+                                    &ldquo;{item.review.review_text}&rdquo;
+                                  </p>
                                 )}
                               </div>
                             )}
                             <button
                               onClick={() => openReviewModal(item)}
-                              className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs font-medium"
+                              className={`${
+                                item.review 
+                                  ? 'bg-gray-700 hover:bg-gray-600 text-gray-300' 
+                                  : 'bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white shadow-lg shadow-purple-500/30'
+                              } px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 hover:scale-105`}
                             >
-                              {item.review ? '✏️ Изменить отзыв' : '⭐ Оценить'}
+                              {item.review ? '✏️ Изменить' : '⭐ Оценить'}
                             </button>
                           </div>
                         </div>
@@ -343,47 +369,73 @@ export default function HistoryPage() {
 
       {/* Review Modal */}
       {showReviewModal && selectedHookahForReview && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-gray-800 rounded-2xl p-6 w-full max-w-md">
-            <h3 className="text-xl font-bold text-white mb-4">Оставить отзыв</h3>
+        <div 
+          className="fixed inset-0 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fadeIn"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setShowReviewModal(false)
+              setSelectedHookahForReview(null)
+              setReviewText('')
+              setReviewRating(5)
+            }
+          }}
+        >
+          <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-8 w-full max-w-md border-2 border-purple-500/30 shadow-2xl shadow-purple-500/20 animate-slideUp">
+            <div className="text-center mb-6">
+              <span className="text-5xl mb-3 block">⭐</span>
+              <h3 className="text-2xl font-bold text-white">Оставить отзыв</h3>
+              <p className="text-gray-400 text-sm mt-1">
+                {selectedHookahForReview.hookah_type === 'free' ? 'Бесплатный кальян' : 'Платный кальян'}
+              </p>
+            </div>
             
-            <div className="space-y-4">
+            <div className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Оценка (1-5 звезд):
+                <label className="block text-sm font-semibold text-gray-300 mb-3 text-center">
+                  Ваша оценка:
                 </label>
-                <div className="flex space-x-2">
+                <div className="flex justify-center space-x-3">
                   {[1, 2, 3, 4, 5].map((rating) => (
                     <button
                       key={rating}
                       onClick={() => setReviewRating(rating)}
-                      className={`text-2xl ${
-                        rating <= reviewRating ? 'text-yellow-400' : 'text-gray-400'
-                      } hover:text-yellow-400 transition-colors`}
+                      className={`text-5xl transition-all duration-200 transform hover:scale-125 ${
+                        rating <= reviewRating 
+                          ? 'text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.8)]' 
+                          : 'text-gray-600 hover:text-gray-400'
+                      }`}
                     >
                       ★
                     </button>
                   ))}
                 </div>
-                <p className="text-gray-400 text-xs mt-1">
-                  Выбрано: {reviewRating} звезд
+                <p className="text-center text-purple-300 text-sm mt-3 font-medium">
+                  {reviewRating === 5 && '🎉 Отлично!'}
+                  {reviewRating === 4 && '😊 Хорошо'}
+                  {reviewRating === 3 && '😐 Нормально'}
+                  {reviewRating === 2 && '😕 Плохо'}
+                  {reviewRating === 1 && '😞 Очень плохо'}
                 </p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-semibold text-gray-300 mb-2">
                   Комментарий (необязательно):
                 </label>
                 <textarea
                   value={reviewText}
                   onChange={(e) => setReviewText(e.target.value)}
-                  placeholder="Оставьте комментарий о кальяне..."
-                  className="w-full px-3 py-2 border border-gray-600 rounded-md bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  rows={3}
+                  placeholder="Расскажите о своих впечатлениях..."
+                  className="w-full px-4 py-3 border-2 border-gray-700 rounded-xl bg-gray-800/50 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all resize-none"
+                  rows={4}
+                  maxLength={200}
                 />
+                <p className="text-gray-500 text-xs mt-1 text-right">
+                  {reviewText.length}/200
+                </p>
               </div>
 
-              <div className="flex space-x-3 pt-4">
+              <div className="flex space-x-3 pt-2">
                 <button
                   onClick={() => {
                     setShowReviewModal(false)
@@ -391,16 +443,26 @@ export default function HistoryPage() {
                     setReviewText('')
                     setReviewRating(5)
                   }}
-                  className="flex-1 bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded-md font-medium"
+                  className="flex-1 bg-gray-700 hover:bg-gray-600 text-white py-3 px-4 rounded-xl font-semibold transition-all duration-200 hover:scale-105"
                 >
                   Отмена
                 </button>
                 <button
                   onClick={submitReview}
                   disabled={isSubmittingReview}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white py-2 px-4 rounded-md font-medium"
+                  className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 disabled:from-gray-600 disabled:to-gray-700 text-white py-3 px-4 rounded-xl font-semibold transition-all duration-200 hover:scale-105 disabled:scale-100 shadow-lg shadow-purple-500/30"
                 >
-                  {isSubmittingReview ? '⏳ Отправляем...' : 'Отправить отзыв'}
+                  {isSubmittingReview ? (
+                    <span className="flex items-center justify-center">
+                      <svg className="animate-spin h-5 w-5 mr-2" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Отправляем...
+                    </span>
+                  ) : (
+                    '✨ Отправить отзыв'
+                  )}
                 </button>
               </div>
             </div>
