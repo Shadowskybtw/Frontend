@@ -979,12 +979,21 @@ export const db = {
       })
 
       // Удаляем связанный отзыв, если он есть (raw SQL)
-      await prisma.$executeRaw`
-        DELETE FROM hookah_reviews
-        WHERE user_id = ${userId}
-          AND hookah_id = ${recordId}
-      `
-      console.log('🗑️ Deleted reviews (if any)')
+      try {
+        await prisma.$executeRaw`
+          DELETE FROM hookah_reviews
+          WHERE user_id = ${userId}
+            AND hookah_id = ${recordId}
+        `
+        console.log('🗑️ Deleted reviews (if any)')
+      } catch (reviewError: any) {
+        // Если таблица не существует - игнорируем ошибку
+        if (reviewError.code === '42P01') {
+          console.log('⚠️ hookah_reviews table does not exist, skipping...')
+        } else {
+          throw reviewError
+        }
+      }
 
       // DIRECT SQL DELETE: Удаляем запись из истории
       const deleteResult = await prisma.$executeRaw`
