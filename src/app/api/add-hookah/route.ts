@@ -59,28 +59,21 @@ export async function POST(request: NextRequest) {
     // ВАЖНО: Проверяем реальное количество кальянов в истории
     const currentHistory = await db.getHookahHistory(user.id)
     const regularCount = currentHistory.filter(h => h.hookah_type === 'regular').length
-    const correctProgress = Math.min(100, regularCount * 20)
+    
+    // CYCLIC PROGRESS: (count % 5) * 20
+    const currentCycleCount = regularCount % 5
+    const correctProgress = currentCycleCount * 20
+    const completedCycles = Math.floor(regularCount / 5)
     
     // Если есть несоответствие - исправляем перед добавлением
     if (stock.progress !== correctProgress) {
-      console.log(`⚠️ Fixing progress mismatch before add: ${stock.progress}% -> ${correctProgress}%`)
+      console.log(`⚠️ Fixing progress mismatch before add: ${stock.progress}% -> ${correctProgress}% (${regularCount} hookahs = ${completedCycles} cycles + ${currentCycleCount})`)
       await db.updateStockProgress(stock.id, correctProgress)
       stock.progress = correctProgress
     }
 
-    // Проверяем, можно ли добавить кальян (не больше 5 в одном цикле)
-    const currentSlot = Math.floor(stock.progress / 20)
-    if (currentSlot >= 5 && stock.progress >= 100) {
-      console.log('⚠️ Cannot add: campaign already completed, waiting for reset')
-      return NextResponse.json({
-        success: false,
-        message: 'Акция уже завершена. Дождитесь сброса прогресса после получения бесплатного кальяна.',
-        debug: {
-          currentSlot,
-          progress: stock.progress
-        }
-      }, { status: 400 })
-    }
+    // Можно добавлять кальяны в любой момент (циклическая логика автоматически сбросит на 0% при 100%)
+    console.log(`📊 Current cycle: ${currentCycleCount}/5 hookahs, ${correctProgress}%`)
 
     // Увеличиваем прогресс на 20% (один слот), но не больше 100%
     const newProgress = Math.min(100, stock.progress + 20)
