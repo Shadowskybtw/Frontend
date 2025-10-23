@@ -65,7 +65,11 @@ export async function POST(request: NextRequest) {
       user.stocks[0]?.progress || 0
     ])
 
-    await batchUpdateSheet(SHEETS.USERS, usersData)
+    await batchUpdateSheet(
+      SHEETS.USERS, 
+      usersData,
+      ['ID', 'Telegram ID', 'Имя', 'Фамилия', 'Username', 'Телефон', 'Дата регистрации', 'Кальянов куплено', 'Прогресс (%)']
+    )
     console.log(`✅ Synced ${usersData.length} users`)
 
     // 2. Синхронизация админов
@@ -84,7 +88,11 @@ export async function POST(request: NextRequest) {
       new Date(admin.created_at).toLocaleString('ru-RU')
     ])
 
-    await batchUpdateSheet(SHEETS.ADMINS, adminsData)
+    await batchUpdateSheet(
+      SHEETS.ADMINS, 
+      adminsData,
+      ['ID', 'Telegram ID', 'Имя', 'Фамилия', 'Дата назначения']
+    )
     console.log(`✅ Synced ${adminsData.length} admins`)
 
     // 3. Синхронизация платных кальянов
@@ -93,7 +101,7 @@ export async function POST(request: NextRequest) {
       include: {
         user: true
       },
-      orderBy: { created_at: 'desc' }
+      orderBy: { created_at: 'asc' }
     })
 
     // Получаем информацию об админах и отзывах для каждого кальяна
@@ -121,7 +129,11 @@ export async function POST(request: NextRequest) {
       ]
     })
 
-    await batchUpdateSheet(SHEETS.REGULAR_HOOKAHS, regularHookahsData)
+    await batchUpdateSheet(
+      SHEETS.REGULAR_HOOKAHS, 
+      regularHookahsData,
+      ['ID', 'Пользователь', 'Телефон', 'Дата добавления', 'Слот', 'Оценка', 'Комментарий']
+    )
     console.log(`✅ Synced ${regularHookahsData.length} regular hookahs`)
 
     // 4. Синхронизация бесплатных кальянов
@@ -130,7 +142,7 @@ export async function POST(request: NextRequest) {
       include: {
         user: true
       },
-      orderBy: { created_at: 'desc' }
+      orderBy: { created_at: 'asc' }
     })
 
     // Получаем информацию о запросах и отзывах для каждого бесплатного кальяна
@@ -174,7 +186,11 @@ export async function POST(request: NextRequest) {
       ]
     })
 
-    await batchUpdateSheet(SHEETS.FREE_HOOKAHS, freeHookahsData)
+    await batchUpdateSheet(
+      SHEETS.FREE_HOOKAHS, 
+      freeHookahsData,
+      ['ID', 'Пользователь', 'Телефон', 'Дата выдачи', 'Дата запроса', 'Оценка', 'Комментарий']
+    )
     console.log(`✅ Synced ${freeHookahsData.length} free hookahs`)
 
     return NextResponse.json({

@@ -124,11 +124,37 @@ export async function clearSheetData(sheetName: string) {
   }
 }
 
-// Функция для batch обновления (массовая загрузка данных)
-export async function batchUpdateSheet(sheetName: string, values: any[][]) {
+// Функция для установки заголовков
+export async function setSheetHeaders(sheetName: string, headers: string[]) {
   const sheets = getGoogleSheetsClient()
   
   try {
+    const response = await sheets.spreadsheets.values.update({
+      spreadsheetId: SPREADSHEET_ID,
+      range: `${sheetName}!A1:Z1`,
+      valueInputOption: 'USER_ENTERED',
+      requestBody: {
+        values: [headers]
+      }
+    })
+    
+    return response.data
+  } catch (error) {
+    console.error(`Error setting headers for sheet ${sheetName}:`, error)
+    throw error
+  }
+}
+
+// Функция для batch обновления (массовая загрузка данных)
+export async function batchUpdateSheet(sheetName: string, values: any[][], headers?: string[]) {
+  const sheets = getGoogleSheetsClient()
+  
+  try {
+    // Если переданы заголовки, устанавливаем их
+    if (headers) {
+      await setSheetHeaders(sheetName, headers)
+    }
+    
     // Сначала очищаем данные (кроме заголовков)
     await clearSheetData(sheetName)
     
