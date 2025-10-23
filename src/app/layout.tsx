@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import { UserProvider } from "@/contexts/UserContext";
+import { AdminProvider } from "@/contexts/AdminContext";
 import TelegramInit from "@/components/TelegramInit";
 
 const geistSans = Geist({
@@ -36,7 +37,9 @@ export default function RootLayout({
         />
         <TelegramInit />
         <UserProvider>
-          {children}
+          <AdminProvider>
+            {children}
+          </AdminProvider>
         </UserProvider>
       </body>
     </html>

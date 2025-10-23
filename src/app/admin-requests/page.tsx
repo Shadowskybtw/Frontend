@@ -2,6 +2,7 @@
 import React, { useEffect, useState, useCallback } from 'react'
 import Navigation from '@/components/Navigation'
 import { useUser } from '@/contexts/UserContext'
+import { useAdmin } from '@/contexts/AdminContext'
 
 interface FreeHookahRequest {
   id: number
@@ -29,11 +30,11 @@ interface Stats {
 
 export default function AdminRequestsPage() {
   const { user, loading, isInitialized } = useUser()
+  const { isAdmin, isChecking, refreshPendingCount } = useAdmin()
   const [requests, setRequests] = useState<FreeHookahRequest[]>([])
   const [stats, setStats] = useState<Stats>({ total: 0, pending: 0, approved: 0, rejected: 0 })
   const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('pending')
   const [isLoading, setIsLoading] = useState(false)
-  const [isAdmin, setIsAdmin] = useState(false)
   const [processingId, setProcessingId] = useState<number | null>(null)
 
   const fetchRequests = useCallback(async (tgId: number) => {
@@ -57,32 +58,12 @@ export default function AdminRequestsPage() {
     }
   }, [filter])
 
-  // Check admin status
+  // Fetch requests when admin status is confirmed
   useEffect(() => {
-    const checkAdmin = async () => {
-      if (!user?.tg_id) return
-
-      try {
-        const response = await fetch(`/api/admin?tg_id=${user.tg_id}`)
-        const data = await response.json()
-        setIsAdmin(data.is_admin || false)
-      } catch (error) {
-        console.error('Error checking admin status:', error)
-        setIsAdmin(false)
-      }
-    }
-
-    if (isInitialized && user) {
-      checkAdmin()
-    }
-  }, [isInitialized, user])
-
-  // Fetch requests
-  useEffect(() => {
-    if (isInitialized && user?.tg_id && isAdmin) {
+    if (isInitialized && user?.tg_id && isAdmin && !isChecking) {
       fetchRequests(Number(user.tg_id))
     }
-  }, [isInitialized, user?.tg_id, isAdmin, filter, fetchRequests])
+  }, [isInitialized, user?.tg_id, isAdmin, isChecking, filter, fetchRequests])
 
   // Auto-refresh every 10 seconds for pending requests
   useEffect(() => {
@@ -123,8 +104,9 @@ export default function AdminRequestsPage() {
           setTimeout(() => notification.remove(), 300)
         }, 3000)
 
-        // Refresh list
+        // Refresh list and pending count
         fetchRequests(Number(user.tg_id))
+        refreshPendingCount()
       } else {
         alert('❌ Ошибка: ' + data.message)
       }
@@ -164,8 +146,9 @@ export default function AdminRequestsPage() {
           setTimeout(() => notification.remove(), 300)
         }, 3000)
 
-        // Refresh list
+        // Refresh list and pending count
         fetchRequests(Number(user.tg_id))
+        refreshPendingCount()
       } else {
         alert('❌ Ошибка: ' + data.message)
       }
@@ -177,14 +160,14 @@ export default function AdminRequestsPage() {
     }
   }
 
-  if (loading || !isInitialized) {
+  if (loading || !isInitialized || isChecking) {
     return (
       <div className="min-h-screen bg-black">
         <Navigation />
         <main className="flex-1 flex items-center justify-center p-4">
           <div className="text-center">
             <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-purple-500 mx-auto mb-3"></div>
-            <p className="text-sm text-gray-400">Загрузка...</p>
+            <p className="text-sm text-gray-400">Проверка прав...</p>
           </div>
         </main>
       </div>
