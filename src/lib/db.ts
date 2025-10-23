@@ -956,45 +956,48 @@ export const db = {
     try {
       console.log('🗑️ Removing hookah from history:', { userId, hookahType })
       
-      // Находим последнюю запись указанного типа (по дате создания)
-      const lastHistoryRecord = await prisma.hookahHistory.findFirst({
-        where: {
-          user_id: userId,
-          hookah_type: hookahType
-        },
-        orderBy: { created_at: 'desc' } // Используем created_at как в рабочей версии
-      })
+      // DIRECT SQL: Находим ID последней записи
+      const lastRecord = await prisma.$queryRaw<Array<{id: number, created_at: Date}>>`
+        SELECT id, created_at
+        FROM hookah_history
+        WHERE user_id = ${userId}
+          AND hookah_type = ${hookahType}
+        ORDER BY created_at DESC
+        LIMIT 1
+      `
 
-      if (!lastHistoryRecord) {
+      if (!lastRecord || lastRecord.length === 0) {
         console.log('❌ No matching history record found for', { userId, hookahType })
         return false
       }
 
+      const recordId = lastRecord[0].id
       console.log('📍 Found record to delete:', {
-        id: lastHistoryRecord.id,
-        type: lastHistoryRecord.hookah_type,
-        created_at: lastHistoryRecord.created_at
+        id: recordId,
+        type: hookahType,
+        created_at: lastRecord[0].created_at
       })
 
-      // Удаляем связанный отзыв, если он есть
-      const deletedReviews = await prisma.hookahReview.deleteMany({
-        where: {
-          user_id: userId,
-          hookah_id: lastHistoryRecord.id
-        }
-      })
-      if (deletedReviews.count > 0) {
-        console.log(`🗑️ Deleted ${deletedReviews.count} review(s)`)
+      // Удаляем связанный отзыв, если он есть (raw SQL)
+      await prisma.$executeRaw`
+        DELETE FROM hookah_reviews
+        WHERE user_id = ${userId}
+          AND hookah_id = ${recordId}
+      `
+      console.log('🗑️ Deleted reviews (if any)')
+
+      // DIRECT SQL DELETE: Удаляем запись из истории
+      const deleteResult = await prisma.$executeRaw`
+        DELETE FROM hookah_history
+        WHERE id = ${recordId}
+      `
+
+      if (deleteResult === 0) {
+        console.log('❌ Failed to delete record from history (affected rows: 0)')
+        return false
       }
 
-      // Удаляем запись из истории
-      await prisma.hookahHistory.delete({
-        where: {
-          id: lastHistoryRecord.id
-        }
-      })
-
-      console.log('✅ Hookah record removed from history successfully:', lastHistoryRecord.id)
+      console.log('✅ Hookah record removed from history successfully:', recordId, 'affected rows:', deleteResult)
       return true
     } catch (error) {
       console.error('❌ Error removing hookah from history:', error)
