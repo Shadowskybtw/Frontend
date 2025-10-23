@@ -99,35 +99,22 @@ export async function POST(request: NextRequest) {
     // Получаем информацию об админах и отзывах для каждого кальяна
     const regularHookahsWithDetails = await Promise.all(
       regularHookahs.map(async (hookah) => {
-        // Получаем админа
-        let adminName = ''
-        if (hookah.admin_id) {
-          const admin = await prisma.admin.findUnique({
-            where: { id: hookah.admin_id },
-            include: { user: true }
-          })
-          if (admin) {
-            adminName = `${admin.user.first_name} ${admin.user.last_name}`
-          }
-        }
-
         // Получаем отзыв
         const review = await prisma.hookahReview.findFirst({
           where: { hookah_id: hookah.id },
           orderBy: { created_at: 'desc' }
         })
 
-        return { hookah, adminName, review }
+        return { hookah, review }
       })
     )
 
-    const regularHookahsData = regularHookahsWithDetails.map(({ hookah, adminName, review }) => {
+    const regularHookahsData = regularHookahsWithDetails.map(({ hookah, review }) => {
       return [
         hookah.id,
         `${hookah.user.first_name} ${hookah.user.last_name}`,
         hookah.user.phone || '',
-        new Date(hookah.created_at).toLocaleString('ru-RU'),
-        adminName,
+        hookah.created_at ? new Date(hookah.created_at).toLocaleString('ru-RU') : '',
         hookah.slot_number || '',
         review?.rating || '',
         review?.review_text || ''
@@ -146,11 +133,11 @@ export async function POST(request: NextRequest) {
       orderBy: { created_at: 'desc' }
     })
 
-    // Получаем информацию о запросах, админах и отзывах для каждого бесплатного кальяна
+    // Получаем информацию о запросах и отзывах для каждого бесплатного кальяна
     const freeHookahsWithDetails = await Promise.all(
       freeHookahs.map(async (hookah) => {
-        // Ищем запрос на бесплатный кальян
-        const request = await prisma.freeHookahRequest.findFirst({
+        // Ищем запрос на бесплатный кальян (только если есть created_at)
+        const request = hookah.created_at ? await prisma.freeHookahRequest.findFirst({
           where: {
             user_id: hookah.user_id,
             status: 'approved',
@@ -159,19 +146,7 @@ export async function POST(request: NextRequest) {
             }
           },
           orderBy: { updated_at: 'desc' }
-        })
-
-        // Получаем информацию об админе
-        let adminName = ''
-        if (hookah.admin_id) {
-          const admin = await prisma.admin.findUnique({
-            where: { id: hookah.admin_id },
-            include: { user: true }
-          })
-          if (admin) {
-            adminName = `${admin.user.first_name} ${admin.user.last_name}`
-          }
-        }
+        }) : null
 
         // Получаем отзыв
         const review = await prisma.hookahReview.findFirst({
@@ -182,19 +157,17 @@ export async function POST(request: NextRequest) {
         return {
           hookah,
           request,
-          adminName,
           review
         }
       })
     )
 
-    const freeHookahsData = freeHookahsWithDetails.map(({ hookah, request, adminName, review }) => {
+    const freeHookahsData = freeHookahsWithDetails.map(({ hookah, request, review }) => {
       return [
         hookah.id,
         `${hookah.user.first_name} ${hookah.user.last_name}`,
         hookah.user.phone || '',
-        new Date(hookah.created_at).toLocaleString('ru-RU'),
-        adminName,
+        hookah.created_at ? new Date(hookah.created_at).toLocaleString('ru-RU') : '',
         request ? new Date(request.created_at).toLocaleString('ru-RU') : '',
         review?.rating || '',
         review?.review_text || ''
