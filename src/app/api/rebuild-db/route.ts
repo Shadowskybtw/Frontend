@@ -100,7 +100,11 @@ export async function POST(request: NextRequest) {
       try {
         const history = await db.getHookahHistory(stock.user_id)
         const regularCount = history.filter(h => h.hookah_type === 'regular').length
-        const correctProgress = Math.min(100, regularCount * 20)
+        
+        // CYCLIC PROGRESS: (count % 5) * 20
+        const currentCycleCount = regularCount % 5
+        const correctProgress = currentCycleCount * 20
+        const completedCycles = Math.floor(regularCount / 5)
 
         if (stock.progress !== correctProgress) {
           await db.updateStockProgress(stock.id, correctProgress)
@@ -111,7 +115,7 @@ export async function POST(request: NextRequest) {
           }
           
           results.users_fixed++
-          console.log(`✅ Fixed user ${stock.user_id}: ${stock.progress}% -> ${correctProgress}%`)
+          console.log(`✅ Fixed user ${stock.user_id}: ${stock.progress}% -> ${correctProgress}% (${regularCount} hookahs = ${completedCycles} cycles + ${currentCycleCount})`)
         }
       } catch (error: any) {
         results.errors.push(`User ${stock.user_id}: ${error.message}`)
