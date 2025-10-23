@@ -127,10 +127,22 @@ export async function POST(request: NextRequest) {
       }
 
       if (removed === 0) {
-        return NextResponse.json(
-          { success: false, message: 'У пользователя нет платных кальянов для удаления' },
-          { status: 400 }
-        )
+        // Детальная информация о том, почему не удалось удалить
+        const detailedMessage = regularHookahs.length === 0
+          ? `В истории нет записей типа 'regular'. Прогресс был автоматически сброшен до 0%. Проверьте через /api/diagnose-user?phone=6642 для детальной информации.`
+          : `Не удалось найти записи для удаления в базе данных, хотя в истории ${regularHookahs.length} записей. Возможна проблема с базой данных.`
+        
+        return NextResponse.json({
+          success: false,
+          message: detailedMessage,
+          debug: {
+            totalHistory: currentHistory.length,
+            regularCount: regularHookahs.length,
+            freeCount: freeHookahs.length,
+            stockProgress: stock.progress,
+            diagnoseUrl: `/api/diagnose-user?phone=XXXX`
+          }
+        }, { status: 400 })
       }
 
       // Обновляем прогресс независимо от текущего значения
