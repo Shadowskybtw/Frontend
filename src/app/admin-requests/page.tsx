@@ -40,6 +40,7 @@ export default function AdminRequestsPage() {
   const fetchRequests = useCallback(async (tgId: number) => {
     setIsLoading(true)
     try {
+      // Fetch filtered requests
       const response = await fetch(`/api/free-hookah-requests/list?admin_tg_id=${tgId}&status=${filter}`, {
         cache: 'no-store'
       })
@@ -47,7 +48,15 @@ export default function AdminRequestsPage() {
 
       if (data.success) {
         setRequests(data.requests || [])
-        setStats(data.stats || { total: 0, pending: 0, approved: 0, rejected: 0 })
+        
+        // Always fetch stats for ALL requests (not filtered)
+        const statsResponse = await fetch(`/api/free-hookah-requests/list?admin_tg_id=${tgId}&status=all`, {
+          cache: 'no-store'
+        })
+        const statsData = await statsResponse.json()
+        if (statsData.success) {
+          setStats(statsData.stats || { total: 0, pending: 0, approved: 0, rejected: 0 })
+        }
       } else {
         console.error('Failed to fetch requests:', data.message)
       }
