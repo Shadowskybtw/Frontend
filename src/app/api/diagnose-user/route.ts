@@ -54,6 +54,11 @@ export async function GET(request: NextRequest) {
     const expectedProgress = Math.min(100, historyByType.regular.length * 20)
     const actualProgress = stock ? stock.progress : 0
 
+    // If OTHER types exist, get them
+    const otherTypes = historyByType.other.length > 0 
+      ? [...new Set(historyByType.other.map(h => h.hookah_type))]
+      : undefined
+
     const diagnosis = {
       user: {
         id: user.id,
@@ -87,7 +92,8 @@ export async function GET(request: NextRequest) {
           ? 'WARNING: Has regular hookahs but progress = 0'
           : expectedProgress !== actualProgress
           ? 'MISMATCH: Progress does not match history'
-          : 'OK'
+          : 'OK',
+        otherTypesFound: otherTypes
       },
       lastRecords: history.slice(0, 10).map(h => ({
         id: h.id,
@@ -95,12 +101,6 @@ export async function GET(request: NextRequest) {
         slot: h.slot_number,
         created_at: h.created_at
       }))
-    }
-
-    // If OTHER types exist, list them
-    if (historyByType.other.length > 0) {
-      const otherTypes = [...new Set(historyByType.other.map(h => h.hookah_type))]
-      diagnosis.analysis.otherTypesFound = otherTypes
     }
 
     return NextResponse.json({
