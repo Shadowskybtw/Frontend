@@ -91,15 +91,15 @@ export async function POST(request: NextRequest) {
     const regularHookahs = await prisma.hookahHistory.findMany({
       where: { hookah_type: 'regular' },
       include: {
-        user: true,
-        reviews: true
+        user: true
       },
       orderBy: { created_at: 'desc' }
     })
 
-    // Получаем информацию об админах для каждого кальяна
-    const regularHookahsWithAdmins = await Promise.all(
+    // Получаем информацию об админах и отзывах для каждого кальяна
+    const regularHookahsWithDetails = await Promise.all(
       regularHookahs.map(async (hookah) => {
+        // Получаем админа
         let adminName = ''
         if (hookah.admin_id) {
           const admin = await prisma.admin.findUnique({
@@ -110,12 +110,18 @@ export async function POST(request: NextRequest) {
             adminName = `${admin.user.first_name} ${admin.user.last_name}`
           }
         }
-        return { hookah, adminName }
+
+        // Получаем отзыв
+        const review = await prisma.hookahReview.findFirst({
+          where: { hookah_id: hookah.id },
+          orderBy: { created_at: 'desc' }
+        })
+
+        return { hookah, adminName, review }
       })
     )
 
-    const regularHookahsData = regularHookahsWithAdmins.map(({ hookah, adminName }) => {
-      const review = hookah.reviews[0]
+    const regularHookahsData = regularHookahsWithDetails.map(({ hookah, adminName, review }) => {
       return [
         hookah.id,
         `${hookah.user.first_name} ${hookah.user.last_name}`,
@@ -124,7 +130,7 @@ export async function POST(request: NextRequest) {
         adminName,
         hookah.slot_number || '',
         review?.rating || '',
-        review?.comment || ''
+        review?.review_text || ''
       ]
     })
 
@@ -135,13 +141,12 @@ export async function POST(request: NextRequest) {
     const freeHookahs = await prisma.hookahHistory.findMany({
       where: { hookah_type: 'free' },
       include: {
-        user: true,
-        reviews: true
+        user: true
       },
       orderBy: { created_at: 'desc' }
     })
 
-    // Получаем информацию о запросах и админах для каждого бесплатного кальяна
+    // Получаем информацию о запросах, админах и отзывах для каждого бесплатного кальяна
     const freeHookahsWithDetails = await Promise.all(
       freeHookahs.map(async (hookah) => {
         // Ищем запрос на бесплатный кальян
@@ -168,16 +173,22 @@ export async function POST(request: NextRequest) {
           }
         }
 
+        // Получаем отзыв
+        const review = await prisma.hookahReview.findFirst({
+          where: { hookah_id: hookah.id },
+          orderBy: { created_at: 'desc' }
+        })
+
         return {
           hookah,
           request,
-          adminName
+          adminName,
+          review
         }
       })
     )
 
-    const freeHookahsData = freeHookahsWithDetails.map(({ hookah, request, adminName }) => {
-      const review = hookah.reviews[0]
+    const freeHookahsData = freeHookahsWithDetails.map(({ hookah, request, adminName, review }) => {
       return [
         hookah.id,
         `${hookah.user.first_name} ${hookah.user.last_name}`,
@@ -186,7 +197,7 @@ export async function POST(request: NextRequest) {
         adminName,
         request ? new Date(request.created_at).toLocaleString('ru-RU') : '',
         review?.rating || '',
-        review?.comment || ''
+        review?.review_text || ''
       ]
     })
 
