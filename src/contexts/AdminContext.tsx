@@ -1,5 +1,5 @@
 "use client"
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react'
 import { useUser } from './UserContext'
 
 interface AdminContextType {
@@ -83,7 +83,7 @@ export function AdminProvider({ children }: AdminProviderProps) {
   }, [user?.tg_id, isInitialized])
 
   // Fetch pending requests count
-  const fetchPendingCount = async () => {
+  const fetchPendingCount = useCallback(async () => {
     if (!user?.tg_id) return
 
     try {
@@ -98,7 +98,7 @@ export function AdminProvider({ children }: AdminProviderProps) {
     } catch (error) {
       console.error('Error fetching pending count:', error)
     }
-  }
+  }, [user?.tg_id])
 
   // Auto-refresh pending count every 30 seconds for admins
   useEffect(() => {
@@ -109,7 +109,7 @@ export function AdminProvider({ children }: AdminProviderProps) {
     }, 30000) // 30 seconds
 
     return () => clearInterval(interval)
-  }, [isAdmin, user?.tg_id])
+  }, [isAdmin, user?.tg_id, fetchPendingCount])
 
   const value: AdminContextType = {
     isAdmin,
