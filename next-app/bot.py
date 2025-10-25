@@ -5,7 +5,6 @@ Only handles /start command with WebApp button
 """
 
 import logging
-import asyncio
 from telegram import Update, WebAppInfo, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, ContextTypes
 
@@ -22,7 +21,6 @@ logger = logging.getLogger(__name__)
 
 class DUNGEONBot:
     def __init__(self):
-        # Используем правильный способ создания Application
         self.application = Application.builder().token(BOT_TOKEN).build()
         self.setup_handlers()
     
