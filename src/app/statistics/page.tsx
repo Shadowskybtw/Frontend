@@ -22,16 +22,6 @@ interface Statistics {
   freeHookahs: number
   averageRating: number
   totalReviews: number
-  monthlyStats: Array<{
-    month: string
-    regular: number
-    free: number
-    total: number
-  }>
-  ratingDistribution: Array<{
-    rating: number
-    count: number
-  }>
 }
 
 export default function StatisticsPage() {
@@ -41,49 +31,6 @@ export default function StatisticsPage() {
   
   const { user, loading, error, isInitialized } = useUser()
 
-  // Calculate monthly statistics
-  const calculateMonthlyStats = useCallback((history: HookahHistory[]) => {
-    const monthlyData: { [key: string]: { regular: number, free: number, total: number } } = {}
-    
-    history.forEach(record => {
-      const date = new Date(record.created_at)
-      const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
-      
-      if (!monthlyData[monthKey]) {
-        monthlyData[monthKey] = { regular: 0, free: 0, total: 0 }
-      }
-      
-      monthlyData[monthKey].total++
-      if (record.hookah_type === 'regular') {
-        monthlyData[monthKey].regular++
-      } else if (record.hookah_type === 'free') {
-        monthlyData[monthKey].free++
-      }
-    })
-
-    return Object.entries(monthlyData)
-      .map(([month, stats]) => ({
-        month: formatMonth(month),
-        ...stats
-      }))
-      .sort((a, b) => b.month.localeCompare(a.month))
-      .slice(0, 12) // Last 12 months
-  }, [])
-
-  // Calculate rating distribution
-  const calculateRatingDistribution = useCallback((reviews: Array<{ rating: number }>) => {
-    const distribution: { [key: number]: number } = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }
-    
-    reviews.forEach(review => {
-      distribution[review.rating]++
-    })
-
-    return Object.entries(distribution)
-      .map(([rating, count]) => ({
-        rating: parseInt(rating),
-        count
-      }))
-  }, [])
 
   // Load statistics data
   const loadStatistics = useCallback(async () => {
@@ -137,20 +84,12 @@ export default function StatisticsPage() {
         : 0
       console.log('📈 Average rating calculated:', averageRating)
 
-      // Calculate monthly statistics
-      const monthlyStats = calculateMonthlyStats(history)
-      
-      // Calculate rating distribution
-      const ratingDistribution = calculateRatingDistribution(reviews)
-
       setStatistics({
         totalHookahs,
         regularHookahs,
         freeHookahs,
         averageRating,
-        totalReviews,
-        monthlyStats,
-        ratingDistribution
+        totalReviews
       })
 
     } catch (error) {
@@ -158,14 +97,8 @@ export default function StatisticsPage() {
     } finally {
       setIsLoading(false)
     }
-  }, [user?.tg_id, calculateMonthlyStats, calculateRatingDistribution])
+  }, [user?.tg_id])
 
-  // Format month helper
-  const formatMonth = (monthKey: string) => {
-    const [year, month] = monthKey.split('-')
-    const date = new Date(parseInt(year), parseInt(month) - 1, 1)
-    return date.toLocaleString('ru-RU', { month: 'long', year: 'numeric' })
-  }
 
   useEffect(() => {
     if (isInitialized && user?.tg_id) {
@@ -325,96 +258,6 @@ export default function StatisticsPage() {
               </div>
             </div>
 
-            {/* Дополнительная статистика */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              {/* Процентное соотношение */}
-              <div className="bg-gray-900 rounded-2xl border-2 border-gray-800 p-6 hover:border-purple-500 hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-300">
-                <div className="flex items-center mb-6">
-                  <div className="bg-purple-500/10 p-3 rounded-xl mr-3">
-                    <span className="text-2xl">📊</span>
-                  </div>
-                  <h2 className="text-xl font-bold text-white">Соотношение покупок</h2>
-                </div>
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-400">Платные кальяны</span>
-                      <span className="text-white font-bold">{((statistics.regularHookahs / statistics.totalHookahs) * 100).toFixed(1)}%</span>
-                    </div>
-                    <div className="w-full bg-gray-800 rounded-full h-3">
-                      <div 
-                        className="bg-purple-500 h-3 rounded-full transition-all duration-1000 ease-out"
-                        style={{ width: `${(statistics.regularHookahs / statistics.totalHookahs) * 100}%` }}
-                      ></div>
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-400">Бесплатные кальяны</span>
-                      <span className="text-white font-bold">{((statistics.freeHookahs / statistics.totalHookahs) * 100).toFixed(1)}%</span>
-                    </div>
-                    <div className="w-full bg-gray-800 rounded-full h-3">
-                      <div 
-                        className="bg-purple-500 h-3 rounded-full transition-all duration-1000 ease-out"
-                        style={{ width: `${(statistics.freeHookahs / statistics.totalHookahs) * 100}%` }}
-                      ></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Распределение оценок */}
-              <div className="bg-gray-900 rounded-2xl border-2 border-gray-800 p-6 hover:border-purple-500 hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-300">
-                <div className="flex items-center mb-6">
-                  <div className="bg-purple-500/10 p-3 rounded-xl mr-3">
-                    <span className="text-2xl">🎯</span>
-                  </div>
-                  <h2 className="text-xl font-bold text-white">Распределение оценок</h2>
-                </div>
-                <div className="space-y-2">
-                  {statistics.ratingDistribution.map((rating, index) => (
-                    <div key={index} className="flex items-center justify-between bg-gray-800 rounded-lg p-3 border border-gray-700 hover:border-purple-500 transition-all duration-200">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-xl">⭐</span>
-                        <span className="text-sm text-gray-300">{rating.rating} звезд</span>
-                      </div>
-                      <div className="text-lg font-bold text-white">{rating.count}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Активность по месяцам */}
-            <div className="bg-gray-900 rounded-2xl border-2 border-gray-800 p-6 hover:border-purple-500 hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-300">
-              <div className="flex items-center mb-6">
-                <div className="bg-purple-500/10 p-3 rounded-xl mr-3">
-                  <span className="text-2xl">📅</span>
-                </div>
-                <h2 className="text-xl font-bold text-white">Активность по месяцам</h2>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                {statistics.monthlyStats.map((month, index) => (
-                  <div key={index} className="bg-gray-800 rounded-xl p-4 border border-gray-700 hover:border-purple-500 transition-all duration-300">
-                    <h3 className="font-bold text-white mb-3 text-sm">{month.month}</h3>
-                    <div className="space-y-2">
-                      <div className="flex justify-between items-center py-1.5 px-2 bg-gray-700/50 rounded">
-                        <span className="text-gray-400 text-xs">Всего</span>
-                        <span className="font-bold text-white text-sm">{month.total}</span>
-                      </div>
-                      <div className="flex justify-between items-center py-1.5 px-2 bg-gray-700/50 rounded">
-                        <span className="text-gray-400 text-xs">Платные</span>
-                        <span className="font-bold text-white text-sm">{month.regular}</span>
-                      </div>
-                      <div className="flex justify-between items-center py-1.5 px-2 bg-gray-700/50 rounded">
-                        <span className="text-gray-400 text-xs">Бесплатные</span>
-                        <span className="font-bold text-white text-sm">{month.free}</span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
           </div>
         ) : (
           <div className="text-center py-16">
